@@ -3,6 +3,9 @@ name: App Store Screenshots
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   screenshots:
     runs-on: macos-15
@@ -87,3 +90,16 @@ jobs:
         with:
           name: app-store-screenshots
           path: screenshots/
+
+      - name: Publish to the app-store-assets branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rm -rf /tmp/assets && mkdir -p /tmp/assets
+          cp screenshots/* /tmp/assets/
+          git checkout --orphan app-store-assets
+          git rm -rf --quiet .
+          mkdir -p screenshots && cp /tmp/assets/* screenshots/
+          git add screenshots
+          git commit -m "App Store screenshots from ${GITHUB_SHA::7} [skip ci]"
+          git push --force origin app-store-assets
