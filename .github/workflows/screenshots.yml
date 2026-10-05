@@ -6,6 +6,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: screenshots
+  cancel-in-progress: false
+
 jobs:
   screenshots:
     runs-on: macos-15
@@ -49,42 +53,48 @@ jobs:
 
       - name: Capture screenshots
         run: |
-          mkdir -p screenshots
+          mkdir -p screenshots/iPhone-6.9 screenshots/InAppPurchase
+          # App Store Connect rejects images with an alpha channel, so every
+          # capture is saved as JPEG under the name it is uploaded with.
           capture() {
-            local scene=$1 wait=$2 name=$3
+            local scene=$1 wait=$2 out=$3
             xcrun simctl terminate "$UDID" "$BUNDLE_ID" 2>/dev/null || true
             xcrun simctl launch "$UDID" "$BUNDLE_ID" -screenshotScene "$scene"
             sleep "$wait"
-            xcrun simctl io "$UDID" screenshot "screenshots/$name.png"
+            xcrun simctl io "$UDID" screenshot --type=jpeg "screenshots/$out.jpg"
           }
           # Warm-up launch so later launches are quick and predictable.
-          capture home 8 warmup && rm screenshots/warmup.png
-          capture home 4 01-home
-          capture handoff 4 02-handoff
-          capture turn 4 03-start
-          capture reveal 2 04-dead-on-a
-          capture reveal 3 04-dead-on-b
-          capture reveal 4 04-dead-on-c
-          capture showdown 4 05-showdown
-          capture results 5 06-results
-          capture paywall 4 iap-review-paywall
-          capture partyPackArt 4 warmup && rm screenshots/warmup.png
+          capture home 8 warmup && rm screenshots/warmup.jpg
+          capture reveal 3 iPhone-6.9/1-dead-on
+          capture showdown 4 iPhone-6.9/2-showdown
+          capture results 5 iPhone-6.9/3-awards
+          capture handoff 4 iPhone-6.9/4-pass-the-phone
+          capture turn 4 iPhone-6.9/5-start
+          capture home 4 iPhone-6.9/6-modes
+          capture paywall 4 InAppPurchase/review-screenshot
+          capture partyPackArt 4 warmup && rm screenshots/warmup.jpg
           DATA=$(xcrun simctl get_app_container "$UDID" "$BUNDLE_ID" data)
-          cp "$DATA/Documents/PartyPackPromo.jpg" screenshots/party-pack-promo-1024.jpg
+          cp "$DATA/Documents/PartyPackPromo.jpg" screenshots/InAppPurchase/party-pack-promo-1024.jpg
 
-      - name: Check sizes
+      - name: Check sizes and alpha
         run: |
-          python3 - <<'PY'
-          import struct, sys, pathlib
-          ok = True
-          for p in sorted(pathlib.Path("screenshots").glob("*.png")):
-              w, h = struct.unpack(">II", p.read_bytes()[16:24])
-              good = (w, h) in {(1320, 2868), (1290, 2796)}
-              ok &= good
-              print(f"{'ok' if good else 'WRONG':5} {w}x{h}  {p.name}")
-          sys.exit(0 if ok else 1)
-          PY
-          sips -g pixelWidth -g pixelHeight -g hasAlpha screenshots/party-pack-promo-1024.jpg
+          ok=1
+          for f in screenshots/*/*.jpg; do
+            w=$(sips -g pixelWidth "$f" | awk '/pixelWidth/ {print $2}')
+            h=$(sips -g pixelHeight "$f" | awk '/pixelHeight/ {print $2}')
+            alpha=$(sips -g hasAlpha "$f" | awk '/hasAlpha/ {print $2}')
+            case "$f" in
+              *party-pack-promo-1024.jpg) want="1024x1024" ;;
+              *) want="1320x2868" ;;
+            esac
+            if [ "${w}x${h}" = "$want" ] && [ "$alpha" = "no" ]; then
+              echo "ok     ${w}x${h} alpha=$alpha  $f"
+            else
+              echo "WRONG  ${w}x${h} alpha=$alpha  $f (want $want, no alpha)"
+              ok=0
+            fi
+          done
+          [ "$ok" = 1 ]
 
       - uses: actions/upload-artifact@v4
         with:
@@ -95,11 +105,10 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          rm -rf /tmp/assets && mkdir -p /tmp/assets
-          cp screenshots/* /tmp/assets/
+          rm -rf /tmp/assets && cp -R screenshots /tmp/assets
           git checkout --orphan app-store-assets
           git rm -rf --quiet .
-          mkdir -p screenshots && cp /tmp/assets/* screenshots/
+          rm -rf screenshots && cp -R /tmp/assets screenshots
           git add screenshots
           git commit -m "App Store screenshots from ${GITHUB_SHA::7} [skip ci]"
           git push --force origin app-store-assets
