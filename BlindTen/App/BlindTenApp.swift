@@ -41,6 +41,7 @@ struct BlindTenApp: App {
 
 struct RootView: View {
     @Environment(AppState.self) private var state
+    @State private var showsSplash = true
 
     var body: some View {
         ZStack {
@@ -51,6 +52,10 @@ struct RootView: View {
                 NavigationStack {
                     HomeView()
                 }
+            }
+            if showsSplash {
+                SplashView { showsSplash = false }
+                    .zIndex(1)
             }
         }
     }
