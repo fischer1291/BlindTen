@@ -52,6 +52,12 @@ PARTY PACK (one-time purchase)
 • Unlimited players and your own house-rule cards
 • TV mode: leaderboard and big reveals on the TV via AirPlay
 
+PLAY TOGETHER ON THE TV
+• Host a session and put your phone on the TV with AirPlay
+• Friends join with their own iPhones, no internet or account needed
+• Everyone plays their turn on their own phone, the host too
+• The big reveal lands on the TV and on your phone at the same moment
+
 MADE FOR THE TABLE
 • Dark, high-contrast screens readable from across the table
 • Precise timing from the moment your finger touches the glass
@@ -115,6 +121,8 @@ Primary: Games > Party (Info.plist already says party games). Secondary: Games >
 Blind Ten is a pass-the-phone party game. Add two names (or use Quick play), tap PLAY, then tap START and tap anywhere to STOP near 10 seconds.
 
 The Party Pack (non-consumable) unlocks five extra modes, unlimited players and custom house-rule cards. To see the purchase screen, tap any mode card marked with a lock on the Home screen. Restore Purchases is in Settings (gear icon, top right).
+
+Local network: "Host a session" / "Join a session" on the Home screen connect nearby iPhones directly (MultipeerConnectivity) so each player plays on their own phone while the host's screen shows the game on a TV. Only the player name, emoji and turn events are exchanged between the devices; nothing is sent to a server. Testing it needs two devices; the rest of the app works on one.
 
 The app collects no data. Everything is stored on the device. No account is needed.
 ```
