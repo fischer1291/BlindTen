@@ -24,7 +24,7 @@ enum ReactionCategory: String, CaseIterable, Sendable {
 
     init(_ outcome: TurnOutcome) {
         switch outcome {
-        case .scored(let tier): self.init(tier)
+        case .scored(let tier): self = ReactionCategory(tier)
         case .misfire: self = .misfire
         case .timeout: self = .timeout
         }
