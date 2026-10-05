@@ -99,6 +99,11 @@ struct PartyPackTests {
         }
     }
 
+    @Test func productIDFollowsTheBundleID() {
+        #expect(PartyPack.makeProductID(bundleID: "com.example.game") == "com.example.game.partypack")
+        #expect(PartyPack.productID == "\(Bundle.main.bundleIdentifier ?? "").partypack")
+    }
+
     @Test func playerLimit() {
         #expect(PartyPack.maxPlayers(unlocked: false) == 10)
         #expect(PartyPack.maxPlayers(unlocked: true) > 10)

@@ -2,7 +2,13 @@ import Foundation
 
 /// What the one-time Party Pack purchase unlocks (SPEC.md Monetization).
 enum PartyPack {
-    static let productID = "com.yourname.blindten.partypack"
+    /// "<bundle ID>.partypack". Create the in-app purchase in App Store Connect
+    /// with exactly this ID; changing the bundle ID in Xcode changes it too.
+    static let productID = makeProductID(bundleID: Bundle.main.bundleIdentifier)
+
+    static func makeProductID(bundleID: String?) -> String {
+        "\(bundleID ?? "com.yourname.blindten").partypack"
+    }
     /// SPEC.md: min 2, max 10 players free, unlimited with the Party Pack.
     static let freePlayerLimit = 10
     /// A practical cap so the roster stays usable even when unlocked.
