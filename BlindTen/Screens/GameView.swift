@@ -13,13 +13,14 @@ struct GameView: View {
             .onAppear { UIApplication.shared.isIdleTimerDisabled = true }
             .onDisappear {
                 UIApplication.shared.isIdleTimerDisabled = false
+                state.feel.stopAll()
                 ScreenBrightness.restore()
             }
             .onChange(of: scenePhase) { _, newPhase in
                 // SPEC.md: app leaves the foreground mid-turn → turn is voided and replayed.
                 if newPhase != .active {
                     state.engine?.voidTurn()
-                    state.feel.endDrumroll()
+                    state.feel.stopAll()
                     ScreenBrightness.restore()
                 }
             }
@@ -31,9 +32,13 @@ struct GameView: View {
         case .handoff:
             HandoffView(engine: engine)
         case .ready, .running:
-            TurnView(engine: engine)
-        case .reveal(let result):
-            RevealView(engine: engine, result: result)
+            if engine.lanes.count == 2 {
+                ShowdownTurnView(engine: engine)
+            } else {
+                TurnView(engine: engine)
+            }
+        case .reveal:
+            RevealView(engine: engine, results: engine.revealedResults)
         case .roundResults:
             RoundResultsView(engine: engine)
         case .finished:
