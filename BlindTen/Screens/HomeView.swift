@@ -5,7 +5,7 @@ import SwiftUI
 struct HomeView: View {
     @Environment(AppState.self) private var state
     @State private var showingSettings = false
-    @State private var paywallMode: ModeKind?
+    @State private var paywallMode: ModeKind? = ScreenshotMode.scene == .paywall ? .liarsClock : nil
 
     var body: some View {
         ScrollView {

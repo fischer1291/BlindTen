@@ -79,3 +79,17 @@ struct ReviewPromptTests {
         #expect(!ReviewPrompt.hadDeadOn([close]))
     }
 }
+
+@MainActor
+struct PromoArtTests {
+    @Test func partyPackArtIsOpaqueAndSquare() throws {
+        let image = try #require(PartyPackArtRenderer.image())
+        #expect(image.size.width * image.scale == 1024)
+        #expect(image.size.height * image.scale == 1024)
+        #expect(image.jpegData(compressionQuality: 0.9) != nil)
+    }
+
+    @Test func screenshotModeIsOffInNormalRuns() {
+        #expect(!ScreenshotMode.isActive)
+    }
+}

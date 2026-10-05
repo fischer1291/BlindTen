@@ -24,6 +24,11 @@ struct BlindTenApp: App {
         let appState = AppState(store: GameStore(context: container.mainContext))
         _state = State(initialValue: appState)
         ExternalDisplay.state = appState
+        #if DEBUG
+        if let scene = ScreenshotMode.scene {
+            ScreenshotFixtures.apply(scene, to: appState)
+        }
+        #endif
     }
 
     var body: some Scene {
@@ -44,7 +49,7 @@ struct BlindTenApp: App {
 
 struct RootView: View {
     @Environment(AppState.self) private var state
-    @State private var showsSplash = true
+    @State private var showsSplash = !ScreenshotMode.isActive
 
     var body: some View {
         ZStack {

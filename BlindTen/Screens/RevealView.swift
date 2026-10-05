@@ -14,7 +14,8 @@ struct RevealView: View {
     @State private var drumrollDuration = RevealTiming.randomDrumrollDuration()
     @State private var drumrollStart = ProcessInfo.processInfo.systemUptime
     @State private var landed = false
-    @State private var skipRequested = false
+    /// Screenshot mode lands at once so the DEAD ON moment can be captured.
+    @State private var skipRequested = ScreenshotMode.isActive
     @State private var flashOpacity = 0.0
     @State private var confettiStart: TimeInterval?
 
@@ -265,6 +266,7 @@ struct RevealView: View {
         if !landed {
             await land()
         }
+        guard !ScreenshotMode.isActive else { return }
         try? await Task.sleep(for: RevealTiming.autoAdvanceDelay)
         guard !Task.isCancelled else { return }
         advance()
