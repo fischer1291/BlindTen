@@ -8,7 +8,7 @@ struct PlayersView: View {
     @FocusState private var nameFieldFocused: Bool
 
     private static let maxNameLength = 20
-    private var isFull: Bool { state.roster.count >= AppState.maxFreePlayers }
+    private var isFull: Bool { state.roster.count >= state.maxPlayers }
 
     var body: some View {
         List {
@@ -33,7 +33,11 @@ struct PlayersView: View {
             } header: {
                 Text("Players")
             } footer: {
-                Text("Up to \(AppState.maxFreePlayers) players. Drag to reorder.")
+                if state.isPartyPackUnlocked {
+                    Text("Drag to reorder. This group is remembered.")
+                } else {
+                    Text("Up to \(PartyPack.freePlayerLimit) players, unlimited with the Party Pack. Drag to reorder.")
+                }
             }
             .listRowBackground(Theme.surface)
 
@@ -67,7 +71,7 @@ struct PlayersView: View {
             .listRowInsets(EdgeInsets())
 
             Section {
-                Stepper("Players: \(quickPlayCount)", value: $quickPlayCount, in: GameEngine.minPlayers...AppState.maxFreePlayers)
+                Stepper("Players: \(quickPlayCount)", value: $quickPlayCount, in: GameEngine.minPlayers...state.maxPlayers)
                     .font(.title3)
                     .listRowBackground(Theme.surface)
                 Button("Quick play") { quickPlay() }
@@ -83,6 +87,7 @@ struct PlayersView: View {
         .scrollContentBackground(.hidden)
         .background(Theme.background.ignoresSafeArea())
         .navigationTitle("Players")
+        .onAppear { state.loadLastGroupIfNeeded() }
         .toolbar {
             EditButton()
         }
@@ -98,7 +103,7 @@ struct PlayersView: View {
     }
 
     private func startGame() {
-        try? state.startGame(players: state.roster, rounds: rounds)
+        try? state.startGame(players: state.roster, rounds: rounds, remember: true)
     }
 
     private func quickPlay() {
@@ -107,6 +112,6 @@ struct PlayersView: View {
             let emoji = Avatar.next(excluding: players.map(\.emoji))
             players.append(Player(name: String(localized: "Player \(number)"), emoji: emoji))
         }
-        try? state.startGame(players: players, rounds: rounds)
+        try? state.startGame(players: players, rounds: rounds, remember: false)
     }
 }

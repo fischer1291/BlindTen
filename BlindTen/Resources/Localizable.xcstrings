@@ -1,11 +1,34 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "%@ draws a card": {},
     "%@ is out!": {},
     "%@ s": {},
     "%@ s off": {},
     "%@ s per turn": {},
     "%@ wins the duel!": {},
+    "%lld DEAD ONs": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld DEAD ON"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld DEAD ONs"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld duel wins": {
       "localizations": {
         "en": {
@@ -21,6 +44,28 @@
                 "stringUnit": {
                   "state": "translated",
                   "value": "%lld duel wins"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld misfires": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld misfire"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld misfires"
                 }
               }
             }
@@ -75,19 +120,32 @@
     "A countdown runs too fast or too slow. Ignore it.": {},
     "A new target every turn, from 4 to 20 seconds.": {},
     "Add player": {},
+    "All 8 game modes": {},
+    "All-time awards for this group.": {},
+    "Awards": {},
+    "Awards for this game.": {},
+    "Best Ever": {},
     "Blind Ten": {},
+    "Cards stay on this phone.": {},
     "Classic": {},
     "Close": {},
+    "Closest ever: %@ s off": {},
     "DEAD ON": {},
+    "Dead Eye": {},
     "Distraction": {},
     "Done": {},
     "Done. Waiting for the other player…": {},
+    "Drag to reorder. This group is remembered.": {},
+    "Edit cards": {},
     "Elimination": {},
     "End game": {},
     "End this game?": {},
     "Final results": {},
+    "Get the Party Pack": {},
+    "Hair Trigger": {},
     "Heartbeat": {},
     "Hold the phone between you. Each thumb on its own half.": {},
+    "House rules": {},
     "It's a tie!": {},
     "Knocked out": {},
     "Liar's Clock": {},
@@ -97,10 +155,13 @@
     "Modes": {},
     "New game": {},
     "Next round": {},
+    "Not now": {},
     "Off": {},
+    "One-time purchase. No subscription, no ads.": {},
     "Out in round %lld": {},
     "PLAY": {},
     "Party Pack": {},
+    "Party Pack unlocked": {},
     "Pass the phone to": {},
     "Player %lld": {},
     "Players": {},
@@ -109,6 +170,7 @@
     "Random Target": {},
     "Random beeps try to throw you off. Heckling allowed.": {},
     "Rematch": {},
+    "Restore Purchases": {},
     "Round %lld of %lld": {},
     "Round %lld results": {},
     "Round %lld · %lld players left": {},
@@ -120,6 +182,7 @@
     "Sharp": {},
     "Showdown": {},
     "Skip names and play as Player 1, Player 2, …": {},
+    "Something went wrong. Please try again.": {},
     "Sound": {},
     "Sounds follow the silent switch.": {},
     "Start": {},
@@ -128,6 +191,7 @@
     "Stop": {},
     "Stop at %@": {},
     "Stop at exactly 10 seconds. Dark screen.": {},
+    "Switched-off cards are never drawn.": {},
     "Tap START, the timer vanishes. Stop at exactly the target. Closest wins.": {},
     "Tap anywhere to stop": {},
     "Tap anywhere when ready": {},
@@ -135,19 +199,33 @@
     "Team %lld": {},
     "Team %lld wins!": {},
     "Teams": {},
+    "The Dawdler": {},
+    "The Impatient One": {},
+    "The loser of each round draws a card.": {},
     "The phone pulses at a slightly wrong tempo.": {},
+    "The store is not available right now.": {},
     "The worst player each round is out until one is left.": {},
     "This round": {},
     "Too eager!": {},
     "Too early": {},
+    "Too early %lld%% of the time": {},
     "Too late": {},
+    "Too late %lld%% of the time": {},
     "Total": {},
     "Two players at once on a split screen. Closest wins the duel.": {},
     "Two teams. The lowest combined deviation wins.": {},
-    "Up to %lld players. Drag to reorder.": {},
+    "Unlimited players": {},
+    "Unlock for %@": {},
+    "Unlock the Party Pack": {},
+    "Up to %lld players, unlimited with the Party Pack. Drag to reorder.": {},
     "Winner": {},
+    "Write your own card": {},
     "Wrong player? Replay turn": {},
     "Wrong players? Replay duel": {},
+    "Your own cards": {},
+    "Your own cards come with the Party Pack.": {},
+    "Your own house-rule cards": {},
+    "Your purchase is waiting for approval.": {},
     "houseRule.default.1": {
       "comment": "Built-in house-rule card the round loser may draw. Keep it neutral and alcohol-free.",
       "extractionState": "manual",

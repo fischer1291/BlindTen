@@ -267,7 +267,7 @@ struct RevealView: View {
         guard state.engine?.phase == .reveal,
               state.engine?.revealedResults.first?.id == results.first?.id
         else { return }
-        state.engine?.advance()
+        state.advance()
     }
 }
 

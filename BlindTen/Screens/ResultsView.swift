@@ -32,6 +32,12 @@ struct RoundResultsView: View {
                     .padding(.horizontal)
             }
             List {
+                if let card = state.houseRuleCards[engine.round], let loser {
+                    Section {
+                        HouseRuleCard(playerName: loser.name, text: card)
+                    }
+                    .listRowBackground(Theme.accent)
+                }
                 if engine.mode.hasTeams {
                     Section {
                         TeamList(teams: engine.teamStandings())
@@ -57,9 +63,9 @@ struct RoundResultsView: View {
 
             Group {
                 if engine.isFinalRound {
-                    Button("Final results") { state.engine?.advance() }
+                    Button("Final results") { state.advance() }
                 } else {
-                    Button("Next round") { state.engine?.advance() }
+                    Button("Next round") { state.advance() }
                 }
             }
             .buttonStyle(.primary)
@@ -91,6 +97,19 @@ struct GameResultsView: View {
                     StandingsList(engine: engine, standings: engine.standings())
                 } header: {
                     SectionHeader(title: "Players")
+                }
+                if !state.awards.isEmpty {
+                    Section {
+                        ForEach(state.awards, id: \.kind) { award in
+                            AwardRow(award: award, player: engine.player(withID: award.playerID))
+                        }
+                    } header: {
+                        SectionHeader(title: "Awards")
+                    } footer: {
+                        Text(state.awardsCoverGroupHistory
+                             ? LocalizedStringKey("All-time awards for this group.")
+                             : LocalizedStringKey("Awards for this game."))
+                    }
                 }
             }
             .listStyle(.insetGrouped)
@@ -134,6 +153,88 @@ struct GameResultsView: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.4)
             }
+        }
+    }
+}
+
+/// The card the round loser drew (house rules).
+private struct HouseRuleCard: View {
+    let playerName: String
+    let text: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Label {
+                Text("\(playerName) draws a card")
+            } icon: {
+                Image(systemName: "rectangle.portrait.on.rectangle.portrait.angled.fill")
+            }
+            .font(.headline.weight(.heavy))
+            Text(verbatim: text)
+                .font(.title2.weight(.heavy))
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .foregroundStyle(Theme.onAccent)
+        .padding(.vertical, 8)
+    }
+}
+
+/// One funny award (SPEC.md "Streaks & stats").
+private struct AwardRow: View {
+    let award: Award
+    let player: Player?
+
+    var body: some View {
+        HStack(spacing: 14) {
+            Image(systemName: symbol)
+                .font(.title)
+                .foregroundStyle(Theme.accent)
+                .frame(width: 40)
+            VStack(alignment: .leading, spacing: 2) {
+                title
+                    .font(.title3.weight(.heavy))
+                    .foregroundStyle(Theme.primaryText)
+                Text(verbatim: "\(player?.emoji ?? "") \(player?.name ?? "")")
+                    .font(.headline)
+                    .foregroundStyle(Theme.primaryText)
+                detail
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(Theme.secondaryText)
+            }
+        }
+        .padding(.vertical, 6)
+        .listRowBackground(Theme.surface)
+    }
+
+    private var symbol: String {
+        switch award.kind {
+        case .bestEver: "trophy.fill"
+        case .deadEye: "scope"
+        case .impatient: "hare.fill"
+        case .dawdler: "tortoise.fill"
+        case .hairTrigger: "bolt.fill"
+        }
+    }
+
+    private var title: Text {
+        switch award.kind {
+        case .bestEver: Text("Best Ever")
+        case .deadEye: Text("Dead Eye")
+        case .impatient: Text("The Impatient One")
+        case .dawdler: Text("The Dawdler")
+        case .hairTrigger: Text("Hair Trigger")
+        }
+    }
+
+    private var detail: Text {
+        let percent = Int((award.value * 100).rounded())
+        let count = Int(award.value.rounded())
+        switch award.kind {
+        case .bestEver: return Text("Closest ever: \(TimeFormat.seconds(award.value)) s off")
+        case .deadEye: return Text("\(count) DEAD ONs")
+        case .impatient: return Text("Too early \(percent)% of the time")
+        case .dawdler: return Text("Too late \(percent)% of the time")
+        case .hairTrigger: return Text("\(count) misfires")
         }
     }
 }
