@@ -1,9 +1,91 @@
 {
-  "sourceLanguage" : "en",
-  "strings" : {
-    "Blind Ten" : {
-
-    }
+  "sourceLanguage": "en",
+  "strings": {
+    "%@ s": {},
+    "%@ s off": {},
+    "%lld points": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld point"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld points"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "+%lld points": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "+%lld point"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "+%lld points"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Add player": {},
+    "Blind Ten": {},
+    "Close": {},
+    "DEAD ON": {},
+    "End game": {},
+    "End this game?": {},
+    "Final results": {},
+    "Lost in time": {},
+    "Meh": {},
+    "New game": {},
+    "Next round": {},
+    "Off": {},
+    "Pass the phone to": {},
+    "Player %lld": {},
+    "Players": {},
+    "Players: %lld": {},
+    "Quick play": {},
+    "Rematch": {},
+    "Round %lld of %lld": {},
+    "Round %lld results": {},
+    "Round loser": {},
+    "Rounds: %lld": {},
+    "START": {},
+    "Sharp": {},
+    "Skip names and play as Player 1, Player 2, …": {},
+    "Start": {},
+    "Start game": {},
+    "Still waiting...": {},
+    "Stop": {},
+    "Stop at %@": {},
+    "Tap anywhere to stop": {},
+    "Tap anywhere when ready": {},
+    "Tap to continue": {},
+    "This round": {},
+    "Too eager!": {},
+    "Total": {},
+    "Up to %lld players. Drag to reorder.": {},
+    "Winner": {},
+    "Wrong player? Replay turn": {}
   },
-  "version" : "1.0"
+  "version": "1.0"
 }
