@@ -37,7 +37,7 @@ struct ReactionTests {
     @Test("A game never repeats a line until the category is used up", arguments: ReactionCategory.allCases)
     func noRepeatsWithinAGame(category: ReactionCategory) {
         var deck = ReactionDeck()
-        var generator = SeededGenerator(seed: 42)
+        var generator = SplitMix64(seed: 42)
         var drawn: [String] = []
         for _ in 0..<category.lineCount {
             drawn.append(deck.draw(for: category, using: &generator))
@@ -51,7 +51,7 @@ struct ReactionTests {
 
     @Test func categoriesAreTrackedSeparately() {
         var deck = ReactionDeck()
-        var generator = SeededGenerator(seed: 7)
+        var generator = SplitMix64(seed: 7)
         let sharp = deck.draw(for: .sharp, using: &generator)
         let deadOn = deck.draw(for: .deadOn, using: &generator)
         #expect(sharp.hasPrefix("reaction.sharp."))
@@ -60,7 +60,7 @@ struct ReactionTests {
 
     @Test func resetAllowsLinesAgain() {
         var deck = ReactionDeck()
-        var generator = SeededGenerator(seed: 1)
+        var generator = SplitMix64(seed: 1)
         for _ in 0..<ReactionCategory.misfire.lineCount - 1 {
             _ = deck.draw(for: .misfire, using: &generator)
         }

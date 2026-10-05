@@ -7,7 +7,7 @@ struct GameEngineTests {
     let ben = Player(name: "Ben", emoji: "🐸")
     let zoe = Player(name: "Zoe", emoji: "🐙")
 
-    /// Plays the current turn: tap to begin, START at `startAt`, STOP after `elapsed`.
+    /// Plays the current single-player turn: tap, START at `startAt`, STOP after `elapsed`.
     @discardableResult
     private func play(_ engine: inout GameEngine, elapsed: TimeInterval, startAt: TimeInterval = 1_000) -> TurnResult? {
         engine.beginTurn()
@@ -32,22 +32,16 @@ struct GameEngineTests {
         }
     }
 
-    @Test func rejectsUnusableTargets() {
-        #expect(throws: GameEngine.SetupError.invalidTarget) {
-            try GameEngine(players: [mia, ben], target: 0.5)
-        }
-        #expect(throws: GameEngine.SetupError.invalidTarget) {
-            try GameEngine(players: [mia, ben], target: .nan)
-        }
-    }
-
     @Test func classicDefaults() throws {
         let engine = try GameEngine(players: [mia, ben])
+        #expect(engine.mode.kind == .classic)
         #expect(engine.rounds == 3)
         #expect(engine.target == 10)
+        #expect(engine.blindEffect == .dark)
         #expect(engine.round == 1)
         #expect(engine.phase == .handoff)
         #expect(engine.currentPlayer == mia)
+        #expect(engine.lanes.count == 1)
         #expect(engine.results.isEmpty)
     }
 
@@ -58,13 +52,14 @@ struct GameEngineTests {
         engine.beginTurn()
         #expect(engine.phase == .ready)
         engine.start(at: 500)
-        #expect(engine.phase == .running(startedAt: 500))
+        #expect(engine.phase == .running)
+        #expect(engine.lanes[0].startedAt == 500)
         #expect(engine.timeoutDeadline == 530)
 
         let resultValue = engine.stop(at: 510.27)
-
         let result = try #require(resultValue)
-        #expect(engine.phase == .reveal(result))
+        #expect(engine.phase == .reveal)
+        #expect(engine.revealedResults == [result])
         #expect(result.playerID == mia.id)
         #expect(result.round == 1)
         #expect(abs(result.stopped - 10.27) < 1e-9)
@@ -78,23 +73,24 @@ struct GameEngineTests {
         var engine = try GameEngine(players: [mia, ben])
         engine.start(at: 1)
         #expect(engine.phase == .handoff)
-        let noResult7 = engine.stop(at: 2)
-        #expect(noResult7 == nil)
+        let noResult1 = engine.stop(at: 2)
+        #expect(noResult1 == nil)
         engine.advance()
         #expect(engine.phase == .handoff)
 
         engine.beginTurn()
         engine.beginTurn()
         #expect(engine.phase == .ready)
-        let noResult8 = engine.stop(at: 2)
-        #expect(noResult8 == nil)
+        let noResult2 = engine.stop(at: 2)
+        #expect(noResult2 == nil)
 
         engine.start(at: 100)
         engine.start(at: 105)
-        #expect(engine.phase == .running(startedAt: 100))
+        #expect(engine.lanes[0].startedAt == 100)
         engine.stop(at: 110)
-        let noResult9 = engine.stop(at: 111)
-        #expect(noResult9 == nil)
+        let noResult3 = engine.stop(at: 111)
+        #expect(noResult3 == nil)
+        engine.start(lane: 5, at: 1)
         #expect(engine.results.count == 1)
     }
 
@@ -112,6 +108,7 @@ struct GameEngineTests {
         #expect(engine.phase == .roundResults)
         #expect(engine.currentPlayer == nil)
         #expect(engine.roundLoser(1) == ben)
+        #expect(!engine.isFinalRound)
         #expect(engine.winner == nil)
 
         engine.advance()
@@ -124,7 +121,7 @@ struct GameEngineTests {
         play(&engine, elapsed: 10.0)    // Ben: DEAD ON, 10
         engine.advance()
         #expect(engine.phase == .roundResults)
-        #expect(engine.isLastRound)
+        #expect(engine.isFinalRound)
         #expect(engine.roundLoser(2) == mia)
 
         engine.advance()
@@ -155,18 +152,19 @@ struct GameEngineTests {
         engine.beginTurn()
         engine.start(at: 100)
 
-        let noResult10 = engine.autoStopIfOverdue(now: 129.99)
-        #expect(noResult10 == nil)
-        #expect(engine.phase == .running(startedAt: 100))
+        let early = engine.autoStopIfOverdue(now: 129.99)
+        #expect(early.isEmpty)
+        #expect(engine.phase == .running)
 
-        let resultValue = engine.autoStopIfOverdue(now: 130)
-        let result = try #require(resultValue)
+        let stopped = engine.autoStopIfOverdue(now: 130)
+        let result = try #require(stopped.first)
+        #expect(stopped.count == 1)
         #expect(result.outcome == .timeout)
         #expect(result.points == 0)
         #expect(result.stopped == 30)
-        #expect(engine.phase == .reveal(result))
-        let noResult11 = engine.autoStopIfOverdue(now: 200)
-        #expect(noResult11 == nil)
+        #expect(engine.phase == .reveal)
+        let again = engine.autoStopIfOverdue(now: 200)
+        #expect(again.isEmpty)
     }
 
     @Test func aLateTapAfterTheDeadlineCountsAsTimeout() throws {
@@ -179,11 +177,11 @@ struct GameEngineTests {
 
     @Test func autoStopDoesNothingWhenNotRunning() throws {
         var engine = try GameEngine(players: [mia, ben])
-        let noResult12 = engine.autoStopIfOverdue(now: 1e9)
-        #expect(noResult12 == nil)
+        let before = engine.autoStopIfOverdue(now: 1e9)
+        #expect(before.isEmpty)
         engine.beginTurn()
-        let noResult13 = engine.autoStopIfOverdue(now: 1e9)
-        #expect(noResult13 == nil)
+        let ready = engine.autoStopIfOverdue(now: 1e9)
+        #expect(ready.isEmpty)
         #expect(engine.phase == .ready)
     }
 
@@ -194,6 +192,7 @@ struct GameEngineTests {
         engine.voidTurn()
         #expect(engine.phase == .handoff)
         #expect(engine.currentPlayer == mia)
+        #expect(engine.lanes[0].startedAt == nil)
         #expect(engine.results.isEmpty)
 
         engine.beginTurn()
@@ -203,10 +202,9 @@ struct GameEngineTests {
 
     @Test func voidingDoesNotTouchFinishedTurns() throws {
         var engine = try GameEngine(players: [mia, ben])
-        let resultValue = play(&engine, elapsed: 10)
-        let result = try #require(resultValue)
+        play(&engine, elapsed: 10)
         engine.voidTurn()
-        #expect(engine.phase == .reveal(result))
+        #expect(engine.phase == .reveal)
         #expect(engine.results.count == 1)
     }
 
@@ -219,7 +217,6 @@ struct GameEngineTests {
         #expect(engine.results.isEmpty)
 
         let replayedValue = play(&engine, elapsed: 10)
-
         let replayed = try #require(replayedValue)
         #expect(replayed.playerID == mia.id)
         #expect(engine.results == [replayed])

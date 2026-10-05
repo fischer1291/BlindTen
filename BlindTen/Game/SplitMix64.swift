@@ -1,9 +1,15 @@
-/// Deterministic SplitMix64 generator for tests.
-struct SeededGenerator: RandomNumberGenerator {
+/// Small, fast, seedable random generator. Seeded in tests for repeatable
+/// games; seeded from the system generator otherwise.
+struct SplitMix64: RandomNumberGenerator, Sendable {
     private var state: UInt64
 
     init(seed: UInt64) {
         state = seed
+    }
+
+    init() {
+        var system = SystemRandomNumberGenerator()
+        state = system.next()
     }
 
     mutating func next() -> UInt64 {

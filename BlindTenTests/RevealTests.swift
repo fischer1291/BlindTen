@@ -14,7 +14,7 @@ struct RevealTests {
     }
 
     @Test func drumrollStaysInTheSpecRange() {
-        var generator = SeededGenerator(seed: 99)
+        var generator = SplitMix64(seed: 99)
         for _ in 0..<500 {
             let duration = RevealTiming.randomDrumrollDuration(using: &generator)
             #expect(RevealTiming.drumrollRange.contains(duration))
