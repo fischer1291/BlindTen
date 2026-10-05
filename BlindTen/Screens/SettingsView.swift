@@ -54,6 +54,14 @@ struct SettingsView: View {
                     Text("Party Pack")
                 }
                 .listRowBackground(Theme.surface)
+
+                Section {
+                    Link("Privacy Policy", destination: WebLinks.privacy)
+                    Link("Contact & Support", destination: WebLinks.support)
+                    Link("Imprint", destination: WebLinks.imprint)
+                }
+                .font(.title3)
+                .listRowBackground(Theme.surface)
             }
             .scrollContentBackground(.hidden)
             .background(Theme.background.ignoresSafeArea())
