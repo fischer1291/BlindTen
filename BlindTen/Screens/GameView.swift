@@ -9,12 +9,18 @@ struct GameView: View {
 
     var body: some View {
         content
+            .foregroundStyle(Theme.primaryText)
             .onAppear { UIApplication.shared.isIdleTimerDisabled = true }
-            .onDisappear { UIApplication.shared.isIdleTimerDisabled = false }
+            .onDisappear {
+                UIApplication.shared.isIdleTimerDisabled = false
+                ScreenBrightness.restore()
+            }
             .onChange(of: scenePhase) { _, newPhase in
                 // SPEC.md: app leaves the foreground mid-turn → turn is voided and replayed.
                 if newPhase != .active {
                     state.engine?.voidTurn()
+                    state.feel.endDrumroll()
+                    ScreenBrightness.restore()
                 }
             }
     }

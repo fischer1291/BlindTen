@@ -15,45 +15,55 @@ struct TurnView: View {
                 readyPhase
             }
         }
+        .background(Theme.background.ignoresSafeArea())
         .statusBarHidden()
         .persistentSystemOverlays(.hidden)
+        .onAppear { ScreenBrightness.maximize() }
+        .onDisappear { ScreenBrightness.restore() }
         .task(id: engine.timeoutDeadline) {
             await autoStopWhenOverdue()
         }
     }
 
     private var readyPhase: some View {
-        VStack(spacing: 32) {
+        VStack(spacing: 28) {
             Text(engine.currentPlayer?.name ?? "")
-                .font(.title2)
+                .font(.title.weight(.bold))
+                .foregroundStyle(Theme.secondaryText)
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
             Text("Stop at \(TimeFormat.seconds(engine.target))")
-                .font(.system(size: 44, weight: .bold))
+                .font(Theme.display(52))
                 .monospacedDigit()
+                .foregroundStyle(Theme.primaryText)
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
             TouchTimerView(accessibilityLabel: String(localized: "Start")) { timestamp in
+                state.feel.touch()
                 state.engine?.start(at: timestamp)
             }
-            .frame(maxWidth: .infinity)
-            .frame(height: 280)
-            .background(.tint, in: RoundedRectangle(cornerRadius: 32))
+            .frame(maxWidth: .infinity, maxHeight: 360)
+            .background(Theme.accent, in: RoundedRectangle(cornerRadius: 40))
             .overlay {
                 Text("START")
-                    .font(.system(size: 56, weight: .heavy))
-                    .foregroundStyle(.white)
+                    .font(Theme.display(72))
+                    .foregroundStyle(Theme.onAccent)
                     .allowsHitTesting(false)
             }
         }
-        .padding()
+        .padding(24)
     }
 
     private var blindPhase: some View {
         ZStack {
             Color.black
             TouchTimerView(accessibilityLabel: String(localized: "Stop")) { timestamp in
-                state.engine?.stop(at: timestamp)
+                state.feel.touch()
+                state.stop(at: timestamp)
             }
             Text("Tap anywhere to stop")
-                .font(.headline)
-                .foregroundStyle(.gray)
+                .font(.title3.weight(.semibold))
+                .foregroundStyle(Color(white: 0.35))
                 .allowsHitTesting(false)
         }
         .ignoresSafeArea()
@@ -65,7 +75,7 @@ struct TurnView: View {
         while !Task.isCancelled {
             let now = ProcessInfo.processInfo.systemUptime
             if now >= deadline {
-                state.engine?.autoStopIfOverdue(now: now)
+                state.autoStopIfOverdue(now: now)
                 return
             }
             try? await Task.sleep(for: .seconds(deadline - now))
