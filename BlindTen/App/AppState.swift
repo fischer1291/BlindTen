@@ -36,6 +36,10 @@ final class AppState {
     var isTVConnected = false
     /// Timing of the reveal on the phone, so the TV can spin in sync.
     var revealPresentation: RevealPresentation?
+    /// The local session this phone hosts, if any.
+    var sessionHost: SessionHost?
+    /// The local session this phone joined, if any.
+    var sessionClient: SessionClient?
 
     /// Reaction line key chosen for each finished turn.
     private(set) var reactionKeys: [TurnResult.ID: String] = [:]
@@ -126,7 +130,7 @@ final class AppState {
         reactionKeys[result.id].map { ReactionText.text(forKey: $0) }
     }
 
-    private func assignReaction(to result: TurnResult) {
+    func assignReaction(to result: TurnResult) {
         reactionKeys[result.id] = reactionDeck.draw(for: ReactionCategory(result.outcome))
     }
 
@@ -164,6 +168,34 @@ final class AppState {
             lastPromptedVersion: defaults.string(forKey: ReviewPromptStorage.lastPromptedVersionKey),
             currentVersion: ReviewPromptStorage.currentVersion
         )
+    }
+
+    // MARK: - Local sessions
+
+    /// Opens a session that players can join from their own iPhones.
+    func hostSession() {
+        newGame()
+        let host = SessionHost(state: self)
+        host.open()
+        sessionHost = host
+    }
+
+    func endHostedSession() {
+        sessionHost?.close()
+        sessionHost = nil
+        newGame()
+    }
+
+    /// Starts looking for sessions nearby.
+    func joinSession(as player: Player) {
+        let client = SessionClient(player: player)
+        client.open()
+        sessionClient = client
+    }
+
+    func leaveSession() {
+        sessionClient?.close()
+        sessionClient = nil
     }
 
     /// Call right after asking for a rating.

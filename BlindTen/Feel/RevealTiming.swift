@@ -18,6 +18,21 @@ enum LandingCue: Equatable, Sendable {
     }
 }
 
+extension LandingCue {
+    /// One cue for a whole reveal: DEAD ON wins over everything; fail only
+    /// when nobody did better.
+    init(results: [TurnResult]) {
+        let cues = results.map { LandingCue($0.outcome) }
+        if cues.contains(.deadOn) {
+            self = .deadOn
+        } else if !cues.isEmpty, cues.allSatisfy({ $0 == .fail }) {
+            self = .fail
+        } else {
+            self = .neutral
+        }
+    }
+}
+
 enum RevealTiming {
     /// SPEC.md: "a short drumroll (0.8–1.5 s)".
     static let drumrollRange: ClosedRange<TimeInterval> = 0.8...1.5

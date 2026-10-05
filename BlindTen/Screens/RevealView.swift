@@ -21,13 +21,7 @@ struct RevealView: View {
 
     private var isDuel: Bool { results.count == 2 }
 
-    /// DEAD ON wins over everything; fail only when nobody did better.
-    private var cue: LandingCue {
-        let cues = results.map { LandingCue($0.outcome) }
-        if cues.contains(.deadOn) { return .deadOn }
-        if !cues.isEmpty, cues.allSatisfy({ $0 == .fail }) { return .fail }
-        return .neutral
-    }
+    private var cue: LandingCue { LandingCue(results: results) }
 
     var body: some View {
         ZStack {
