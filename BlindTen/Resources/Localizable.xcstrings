@@ -148,6 +148,150 @@
     "Winner": {},
     "Wrong player? Replay turn": {},
     "Wrong players? Replay duel": {},
+    "houseRule.default.1": {
+      "comment": "Built-in house-rule card the round loser may draw. Keep it neutral and alcohol-free.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Speak in an accent until your next turn."
+          }
+        }
+      }
+    },
+    "houseRule.default.10": {
+      "comment": "Built-in house-rule card the round loser may draw. Keep it neutral and alcohol-free.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Narrate everything like a sports commentator until your next turn."
+          }
+        }
+      }
+    },
+    "houseRule.default.11": {
+      "comment": "Built-in house-rule card the round loser may draw. Keep it neutral and alcohol-free.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Swap seats with the winner."
+          }
+        }
+      }
+    },
+    "houseRule.default.12": {
+      "comment": "Built-in house-rule card the round loser may draw. Keep it neutral and alcohol-free.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tell the group a terrible joke."
+          }
+        }
+      }
+    },
+    "houseRule.default.2": {
+      "comment": "Built-in house-rule card the round loser may draw. Keep it neutral and alcohol-free.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You choose the next song."
+          }
+        }
+      }
+    },
+    "houseRule.default.3": {
+      "comment": "Built-in house-rule card the round loser may draw. Keep it neutral and alcohol-free.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Give everyone at the table a compliment."
+          }
+        }
+      }
+    },
+    "houseRule.default.4": {
+      "comment": "Built-in house-rule card the round loser may draw. Keep it neutral and alcohol-free.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Do your best robot impression."
+          }
+        }
+      }
+    },
+    "houseRule.default.5": {
+      "comment": "Built-in house-rule card the round loser may draw. Keep it neutral and alcohol-free.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Talk only in questions until your next turn."
+          }
+        }
+      }
+    },
+    "houseRule.default.6": {
+      "comment": "Built-in house-rule card the round loser may draw. Keep it neutral and alcohol-free.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Do ten squats. Everyone counts."
+          }
+        }
+      }
+    },
+    "houseRule.default.7": {
+      "comment": "Built-in house-rule card the round loser may draw. Keep it neutral and alcohol-free.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The winner picks your nickname for the rest of the game."
+          }
+        }
+      }
+    },
+    "houseRule.default.8": {
+      "comment": "Built-in house-rule card the round loser may draw. Keep it neutral and alcohol-free.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sing the chorus of a song the group chooses."
+          }
+        }
+      }
+    },
+    "houseRule.default.9": {
+      "comment": "Built-in house-rule card the round loser may draw. Keep it neutral and alcohol-free.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Play your next turn with your other hand."
+          }
+        }
+      }
+    },
     "reaction.close.1": {
       "comment": "Funny one-line reaction shown after Close (within 0.50 s).",
       "extractionState": "manual",

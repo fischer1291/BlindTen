@@ -50,6 +50,36 @@ enum TurnOutcome: Hashable, Sendable {
     }
 }
 
+extension TurnOutcome {
+    /// Stable code for persistence, e.g. "deadOn", "misfire".
+    var code: String {
+        switch self {
+        case .scored(.deadOn): "deadOn"
+        case .scored(.sharp): "sharp"
+        case .scored(.close): "close"
+        case .scored(.meh): "meh"
+        case .scored(.off): "off"
+        case .scored(.lostInTime): "lostInTime"
+        case .misfire: "misfire"
+        case .timeout: "timeout"
+        }
+    }
+
+    init?(code: String) {
+        switch code {
+        case "deadOn": self = .scored(.deadOn)
+        case "sharp": self = .scored(.sharp)
+        case "close": self = .scored(.close)
+        case "meh": self = .scored(.meh)
+        case "off": self = .scored(.off)
+        case "lostInTime": self = .scored(.lostInTime)
+        case "misfire": self = .misfire
+        case "timeout": self = .timeout
+        default: return nil
+        }
+    }
+}
+
 /// Pure scoring rules. No UI, no clocks.
 enum Scoring {
     /// Stopping before this many seconds is a misfire.
