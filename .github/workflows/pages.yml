@@ -1,0 +1,55 @@
+name: Website
+
+# Publishes website/ (landing page, privacy policy, contact, imprint) to
+# GitHub Pages at https://fischer1291.github.io/BlindTen/.
+# One-time setup: Settings > Pages > Build and deployment > Source: GitHub Actions.
+
+on:
+  push:
+    paths:
+      - "website/**"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v5
+
+      # An imprint with placeholders must not go live. Skip (not fail) so
+      # nobody gets a failure email while the details are still missing.
+      - name: Check that no placeholder is left
+        id: check
+        run: |
+          if grep -n "{{" website/*.html; then
+            echo "::notice::Not published yet: fill in the {{…}} placeholders listed above."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - if: steps.check.outputs.ready == 'true'
+        uses: actions/configure-pages@v5
+
+      - if: steps.check.outputs.ready == 'true'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: website
+
+      - if: steps.check.outputs.ready == 'true'
+        id: deployment
+        uses: actions/deploy-pages@v4

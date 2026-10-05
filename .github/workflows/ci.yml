@@ -4,10 +4,12 @@ on:
   push:
     paths-ignore:
       - "AppStore/**"
+      - "website/**"
       - "**/*.md"
   pull_request:
     paths-ignore:
       - "AppStore/**"
+      - "website/**"
       - "**/*.md"
 
 concurrency:

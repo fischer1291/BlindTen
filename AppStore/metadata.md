@@ -71,11 +71,24 @@ party game,friends,group game,timer,stopwatch,reaction,time challenge,guess,ten 
 
 ## Support URL
 
-Any page where players can reach you (a simple contact page is enough).
+```
+https://fischer1291.github.io/BlindTen/contact.html
+```
+
+## Marketing URL (optional)
+
+```
+https://fischer1291.github.io/BlindTen/
+```
 
 ## Privacy Policy URL
 
-Publish `AppStore/privacy-policy.md` on any public web page and paste that URL.
+```
+https://fischer1291.github.io/BlindTen/privacy.html
+```
+
+The pages live in `website/` and are published by the Website workflow
+(GitHub Pages). The app links to them from Settings.
 
 ## Category
 

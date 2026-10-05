@@ -1,0 +1,124 @@
+/* Blind Ten website: the app's dark, high-contrast look. No external fonts,
+   scripts or trackers, so the pages load nothing from third parties. */
+:root {
+  --background: #000;
+  --surface: #1c1c1c;
+  --accent: #ffd100;
+  --on-accent: #000;
+  --text: #fff;
+  --secondary: #b8b8b8;
+  --rounded: ui-rounded, "SF Pro Rounded", "Nunito", "Varela Round", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html { background: var(--background); color-scheme: dark; }
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--text);
+  font: 500 17px/1.55 var(--rounded);
+  -webkit-font-smoothing: antialiased;
+}
+
+main {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 32px 16px 48px;
+}
+
+a { color: var(--accent); }
+
+h1, h2, h3 { font-weight: 900; line-height: 1.15; margin: 0 0 12px; }
+/* Long German words ("Datenschutzerklärung") must not push the page sideways. */
+h1, h2, h3, p { hyphens: auto; -webkit-hyphens: auto; overflow-wrap: break-word; }
+h1 { font-size: clamp(36px, 8vw, 56px); letter-spacing: 0.04em; }
+h2 { font-size: 26px; margin-top: 40px; }
+h3 { font-size: 19px; margin-top: 24px; }
+p, ul { margin: 0 0 14px; }
+.secondary { color: var(--secondary); }
+
+/* Header with the logo, links back home on subpages */
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 900;
+  font-size: 22px;
+  letter-spacing: 0.08em;
+  margin-bottom: 28px;
+}
+.brand img { width: 44px; height: 44px; border-radius: 11px; }
+
+/* Home */
+.hero { text-align: center; padding: 24px 0 8px; }
+.hero img { width: 128px; height: 128px; border-radius: 29px; margin-bottom: 20px; }
+.hero .tagline { font-size: 21px; font-weight: 700; color: var(--secondary); max-width: 30ch; margin: 0 auto 28px; }
+
+.button {
+  display: inline-block;
+  min-height: 60px;
+  padding: 16px 32px;
+  border-radius: 20px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 900;
+  font-size: 22px;
+  text-decoration: none;
+}
+.button.soon { opacity: 0.85; cursor: default; }
+
+.cards { display: grid; gap: 14px; margin-top: 40px; }
+@media (min-width: 640px) { .cards { grid-template-columns: repeat(3, 1fr); } }
+.card {
+  background: var(--surface);
+  border-radius: 20px;
+  padding: 20px;
+}
+.card .big { font-size: 34px; display: block; margin-bottom: 6px; }
+.card h3 { margin: 0 0 6px; }
+.card p { margin: 0; color: var(--secondary); }
+
+.dead-on {
+  margin: 44px auto 0;
+  text-align: center;
+}
+.dead-on .time { font-size: clamp(56px, 16vw, 96px); font-weight: 900; font-variant-numeric: tabular-nums; }
+.dead-on .tier { font-size: clamp(32px, 9vw, 52px); font-weight: 900; color: var(--accent); }
+
+/* Text pages */
+.panel {
+  background: var(--surface);
+  border-radius: 20px;
+  padding: 20px;
+  margin: 16px 0;
+}
+.panel p:last-child, .panel ul:last-child { margin-bottom: 0; }
+.lang-switch { display: flex; gap: 10px; margin: 0 0 8px; }
+.lang-switch a {
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 800;
+}
+hr { border: 0; border-top: 2px solid var(--surface); margin: 48px 0 8px; }
+
+footer {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 16px 40px;
+  border-top: 2px solid var(--surface);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  color: var(--secondary);
+  font-weight: 700;
+}
+footer a { color: var(--secondary); text-decoration: none; }
+footer a:hover, footer a[aria-current="page"] { color: var(--accent); }
+footer .copy { margin-left: auto; }
