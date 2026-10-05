@@ -5,11 +5,13 @@ on:
     paths-ignore:
       - "AppStore/**"
       - "website/**"
+      - "marketing/**"
       - "**/*.md"
   pull_request:
     paths-ignore:
       - "AppStore/**"
       - "website/**"
+      - "marketing/**"
       - "**/*.md"
 
 concurrency:
