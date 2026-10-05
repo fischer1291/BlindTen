@@ -7,7 +7,7 @@ enum PartyPack {
     static let productID = makeProductID(bundleID: Bundle.main.bundleIdentifier)
 
     static func makeProductID(bundleID: String?) -> String {
-        "\(bundleID ?? "com.yourname.blindten").partypack"
+        "\(bundleID ?? "com.leroyfischer.blindten").partypack"
     }
     /// SPEC.md: min 2, max 10 players free, unlimited with the Party Pack.
     static let freePlayerLimit = 10
