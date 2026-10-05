@@ -378,8 +378,11 @@ struct GameEngine: Sendable {
             if a.points != b.points {
                 return a.points > b.points
             }
-            if a.totalDeviation != b.totalDeviation {
-                return a.totalDeviation < b.totalDeviation
+            // Compare deviations as displayed, so equal-looking totals tie.
+            let deviationA = Scoring.hundredths(a.totalDeviation) ?? Int.max
+            let deviationB = Scoring.hundredths(b.totalDeviation) ?? Int.max
+            if deviationA != deviationB {
+                return deviationA < deviationB
             }
             return lhs.index < rhs.index
         }
@@ -433,13 +436,23 @@ struct GameEngine: Sendable {
         return teams[0].team
     }
 
-    /// The winner of a Showdown duel: the lower absolute deviation. Nil on a tie.
+    /// The winner of a Showdown duel. A scored turn beats a misfire or a
+    /// timeout; then the lower deviation as displayed (two decimals) wins.
+    /// Nil on a tie, so two players who both show "±0.27" draw.
     static func duelWinner(of results: [TurnResult]) -> Player.ID? {
         guard results.count == 2 else { return nil }
-        let first = abs(results[0].deviation)
-        let second = abs(results[1].deviation)
+        let first = duelRank(results[0])
+        let second = duelRank(results[1])
         if first == second { return nil }
         return first < second ? results[0].playerID : results[1].playerID
+    }
+
+    private static func duelRank(_ result: TurnResult) -> (Int, Int) {
+        let missed = switch result.outcome {
+        case .scored: 0
+        case .misfire, .timeout: 1
+        }
+        return (missed, Scoring.hundredths(result.deviation) ?? Int.max)
     }
 
     private func duelWins(in results: [TurnResult]) -> [Player.ID: Int] {

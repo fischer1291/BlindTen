@@ -125,6 +125,26 @@ final class AppState {
         }
     }
 
+    /// Replays the revealed turn ("wrong player tapped").
+    func replayTurn() {
+        forgetReactionsOfCurrentTurn()
+        engine?.replayTurn()
+    }
+
+    /// Voids an unfinished turn, e.g. when the app leaves the foreground.
+    func voidTurn() {
+        forgetReactionsOfCurrentTurn()
+        engine?.voidTurn()
+    }
+
+    private func forgetReactionsOfCurrentTurn() {
+        for lane in engine?.lanes ?? [] {
+            if let id = lane.result?.id {
+                reactionKeys[id] = nil
+            }
+        }
+    }
+
     /// The localized reaction line for a finished turn.
     func reactionText(for result: TurnResult) -> String? {
         reactionKeys[result.id].map { ReactionText.text(forKey: $0) }
@@ -163,7 +183,9 @@ final class AppState {
         defaults.set(finishedGames, forKey: ReviewPromptStorage.finishedGamesKey)
         wantsReviewPrompt = ReviewPrompt.shouldAsk(
             hadDeadOn: ReviewPrompt.hadDeadOn(engine.results),
-            isCloseFinal: ReviewPrompt.isCloseFinal(engine.standings()),
+            // Points decide only the plain modes; the others rank by duels, survival or team.
+            isCloseFinal: engine.mode.playersPerTurn == 1 && !engine.mode.eliminatesRoundLoser && !engine.mode.hasTeams
+                && ReviewPrompt.isCloseFinal(engine.standings()),
             finishedGames: finishedGames,
             lastPromptedVersion: defaults.string(forKey: ReviewPromptStorage.lastPromptedVersionKey),
             currentVersion: ReviewPromptStorage.currentVersion

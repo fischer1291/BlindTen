@@ -15,7 +15,9 @@ final class PurchaseManager {
         case unavailable
     }
 
-    private(set) var isPartyPackUnlocked = false
+    /// Starts from the last known state so the TV scene and the player
+    /// limit are right before StoreKit has answered.
+    private(set) var isPartyPackUnlocked = UserDefaults.standard.bool(forKey: PurchaseCache.unlockedKey)
     private(set) var product: Product?
     private(set) var isPurchasing = false
     private(set) var issue: Issue?
@@ -54,6 +56,11 @@ final class PurchaseManager {
             }
         }
         isPartyPackUnlocked = unlocked
+        UserDefaults.standard.set(unlocked, forKey: PurchaseCache.unlockedKey)
+        if unlocked {
+            // A pending purchase (Ask to Buy) that went through.
+            issue = nil
+        }
     }
 
     func purchase() async {
@@ -101,9 +108,18 @@ final class PurchaseManager {
     }
 
     private func handle(_ update: VerificationResult<Transaction>) async {
-        if case .verified(let transaction) = update {
+        // Unverified transactions are finished too, so they are not delivered
+        // again on every launch; only verified ones unlock anything.
+        switch update {
+        case .verified(let transaction), .unverified(let transaction, _):
             await transaction.finish()
         }
         await refreshEntitlements()
     }
+}
+
+/// The last known unlock state. A hint only: `refreshEntitlements` always
+/// replaces it with StoreKit's answer.
+private enum PurchaseCache {
+    static let unlockedKey = "partyPackUnlockedCache"
 }

@@ -138,6 +138,20 @@ struct ModeTests {
         #expect(standings.map(\.points) == [15, 20])
     }
 
+    @Test func duelTiedOnTheDisplayedDeviationHasNoWinner() {
+        let a = TurnResult(id: UUID(), turnID: UUID(), playerID: UUID(), round: 1, target: 10, stopped: 10.271, outcome: .scored(.close))
+        let b = TurnResult(id: UUID(), turnID: a.turnID, playerID: UUID(), round: 1, target: 10, stopped: 9.732, outcome: .scored(.close))
+        #expect(GameEngine.duelWinner(of: [a, b]) == nil)
+    }
+
+    @Test func scoredTurnBeatsAMisfireEvenIfFurtherOff() {
+        // Random Target 4 s: a misfire at 0.99 s is 3.01 off, a stop at 7.20 s is 3.20 off.
+        let misfire = TurnResult(id: UUID(), turnID: UUID(), playerID: UUID(), round: 1, target: 4, stopped: 0.99, outcome: .misfire)
+        let scored = TurnResult(id: UUID(), turnID: misfire.turnID, playerID: UUID(), round: 1, target: 4, stopped: 7.2, outcome: .scored(.lostInTime))
+        #expect(GameEngine.duelWinner(of: [misfire, scored]) == scored.playerID)
+        #expect(GameEngine.duelWinner(of: [scored, misfire]) == scored.playerID)
+    }
+
     @Test func duelTiesHaveNoWinner() {
         let a = TurnResult(id: UUID(), turnID: UUID(), playerID: UUID(), round: 1, target: 10, stopped: 10.5, outcome: .scored(.close))
         let b = TurnResult(id: UUID(), turnID: a.turnID, playerID: UUID(), round: 1, target: 10, stopped: 9.5, outcome: .scored(.close))
