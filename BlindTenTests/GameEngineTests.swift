@@ -61,7 +61,9 @@ struct GameEngineTests {
         #expect(engine.phase == .running(startedAt: 500))
         #expect(engine.timeoutDeadline == 530)
 
-        let result = try #require(engine.stop(at: 510.27))
+        let resultValue = engine.stop(at: 510.27)
+
+        let result = try #require(resultValue)
         #expect(engine.phase == .reveal(result))
         #expect(result.playerID == mia.id)
         #expect(result.round == 1)
@@ -76,20 +78,23 @@ struct GameEngineTests {
         var engine = try GameEngine(players: [mia, ben])
         engine.start(at: 1)
         #expect(engine.phase == .handoff)
-        #expect(engine.stop(at: 2) == nil)
+        let noResult7 = engine.stop(at: 2)
+        #expect(noResult7 == nil)
         engine.advance()
         #expect(engine.phase == .handoff)
 
         engine.beginTurn()
         engine.beginTurn()
         #expect(engine.phase == .ready)
-        #expect(engine.stop(at: 2) == nil)
+        let noResult8 = engine.stop(at: 2)
+        #expect(noResult8 == nil)
 
         engine.start(at: 100)
         engine.start(at: 105)
         #expect(engine.phase == .running(startedAt: 100))
         engine.stop(at: 110)
-        #expect(engine.stop(at: 111) == nil)
+        let noResult9 = engine.stop(at: 111)
+        #expect(noResult9 == nil)
         #expect(engine.results.count == 1)
     }
 
@@ -138,7 +143,8 @@ struct GameEngineTests {
 
     @Test func stoppingBeforeOneSecondIsAMisfire() throws {
         var engine = try GameEngine(players: [mia, ben])
-        let result = try #require(play(&engine, elapsed: 0.4))
+        let resultValue = play(&engine, elapsed: 0.4)
+        let result = try #require(resultValue)
         #expect(result.outcome == .misfire)
         #expect(result.points == 0)
         #expect(abs(result.stopped - 0.4) < 1e-9)
@@ -149,29 +155,35 @@ struct GameEngineTests {
         engine.beginTurn()
         engine.start(at: 100)
 
-        #expect(engine.autoStopIfOverdue(now: 129.99) == nil)
+        let noResult10 = engine.autoStopIfOverdue(now: 129.99)
+        #expect(noResult10 == nil)
         #expect(engine.phase == .running(startedAt: 100))
 
-        let result = try #require(engine.autoStopIfOverdue(now: 130))
+        let resultValue = engine.autoStopIfOverdue(now: 130)
+        let result = try #require(resultValue)
         #expect(result.outcome == .timeout)
         #expect(result.points == 0)
         #expect(result.stopped == 30)
         #expect(engine.phase == .reveal(result))
-        #expect(engine.autoStopIfOverdue(now: 200) == nil)
+        let noResult11 = engine.autoStopIfOverdue(now: 200)
+        #expect(noResult11 == nil)
     }
 
     @Test func aLateTapAfterTheDeadlineCountsAsTimeout() throws {
         var engine = try GameEngine(players: [mia, ben])
-        let result = try #require(play(&engine, elapsed: 45))
+        let resultValue = play(&engine, elapsed: 45)
+        let result = try #require(resultValue)
         #expect(result.outcome == .timeout)
         #expect(result.stopped == 30)
     }
 
     @Test func autoStopDoesNothingWhenNotRunning() throws {
         var engine = try GameEngine(players: [mia, ben])
-        #expect(engine.autoStopIfOverdue(now: 1e9) == nil)
+        let noResult12 = engine.autoStopIfOverdue(now: 1e9)
+        #expect(noResult12 == nil)
         engine.beginTurn()
-        #expect(engine.autoStopIfOverdue(now: 1e9) == nil)
+        let noResult13 = engine.autoStopIfOverdue(now: 1e9)
+        #expect(noResult13 == nil)
         #expect(engine.phase == .ready)
     }
 
@@ -191,7 +203,8 @@ struct GameEngineTests {
 
     @Test func voidingDoesNotTouchFinishedTurns() throws {
         var engine = try GameEngine(players: [mia, ben])
-        let result = try #require(play(&engine, elapsed: 10))
+        let resultValue = play(&engine, elapsed: 10)
+        let result = try #require(resultValue)
         engine.voidTurn()
         #expect(engine.phase == .reveal(result))
         #expect(engine.results.count == 1)
@@ -205,7 +218,9 @@ struct GameEngineTests {
         #expect(engine.currentPlayer == mia)
         #expect(engine.results.isEmpty)
 
-        let replayed = try #require(play(&engine, elapsed: 10))
+        let replayedValue = play(&engine, elapsed: 10)
+
+        let replayed = try #require(replayedValue)
         #expect(replayed.playerID == mia.id)
         #expect(engine.results == [replayed])
     }
