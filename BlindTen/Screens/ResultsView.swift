@@ -1,3 +1,4 @@
+import StoreKit
 import SwiftUI
 
 /// Leaderboard after each round, with the round loser highlighted.
@@ -75,9 +76,11 @@ struct RoundResultsView: View {
     }
 }
 
-/// Final leaderboard with Rematch and New game.
+/// Final leaderboard with Rematch, New game and Share.
 struct GameResultsView: View {
     @Environment(AppState.self) private var state
+    @Environment(\.requestReview) private var requestReview
+    @State private var shareImage: Image?
     let engine: GameEngine
 
     var body: some View {
@@ -115,15 +118,39 @@ struct GameResultsView: View {
             .listStyle(.insetGrouped)
             .scrollContentBackground(.hidden)
 
-            HStack(spacing: 16) {
-                Button("Rematch") { state.rematch() }
-                    .buttonStyle(.primary)
-                Button("New game") { state.newGame() }
+            VStack(spacing: 12) {
+                if let shareImage {
+                    ShareLink(
+                        item: shareImage,
+                        preview: SharePreview("My Blind Ten results", image: shareImage)
+                    ) {
+                        Label("Share results", systemImage: "square.and.arrow.up")
+                    }
                     .buttonStyle(.secondary)
+                }
+                HStack(spacing: 16) {
+                    Button("Rematch") { state.rematch() }
+                        .buttonStyle(.primary)
+                    Button("New game") { state.newGame() }
+                        .buttonStyle(.secondary)
+                }
             }
             .padding(24)
         }
         .background(Theme.background.ignoresSafeArea())
+        .task {
+            if let image = ShareCardRenderer.image(for: ShareSummary(engine: engine)) {
+                shareImage = Image(uiImage: image)
+            }
+        }
+        .task(id: state.wantsReviewPrompt) {
+            // SPEC.md: only after a DEAD ON or a close final; give the moment a beat first.
+            guard state.wantsReviewPrompt else { return }
+            try? await Task.sleep(for: .seconds(2))
+            guard !Task.isCancelled else { return }
+            requestReview()
+            state.didRequestReview()
+        }
     }
 
     @ViewBuilder

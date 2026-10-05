@@ -33,6 +33,8 @@ final class AppState {
     private(set) var awards: [Award] = []
     /// True when the awards cover the group's whole history, not just this game.
     private(set) var awardsCoverGroupHistory = false
+    /// Set when a finished game qualifies for the rating prompt (SPEC.md growth).
+    private(set) var wantsReviewPrompt = false
 
     @ObservationIgnored private var reactionDeck = ReactionDeck()
     @ObservationIgnored private var houseRulePicker = NoRepeatPicker()
@@ -139,6 +141,23 @@ final class AppState {
             awards = Awards.compute(from: engine.results.map(TurnStat.init))
             awardsCoverGroupHistory = false
         }
+
+        let defaults = UserDefaults.standard
+        let finishedGames = defaults.integer(forKey: ReviewPromptStorage.finishedGamesKey) + 1
+        defaults.set(finishedGames, forKey: ReviewPromptStorage.finishedGamesKey)
+        wantsReviewPrompt = ReviewPrompt.shouldAsk(
+            hadDeadOn: ReviewPrompt.hadDeadOn(engine.results),
+            isCloseFinal: ReviewPrompt.isCloseFinal(engine.standings()),
+            finishedGames: finishedGames,
+            lastPromptedVersion: defaults.string(forKey: ReviewPromptStorage.lastPromptedVersionKey),
+            currentVersion: ReviewPromptStorage.currentVersion
+        )
+    }
+
+    /// Call right after asking for a rating.
+    func didRequestReview() {
+        wantsReviewPrompt = false
+        UserDefaults.standard.set(ReviewPromptStorage.currentVersion, forKey: ReviewPromptStorage.lastPromptedVersionKey)
     }
 
     private func resetGameExtras() {
@@ -148,6 +167,7 @@ final class AppState {
         houseRuleCards = [:]
         awards = []
         awardsCoverGroupHistory = false
+        wantsReviewPrompt = false
         gameSaved = false
         gameStartedAt = .now
     }
