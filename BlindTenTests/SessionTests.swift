@@ -50,25 +50,30 @@ struct SessionHostLogicTests {
 
     @Test func playersJoinTheLobby() {
         var logic = SessionHostLogic()
-        #expect(logic.join(mia, protocolVersion: version, gameInProgress: false, maxPlayers: 10) == .joined)
-        #expect(logic.join(ben, protocolVersion: version, gameInProgress: false, maxPlayers: 10) == .joined)
+        let joined1 = logic.join(mia, protocolVersion: version, gameInProgress: false, maxPlayers: 10)
+        #expect(joined1 == .joined)
+        let joined2 = logic.join(ben, protocolVersion: version, gameInProgress: false, maxPlayers: 10)
+        #expect(joined2 == .joined)
         #expect(logic.connectedPlayers == [mia, ben])
     }
 
     @Test func lobbyCanBeFull() {
         var logic = lobby([mia, ben])
-        #expect(logic.join(zoe, protocolVersion: version, gameInProgress: false, maxPlayers: 2) == .rejected(.full))
+        let joined3 = logic.join(zoe, protocolVersion: version, gameInProgress: false, maxPlayers: 2)
+        #expect(joined3 == .rejected(.full))
     }
 
     @Test func wrongVersionIsRejected() {
         var logic = SessionHostLogic()
-        #expect(logic.join(mia, protocolVersion: version + 1, gameInProgress: false, maxPlayers: 10) == .rejected(.incompatibleVersion))
+        let joined4 = logic.join(mia, protocolVersion: version + 1, gameInProgress: false, maxPlayers: 10)
+        #expect(joined4 == .rejected(.incompatibleVersion))
         #expect(logic.players.isEmpty)
     }
 
     @Test func newPlayersCannotJoinAGameInProgress() {
         var logic = lobby([mia, ben])
-        #expect(logic.join(zoe, protocolVersion: version, gameInProgress: true, maxPlayers: 10) == .rejected(.gameInProgress))
+        let joined5 = logic.join(zoe, protocolVersion: version, gameInProgress: true, maxPlayers: 10)
+        #expect(joined5 == .rejected(.gameInProgress))
     }
 
     @Test func leavingTheLobbyRemovesThePlayer() {
@@ -82,7 +87,8 @@ struct SessionHostLogicTests {
         logic.disconnect(mia.id, gameInProgress: true)
         #expect(logic.players == [mia, ben])
         #expect(logic.connectedPlayers == [ben])
-        #expect(logic.join(mia, protocolVersion: version, gameInProgress: true, maxPlayers: 10) == .rejoined)
+        let joined6 = logic.join(mia, protocolVersion: version, gameInProgress: true, maxPlayers: 10)
+        #expect(joined6 == .rejoined)
         #expect(logic.connectedPlayers == [mia, ben])
     }
 
@@ -103,7 +109,8 @@ struct SessionHostLogicTests {
         logic.apply(.started, from: mia.id, to: &engine, now: 100.2)
         #expect(engine.phase == .running)
         // Elapsed time comes from the phone, so network delay does not count.
-        let result = try #require(logic.apply(.stopped(elapsed: 10.03), from: mia.id, to: &engine, now: 111))
+        let stopped = logic.apply(.stopped(elapsed: 10.03), from: mia.id, to: &engine, now: 111)
+        let result = try #require(stopped)
         #expect(abs(result.stopped - 10.03) < 0.000_1)
         #expect(result.outcome == .scored(.deadOn))
         #expect(engine.phase == .reveal)
@@ -145,7 +152,8 @@ struct SessionHostLogicTests {
         var engine = try GameEngine(players: [mia, ben])
         logic.disconnect(mia.id, gameInProgress: true)
         #expect(logic.missingTurnPlayers(in: engine) == [mia.id])
-        let result = try #require(logic.forfeit(mia.id, engine: &engine, now: 200))
+        let forfeited = logic.forfeit(mia.id, engine: &engine, now: 200)
+        let result = try #require(forfeited)
         #expect(result.outcome == .timeout)
         #expect(engine.phase == .reveal)
         #expect(logic.missingTurnPlayers(in: engine).isEmpty)
@@ -212,19 +220,24 @@ struct ClientTurnTests {
         let handoff = snapshot(.handoff, turn: [mia.id], turnID: id)
         turn.sync(with: handoff)
         #expect(turn.screen(for: handoff, me: mia.id) == .yourTurn)
-        #expect(turn.markReady())
-        #expect(!turn.markReady())
+        let firstReady = turn.markReady()
+        let secondReady = turn.markReady()
+        #expect(firstReady)
+        #expect(!secondReady)
 
         let ready = snapshot(.ready, turn: [mia.id], turnID: id, ready: [mia.id])
         turn.sync(with: ready)
         #expect(turn.screen(for: ready, me: mia.id) == .start(target: 10))
-        #expect(turn.start(at: 50))
-        #expect(!turn.start(at: 51))
+        let firstStart = turn.start(at: 50)
+        let secondStart = turn.start(at: 51)
+        #expect(firstStart)
+        #expect(!secondStart)
         #expect(turn.screen(for: ready, me: mia.id) == .blind(startedAt: 50))
 
         let elapsed = turn.stop(at: 59.9)
         #expect(elapsed.map { abs($0 - 9.9) < 0.000_1 } == true)
-        #expect(turn.stop(at: 61) == nil)
+        let secondStop = turn.stop(at: 61)
+        #expect(secondStop == nil)
         #expect(turn.screen(for: ready, me: mia.id) == .stopped)
 
         let spinning = snapshot(.reveal, turn: [mia.id], turnID: id)
