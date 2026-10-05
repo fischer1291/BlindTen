@@ -72,19 +72,19 @@ party game,friends,group game,timer,stopwatch,reaction,time challenge,guess,ten 
 ## Support URL
 
 ```
-https://fischer1291.github.io/BlindTen/contact.html
+https://www.blindten.com/contact.html
 ```
 
 ## Marketing URL (optional)
 
 ```
-https://fischer1291.github.io/BlindTen/
+https://www.blindten.com/
 ```
 
 ## Privacy Policy URL
 
 ```
-https://fischer1291.github.io/BlindTen/privacy.html
+https://www.blindten.com/privacy.html
 ```
 
 The pages live in `website/` and are published by the Website workflow

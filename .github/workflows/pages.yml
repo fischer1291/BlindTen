@@ -1,7 +1,7 @@
 name: Website
 
 # Publishes website/ (landing page, privacy policy, contact, imprint) to
-# GitHub Pages at https://fischer1291.github.io/BlindTen/.
+# GitHub Pages at https://www.blindten.com (custom domain set in Settings > Pages).
 # One-time setup: Settings > Pages > Build and deployment > Source: GitHub Actions.
 
 on:
