@@ -1,0 +1,132 @@
+name: TestFlight
+
+# Archives the app, signs it with Xcode's cloud-managed signing and uploads
+# it to App Store Connect, where it shows up in TestFlight after processing.
+#
+# Needs these repository secrets (Settings > Secrets and variables > Actions):
+#   APP_STORE_CONNECT_KEY_ID     Key ID of an App Store Connect API key (Admin role)
+#   APP_STORE_CONNECT_ISSUER_ID  Issuer ID shown above the list of keys
+#   APP_STORE_CONNECT_KEY        Full contents of the downloaded AuthKey_XXXX.p8 file
+#   APPLE_TEAM_ID                10-character Team ID from developer.apple.com > Membership
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_number:
+        description: "Build number (leave empty to use the run number + 1)"
+        required: false
+
+concurrency:
+  group: testflight
+  cancel-in-progress: false
+
+jobs:
+  upload:
+    runs-on: macos-26
+    timeout-minutes: 45
+    env:
+      KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+      ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+      TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Check secrets
+        env:
+          KEY: ${{ secrets.APP_STORE_CONNECT_KEY }}
+        run: |
+          missing=0
+          for name in KEY_ID ISSUER_ID TEAM_ID KEY; do
+            if [ -z "${!name}" ]; then
+              echo "::error::Missing secret for $name (see the comment at the top of testflight.yml)"
+              missing=1
+            fi
+          done
+          [ "$missing" = 0 ]
+
+      # App Store Connect only accepts builds made with Xcode 26 or later.
+      - name: Select the newest Xcode
+        run: |
+          XCODE=$(ls -d /Applications/Xcode_2[6-9]*.app 2>/dev/null | sort -V | tail -1)
+          if [ -z "$XCODE" ]; then
+            echo "::error::No Xcode 26 or later on this runner"
+            ls -d /Applications/Xcode*.app
+            exit 1
+          fi
+          sudo xcode-select -s "$XCODE"
+          xcodebuild -version
+
+      - name: Write the API key
+        env:
+          KEY: ${{ secrets.APP_STORE_CONNECT_KEY }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/keys"
+          printf '%s\n' "$KEY" > "$RUNNER_TEMP/keys/AuthKey.p8"
+          echo "KEY_PATH=$RUNNER_TEMP/keys/AuthKey.p8" >> "$GITHUB_ENV"
+
+      - name: Pick the build number
+        env:
+          REQUESTED: ${{ inputs.build_number }}
+          RUN_NUMBER: ${{ github.run_number }}
+        run: |
+          BUILD="${REQUESTED:-$(( RUN_NUMBER + 1 ))}"
+          if ! [[ "$BUILD" =~ ^[0-9]+$ ]]; then
+            echo "::error::Build number must be a whole number, got '$BUILD'"
+            exit 1
+          fi
+          echo "Build number $BUILD"
+          echo "BUILD=$BUILD" >> "$GITHUB_ENV"
+
+      - name: Archive
+        run: |
+          set -o pipefail
+          xcodebuild archive \
+            -project BlindTen.xcodeproj \
+            -scheme BlindTen \
+            -configuration Release \
+            -destination "generic/platform=iOS" \
+            -archivePath "$RUNNER_TEMP/BlindTen.xcarchive" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$KEY_PATH" \
+            -authenticationKeyID "$KEY_ID" \
+            -authenticationKeyIssuerID "$ISSUER_ID" \
+            DEVELOPMENT_TEAM="$TEAM_ID" \
+            CODE_SIGN_STYLE=Automatic \
+            CURRENT_PROJECT_VERSION="$BUILD"
+
+      - name: Upload to App Store Connect
+        run: |
+          set -o pipefail
+          cat > "$RUNNER_TEMP/ExportOptions.plist" <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>app-store-connect</string>
+            <key>destination</key>
+            <string>upload</string>
+            <key>teamID</key>
+            <string>$TEAM_ID</string>
+            <key>signingStyle</key>
+            <string>automatic</string>
+            <key>manageAppVersionAndBuildNumber</key>
+            <false/>
+            <key>uploadSymbols</key>
+            <true/>
+          </dict>
+          </plist>
+          EOF
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/BlindTen.xcarchive" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" \
+            -exportPath "$RUNNER_TEMP/export" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$KEY_PATH" \
+            -authenticationKeyID "$KEY_ID" \
+            -authenticationKeyIssuerID "$ISSUER_ID"
+          echo "Uploaded version $(/usr/libexec/PlistBuddy -c 'Print :ApplicationProperties:CFBundleShortVersionString' "$RUNNER_TEMP/BlindTen.xcarchive/Info.plist") ($BUILD)"
+
+      - name: Remove the API key
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/keys"
