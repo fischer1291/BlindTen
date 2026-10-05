@@ -19,7 +19,7 @@ struct GameView: View {
             .onChange(of: scenePhase) { _, newPhase in
                 // SPEC.md: app leaves the foreground mid-turn → turn is voided and replayed.
                 if newPhase != .active {
-                    state.engine?.voidTurn()
+                    state.voidTurn()
                     state.feel.stopAll()
                     ScreenBrightness.restore()
                 }

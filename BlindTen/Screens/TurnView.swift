@@ -9,8 +9,8 @@ struct TurnView: View {
         Group {
             if let startedAt = engine.lanes.first?.startedAt {
                 BlindPhaseView(effect: engine.blindEffect, target: engine.target, startedAt: startedAt) { timestamp in
-                    state.feel.touch()
                     state.stop(at: timestamp)
+                    state.feel.touch()
                 }
             } else {
                 readyPhase
@@ -19,6 +19,8 @@ struct TurnView: View {
         .background(Theme.background.ignoresSafeArea())
         .statusBarHidden()
         .persistentSystemOverlays(.hidden)
+        // A thumb sliding in from an edge must not open Control Center and void the turn.
+        .defersSystemGestures(on: .all)
         .onAppear {
             state.feel.warmUp()
             ScreenBrightness.maximize()
@@ -41,8 +43,8 @@ struct TurnView: View {
                 .lineLimit(1)
                 .minimumScaleFactor(0.5)
             TouchTimerView(accessibilityLabel: String(localized: "Start")) { timestamp in
-                state.feel.touch()
                 state.engine?.start(at: timestamp)
+                state.feel.touch()
             }
             .frame(maxWidth: .infinity, maxHeight: 360)
             .background(Theme.accent, in: RoundedRectangle(cornerRadius: 40))
@@ -51,6 +53,7 @@ struct TurnView: View {
                     .font(Theme.display(72))
                     .foregroundStyle(Theme.onAccent)
                     .allowsHitTesting(false)
+                    .accessibilityHidden(true)
             }
         }
         .padding(24)

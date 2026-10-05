@@ -21,6 +21,7 @@ struct ShowdownTurnView: View {
         .ignoresSafeArea()
         .statusBarHidden()
         .persistentSystemOverlays(.hidden)
+        .defersSystemGestures(on: .all)
         .onAppear {
             state.feel.warmUp()
             ScreenBrightness.maximize()
@@ -49,8 +50,8 @@ struct ShowdownTurnView: View {
                     ZStack {
                         Color.black
                         TouchTimerView(accessibilityLabel: String(localized: "Stop")) { timestamp in
-                            state.feel.touch()
                             state.stop(lane: index, at: timestamp)
+                            state.feel.touch()
                         }
                         Text(verbatim: name)
                             .font(.title3.weight(.semibold))
@@ -61,8 +62,8 @@ struct ShowdownTurnView: View {
                     ZStack {
                         Theme.accent
                         TouchTimerView(accessibilityLabel: String(localized: "Start")) { timestamp in
-                            state.feel.touch()
                             state.engine?.start(lane: index, at: timestamp)
+                            state.feel.touch()
                         }
                         VStack(spacing: 6) {
                             Text(verbatim: name)

@@ -171,7 +171,6 @@
     "A new target every turn, from 4 to 20 seconds.": {},
     "Add player": {},
     "All 8 game modes": {},
-    "All modes · Unlimited players · TV mode": {},
     "All-time awards for this group.": {},
     "Ask the host to tap \"Host a session\". Both phones need Wi-Fi or Bluetooth turned on.": {},
     "Awards": {},
@@ -247,17 +246,6 @@
     "Off": {},
     "One-time purchase. No subscription, no ads.": {},
     "Out in round %lld": {},
-    "PARTY PACK": {
-      "comment": "Party Pack promotional image title. Keep in capitals.",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "PARTY PACK"
-          }
-        }
-      }
-    },
     "PLAY": {},
     "Party Pack": {},
     "Party Pack unlocked": {},

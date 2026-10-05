@@ -5,6 +5,8 @@ struct ConfettiView: View {
     /// `ProcessInfo.systemUptime` when the burst started.
     let startTime: TimeInterval
     @State private var particles = ConfettiParticle.burst(count: 160)
+    /// Every piece has fallen off screen; stop redrawing.
+    @State private var isDone = false
 
     private static let palette: [Color] = [
         Theme.accent, Theme.early, Theme.late, .white,
@@ -12,7 +14,7 @@ struct ConfettiView: View {
     ]
 
     var body: some View {
-        TimelineView(.animation) { _ in
+        TimelineView(.animation(minimumInterval: nil, paused: isDone)) { _ in
             Canvas { context, size in
                 let elapsed = ProcessInfo.processInfo.systemUptime - startTime
                 for particle in particles {
@@ -32,10 +34,22 @@ struct ConfettiView: View {
                 }
             }
         }
+        .opacity(isDone ? 0 : 1)
         .ignoresSafeArea()
         .allowsHitTesting(false)
         .accessibilityHidden(true)
+        .task(id: startTime) {
+            let wait = startTime + Self.lifetime - ProcessInfo.processInfo.systemUptime
+            if wait > 0 {
+                try? await Task.sleep(for: .seconds(wait))
+            }
+            guard !Task.isCancelled else { return }
+            isDone = true
+        }
     }
+
+    /// Long enough for the slowest piece to fall past the bottom edge.
+    private static let lifetime: TimeInterval = 4
 }
 
 /// One piece of confetti, in units relative to the screen size.

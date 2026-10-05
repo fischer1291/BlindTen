@@ -1,7 +1,9 @@
+#if DEBUG
 import SwiftUI
 import UIKit
 
 /// The Party Pack's 1024 × 1024 promotional image for App Store Connect.
+/// Debug only: rendered by screenshot mode, never shipped or translated.
 struct PartyPackArtView: View {
     static let size = CGSize(width: 1024, height: 1024)
 
@@ -17,11 +19,11 @@ struct PartyPackArtView: View {
             VStack(spacing: 36) {
                 LogoMark()
                     .frame(width: 400, height: 400)
-                Text("PARTY PACK")
+                Text(verbatim: "PARTY PACK")
                     .font(.system(size: 108, weight: .heavy, design: .rounded))
                     .tracking(4)
                     .foregroundStyle(Theme.accent)
-                Text("All modes · Unlimited players · TV mode")
+                Text(verbatim: "All modes · Unlimited players · TV mode")
                     .font(.system(size: 40, weight: .bold, design: .rounded))
                     .foregroundStyle(Theme.primaryText)
             }
@@ -40,3 +42,4 @@ enum PartyPackArtRenderer {
         return renderer.uiImage
     }
 }
+#endif

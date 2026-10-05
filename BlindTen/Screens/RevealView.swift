@@ -57,7 +57,7 @@ struct RevealView: View {
         .overlay(alignment: .bottom) {
             if landed {
                 Button(isDuel ? LocalizedStringKey("Wrong players? Replay duel") : LocalizedStringKey("Wrong player? Replay turn")) {
-                    state.engine?.replayTurn()
+                    state.replayTurn()
                 }
                 .font(.headline)
                 .foregroundStyle(Theme.secondaryText)
@@ -260,7 +260,8 @@ struct RevealView: View {
         if !landed {
             await land()
         }
-        guard !ScreenshotMode.isActive else { return }
+        // VoiceOver users need longer than 3 s; they tap to continue.
+        guard !ScreenshotMode.isActive, !UIAccessibility.isVoiceOverRunning else { return }
         try? await Task.sleep(for: RevealTiming.autoAdvanceDelay)
         guard !Task.isCancelled else { return }
         advance()

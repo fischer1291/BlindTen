@@ -22,7 +22,8 @@ enum ScreenBrightness {
     private static var currentScreen: UIScreen? {
         UIApplication.shared.connectedScenes
             .compactMap { $0 as? UIWindowScene }
-            .first?
+            // Not the TV: external displays get scenes of their own.
+            .first { $0.session.role == .windowApplication }?
             .screen
     }
 }

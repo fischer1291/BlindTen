@@ -160,7 +160,9 @@ private struct TVRevealView: View {
         return presentation
     }
 
-    private var landed: Bool { timing.map { $0.landedAt != nil } ?? true }
+    /// Until the phone reports its drumroll for these results, the TV holds
+    /// back the result instead of spoiling it for a frame.
+    private var landed: Bool { timing?.landedAt != nil }
 
     var body: some View {
         ZStack {
@@ -239,7 +241,8 @@ private struct TVRevealView: View {
         case .scored: final = result.displayedStopped
         case .misfire, .timeout: final = result.stopped
         }
-        guard let timing, timing.landedAt == nil else { return final }
+        guard let timing else { return 0 }
+        guard timing.landedAt == nil else { return final }
         let elapsed = ProcessInfo.processInfo.systemUptime - timing.drumrollStart
         return SlotRoll.value(progress: elapsed / timing.drumrollDuration, target: final)
     }
