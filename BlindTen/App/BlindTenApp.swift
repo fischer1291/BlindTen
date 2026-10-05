@@ -4,6 +4,7 @@ import SwiftUI
 @main
 @MainActor
 struct BlindTenApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     private let container: ModelContainer
     @State private var state: AppState
 
@@ -20,7 +21,9 @@ struct BlindTenApp: App {
             }
         }
         self.container = container
-        _state = State(initialValue: AppState(store: GameStore(context: container.mainContext)))
+        let appState = AppState(store: GameStore(context: container.mainContext))
+        _state = State(initialValue: appState)
+        ExternalDisplay.state = appState
     }
 
     var body: some Scene {

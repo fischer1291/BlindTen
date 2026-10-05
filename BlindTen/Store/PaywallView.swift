@@ -35,6 +35,7 @@ struct PaywallView: View {
                         Benefit(symbol: "square.grid.2x2.fill", text: "All 8 game modes")
                         Benefit(symbol: "person.3.fill", text: "Unlimited players")
                         Benefit(symbol: "rectangle.stack.badge.plus", text: "Your own house-rule cards")
+                        Benefit(symbol: "tv", text: "Big reveals on the TV via AirPlay")
                         Benefit(symbol: "checkmark.seal.fill", text: "One-time purchase. No subscription, no ads.")
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)

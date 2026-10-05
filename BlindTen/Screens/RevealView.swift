@@ -36,7 +36,9 @@ struct RevealView: View {
                 handleTap()
             } label: {
                 Group {
-                    if isDuel {
+                    if state.isTVConnected {
+                        tvHint
+                    } else if isDuel {
                         duelContent
                     } else if let result = results.first {
                         singleContent(result)
@@ -75,6 +77,25 @@ struct RevealView: View {
         }
         .onDisappear {
             state.feel.endDrumroll()
+        }
+    }
+
+    // MARK: - TV
+
+    /// With the TV scene active the big reveal plays on the TV; the phone
+    /// keeps the drumroll, haptics and the tap to continue.
+    private var tvHint: some View {
+        VStack(spacing: 20) {
+            Image(systemName: "tv")
+                .font(.system(size: 72, weight: .bold))
+                .foregroundStyle(Theme.accent)
+            Text("Look at the TV")
+                .font(Theme.display(44))
+            if landed {
+                Text("Tap to continue")
+                    .font(.title2.weight(.bold))
+                    .foregroundStyle(Theme.secondaryText)
+            }
         }
     }
 
@@ -230,6 +251,13 @@ struct RevealView: View {
     private func runReveal() async {
         if !landed && !skipRequested {
             drumrollStart = ProcessInfo.processInfo.systemUptime
+            if let first = results.first {
+                state.revealPresentation = RevealPresentation(
+                    firstResultID: first.id,
+                    drumrollStart: drumrollStart,
+                    drumrollDuration: drumrollDuration
+                )
+            }
             state.feel.beginDrumroll(duration: drumrollDuration)
             try? await Task.sleep(for: .seconds(drumrollDuration))
             guard !Task.isCancelled else { return }
@@ -245,7 +273,18 @@ struct RevealView: View {
     private func land() async {
         landed = true
         state.feel.land(cue)
-        guard cue == .deadOn, !reduceMotion else { return }
+        let now = ProcessInfo.processInfo.systemUptime
+        if let first = results.first {
+            if state.revealPresentation?.firstResultID == first.id {
+                state.revealPresentation?.landedAt = now
+            } else {
+                state.revealPresentation = RevealPresentation(
+                    firstResultID: first.id, drumrollStart: now, drumrollDuration: 0, landedAt: now
+                )
+            }
+        }
+        // On the TV the celebration plays on the big screen.
+        guard cue == .deadOn, !reduceMotion, !state.isTVConnected else { return }
         confettiStart = ProcessInfo.processInfo.systemUptime
         flashOpacity = 0.85
         try? await Task.sleep(for: .milliseconds(50))

@@ -50,6 +50,7 @@ PARTY PACK (one-time purchase)
 • Elimination: the worst player each round is out
 • Teams: two teams, lowest combined deviation wins
 • Unlimited players and your own house-rule cards
+• TV mode: leaderboard and big reveals on the TV via AirPlay
 
 MADE FOR THE TABLE
 • Dark, high-contrast screens readable from across the table

@@ -109,6 +109,11 @@ struct PartyPackTests {
         #expect(PartyPack.maxPlayers(unlocked: true) > 10)
     }
 
+    @Test func tvSceneNeedsThePack() {
+        #expect(!PartyPack.canUseTVScene(unlocked: false))
+        #expect(PartyPack.canUseTVScene(unlocked: true))
+    }
+
     @Test func customHouseRulesNeedThePack() {
         #expect(!PartyPack.canAddCustomHouseRules(unlocked: false))
         #expect(PartyPack.canAddCustomHouseRules(unlocked: true))

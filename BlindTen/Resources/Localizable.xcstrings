@@ -124,8 +124,22 @@
     "All-time awards for this group.": {},
     "Awards": {},
     "Awards for this game.": {},
+    "BLIND TEN": {
+      "comment": "Wordmark of the app name. Keep in capitals.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BLIND TEN"
+          }
+        }
+      }
+    },
     "Best Ever": {},
+    "Best times": {},
+    "Big reveals on the TV via AirPlay": {},
     "Blind Ten": {},
+    "Blind Ten on the App Store": {},
     "Cards stay on this phone.": {},
     "Classic": {},
     "Close": {},
@@ -149,10 +163,12 @@
     "It's a tie!": {},
     "Knocked out": {},
     "Liar's Clock": {},
+    "Look at the TV": {},
     "Lost in time": {},
     "Meh": {},
     "Mode": {},
     "Modes": {},
+    "My Blind Ten results": {},
     "New game": {},
     "Next round": {},
     "Not now": {},
@@ -163,6 +179,7 @@
     "Party Pack": {},
     "Party Pack unlocked": {},
     "Pass the phone to": {},
+    "Pick a mode and the players on the phone.": {},
     "Player %lld": {},
     "Players": {},
     "Players: %lld": {},
@@ -179,8 +196,10 @@
     "Rounds: until one is left": {},
     "START": {},
     "Settings": {},
+    "Share results": {},
     "Sharp": {},
     "Showdown": {},
+    "Silence…": {},
     "Skip names and play as Player 1, Player 2, …": {},
     "Something went wrong. Please try again.": {},
     "Sound": {},
@@ -196,6 +215,7 @@
     "Tap anywhere to stop": {},
     "Tap anywhere when ready": {},
     "Tap anywhere when you're both ready": {},
+    "Tap to continue": {},
     "Team %lld": {},
     "Team %lld wins!": {},
     "Teams": {},
@@ -205,6 +225,7 @@
     "The phone pulses at a slightly wrong tempo.": {},
     "The store is not available right now.": {},
     "The worst player each round is out until one is left.": {},
+    "Think you can stop at exactly 10?": {},
     "This round": {},
     "Too eager!": {},
     "Too early": {},

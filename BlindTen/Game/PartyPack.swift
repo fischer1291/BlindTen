@@ -25,6 +25,12 @@ enum PartyPack {
     static func canAddCustomHouseRules(unlocked: Bool) -> Bool {
         unlocked
     }
+
+    /// SPEC.md: the dedicated TV scene is a Party Pack feature; without it
+    /// the system simply mirrors the phone.
+    static func canUseTVScene(unlocked: Bool) -> Bool {
+        unlocked
+    }
 }
 
 /// Picks at random without repeating until every option has been used.

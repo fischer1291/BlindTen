@@ -1,6 +1,14 @@
 import Foundation
 import Observation
 
+/// When the current reveal's drumroll started and when it landed.
+struct RevealPresentation: Equatable, Sendable {
+    let firstResultID: UUID
+    let drumrollStart: TimeInterval
+    let drumrollDuration: TimeInterval
+    var landedAt: TimeInterval?
+}
+
 enum HouseRuleSettings {
     /// UserDefaults key. SPEC.md: house rules are optional and off by default.
     static let enabledKey = "houseRulesEnabled"
@@ -24,6 +32,10 @@ final class AppState {
     let purchases = PurchaseManager()
     /// Nil only if local storage could not be opened.
     let store: GameStore?
+    /// True while the TV scene shows the game on an external display.
+    var isTVConnected = false
+    /// Timing of the reveal on the phone, so the TV can spin in sync.
+    var revealPresentation: RevealPresentation?
 
     /// Reaction line key chosen for each finished turn.
     private(set) var reactionKeys: [TurnResult.ID: String] = [:]
