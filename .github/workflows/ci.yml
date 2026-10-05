@@ -2,9 +2,33 @@ name: CI
 
 on:
   push:
+    paths-ignore:
+      - "AppStore/**"
+      - "**/*.md"
   pull_request:
+    paths-ignore:
+      - "AppStore/**"
+      - "**/*.md"
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: App Store metadata limits
+        run: python3 Tools/check_metadata.py
+
+      - name: String Catalog matches the text lists
+        run: |
+          python3 Tools/update_catalog.py
+          git diff --exit-code BlindTen/Resources/Localizable.xcstrings
+
   build-and-test:
     runs-on: macos-15
     timeout-minutes: 30

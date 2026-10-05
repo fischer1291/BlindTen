@@ -9,3 +9,13 @@ build/
 
 # macOS
 .DS_Store
+
+# Build and release output
+*.xcarchive
+*.ipa
+*.dSYM.zip
+*.xcresult
+/screenshots/
+
+# Python
+__pycache__/

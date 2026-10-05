@@ -21,9 +21,22 @@
 		B10000000000000000000012 /* BlindTenTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BlindTenTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		B10000000000000000000031 /* Exceptions for "BlindTen" folder in "BlindTen" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = B10000000000000000000101 /* BlindTen */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		B10000000000000000000021 /* BlindTen */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				B10000000000000000000031 /* Exceptions for "BlindTen" folder in "BlindTen" target */,
+			);
 			path = BlindTen;
 			sourceTree = "<group>";
 		};
