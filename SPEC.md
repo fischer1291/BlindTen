@@ -144,6 +144,15 @@ Native iOS app in Swift and SwiftUI, iOS 17+, fully offline, no backend for the 
 - MVP: screen mirroring via AirPlay just works, so design for 16:9 and portrait both.
 - v1.1: dedicated external display scene (UIWindowSceneSessionRoleExternalDisplay). The TV shows the leaderboard and big reveals; the phone shows only the START/STOP surface. This is a Party Pack feature.
 
+**Local session (multi-phone)**
+
+- One phone hosts ("Host a session"); it becomes the main screen and is put on the TV with AirPlay (mirroring, or the TV scene with the Party Pack). Other players tap "Join a session", enter a name and emoji, and pick the host's three-emoji code.
+- Transport: MultipeerConnectivity (service type `blindten`, encryption required), so it works over Wi-Fi or Bluetooth without internet or accounts. Info.plist declares `NSLocalNetworkUsageDescription` and `NSBonjourServices`.
+- The host is authoritative: it runs the GameEngine and sends every phone a full snapshot after each change. Phones send only events (ready, started, stopped with the elapsed seconds, voided).
+- Each player's phone measures its own START and STOP with UITouch.timestamp; only the elapsed time travels, so network latency never affects a result. The host stops a turn itself 5 s after its timeout in case a phone never reports back, and can skip a player whose phone dropped out.
+- Players take turns as in pass-the-phone play (two at once in Showdown). While others play, a phone shows an animated waiting screen whose motion never follows a 1-second rhythm. Results land on the TV and on the player's phone at the same moment.
+- Mode access and the player limit follow the host's Party Pack.
+
 **Data model**
 
 ```
@@ -162,11 +171,19 @@ BlindTen/
   Game/           GameEngine.swift, Scoring.swift, Modes/
   Timing/         TouchTimerView.swift (UIViewRepresentable)
   Feel/           Haptics.swift, Sound.swift, Reactions.swift
-  Screens/        Home, Players, Handoff, Turn, Reveal, Results
-  Store/          PurchaseManager.swift (StoreKit 2)
+  Screens/        Home, Players, Handoff, Turn, Reveal, Results, Settings
+  Screens/Session HostSessionView, JoinSessionView, ClientSessionView, SessionBoard
+  Session/        SessionProtocol, SessionHostLogic, ClientTurn (pure), PeerTransport, SessionHost, SessionClient
+  Store/          PurchaseManager.swift (StoreKit 2), PaywallView
+  Persistence/    SwiftData models, GameStore
+  TV/             ExternalDisplay (scene delegate), TVView
+  Brand/          LogoMark, SplashView
   Share/          ShareCardView.swift
-  Resources/      Localizable.xcstrings, Sounds/
-BlindTenTests/    ScoringTests.swift, GameEngineTests.swift
+  Resources/      Localizable.xcstrings, InfoPlist.xcstrings, Sounds/, Assets
+BlindTenTests/    one Swift Testing file per area (Scoring, GameEngine, Modes, Session, …)
+Config/           Info.plist (launch screen, local network keys; merged into the generated one)
+AppStore/         listing texts, privacy policy, screenshots (JPEG, no alpha)
+Tools/            catalog, icon, sound and metadata scripts
 ```
 
 Keep GameEngine free of SwiftUI so modes can be unit-tested and a second-screen view can render the same state.
@@ -188,7 +205,7 @@ Party games are played in bursts with friends watching. Ads mid-game kill the mo
 
 **Implementation (StoreKit 2)**
 
-- One non-consumable product, e.g. com.yourname.blindten.partypack.
+- One non-consumable product: com.leroyfischer.blindtengame.partypack.
 - PurchaseManager listens to Transaction.updates, checks currentEntitlements on launch, and exposes isPartyPackUnlocked.
 - Paywall appears only when tapping a locked mode card, never on launch. Show a 5-second looping preview of the mode.
 - "Restore Purchases" in settings (required by App Review).
@@ -220,4 +237,4 @@ After launch: Daily Challenge with Game Center, more languages (German first, si
 
 **Testing tips:** precise timing only behaves on a real device, so run every milestone on your iPhone, not just the simulator. Test the reveal with real friends at milestone 2; their reactions decide what gets polished.
 
-**Out of scope for v1:** online multiplayer, accounts, Android, a backend, user-generated content shared between devices.
+**Out of scope for v1:** online multiplayer over the internet (the local session above stays on the local network), accounts, Android, a backend, user-generated content shared between devices.
