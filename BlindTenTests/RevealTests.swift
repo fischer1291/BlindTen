@@ -41,9 +41,8 @@ struct RevealTests {
     }
 
     @Test func directionFollowsTheDisplayedDeviation() throws {
-        let mia = Player(name: "Mia", emoji: "🦊")
-        let ben = Player(name: "Ben", emoji: "🐸")
-        var engine = try GameEngine(players: [mia, ben], rounds: 3)
+        let players = ["Mia", "Ben", "Zoe", "Ali"].map { Player(name: $0, emoji: "🦊") }
+        var engine = try GameEngine(players: players, rounds: 1)
 
         func turn(_ elapsed: TimeInterval) -> TurnResult? {
             engine.beginTurn()
