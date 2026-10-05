@@ -31,7 +31,7 @@ main {
 a { color: var(--accent); }
 
 h1, h2, h3 { font-weight: 900; line-height: 1.15; margin: 0 0 12px; }
-/* Long German words ("Datenschutzerklärung") must not push the page sideways. */
+/* Long words must not push the page sideways on a phone. */
 h1, h2, h3, p { hyphens: auto; -webkit-hyphens: auto; overflow-wrap: break-word; }
 h1 { font-size: clamp(36px, 8vw, 56px); letter-spacing: 0.04em; }
 h2 { font-size: 26px; margin-top: 40px; }
@@ -97,15 +97,6 @@ p, ul { margin: 0 0 14px; }
   margin: 16px 0;
 }
 .panel p:last-child, .panel ul:last-child { margin-bottom: 0; }
-.lang-switch { display: flex; gap: 10px; margin: 0 0 8px; }
-.lang-switch a {
-  padding: 6px 14px;
-  border-radius: 999px;
-  background: var(--surface);
-  color: var(--text);
-  text-decoration: none;
-  font-weight: 800;
-}
 hr { border: 0; border-top: 2px solid var(--surface); margin: 48px 0 8px; }
 
 footer {
