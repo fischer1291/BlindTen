@@ -9,6 +9,8 @@ final class AppState {
     static let maxFreePlayers = 10
 
     var roster: [Player] = []
+    /// Mode picked on the Home screen.
+    var selectedMode: ModeKind = .classic
     /// The running game, or nil while on the Players screen.
     var engine: GameEngine?
     /// Haptics and sound.
@@ -19,7 +21,7 @@ final class AppState {
     @ObservationIgnored private var reactionDeck = ReactionDeck()
 
     func startGame(players: [Player], rounds: Int) throws {
-        engine = try GameEngine(players: players, rounds: rounds)
+        engine = try GameEngine(players: players, mode: selectedMode.mode, rounds: rounds)
         resetReactions()
     }
 
@@ -35,20 +37,20 @@ final class AppState {
         resetReactions()
     }
 
-    /// STOP. Ends the running turn and picks its reaction line.
+    /// STOP for one lane. Ends that player's turn and picks a reaction line.
     @discardableResult
-    func stop(at timestamp: TimeInterval) -> TurnResult? {
-        guard let result = engine?.stop(at: timestamp) else { return nil }
+    func stop(lane: Int = 0, at timestamp: TimeInterval) -> TurnResult? {
+        guard let result = engine?.stop(lane: lane, at: timestamp) else { return nil }
         assignReaction(to: result)
         return result
     }
 
     /// Auto-stop at target × 3.
-    @discardableResult
-    func autoStopIfOverdue(now: TimeInterval) -> TurnResult? {
-        guard let result = engine?.autoStopIfOverdue(now: now) else { return nil }
-        assignReaction(to: result)
-        return result
+    func autoStopIfOverdue(now: TimeInterval) {
+        guard let results = engine?.autoStopIfOverdue(now: now) else { return }
+        for result in results {
+            assignReaction(to: result)
+        }
     }
 
     /// The localized reaction line for a finished turn.

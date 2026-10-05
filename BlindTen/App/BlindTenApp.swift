@@ -26,7 +26,7 @@ struct RootView: View {
                 GameView(engine: engine)
             } else {
                 NavigationStack {
-                    PlayersView()
+                    HomeView()
                 }
             }
         }

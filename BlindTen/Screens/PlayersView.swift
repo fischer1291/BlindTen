@@ -2,7 +2,6 @@ import SwiftUI
 
 struct PlayersView: View {
     @Environment(AppState.self) private var state
-    @AppStorage(SoundSettings.enabledKey) private var soundEnabled = true
     @State private var newName = ""
     @State private var rounds = GameEngine.defaultRounds
     @State private var quickPlayCount = GameEngine.minPlayers
@@ -39,12 +38,23 @@ struct PlayersView: View {
             .listRowBackground(Theme.surface)
 
             Section {
-                Stepper("Rounds: \(rounds)", value: $rounds, in: 1...10)
-                    .font(.title3)
-                Toggle("Sound", isOn: $soundEnabled)
-                    .font(.title3)
+                HStack(spacing: 12) {
+                    Image(systemName: state.selectedMode.symbol)
+                        .foregroundStyle(Theme.accent)
+                    Text(state.selectedMode.title)
+                        .font(.title3.weight(.bold))
+                }
+                if state.selectedMode.mode.eliminatesRoundLoser {
+                    Text("Rounds: until one is left")
+                        .font(.title3)
+                } else {
+                    Stepper("Rounds: \(rounds)", value: $rounds, in: 1...10)
+                        .font(.title3)
+                }
+            } header: {
+                Text("Mode")
             } footer: {
-                Text("Sounds follow the silent switch.")
+                Text(state.selectedMode.rules)
             }
             .listRowBackground(Theme.surface)
 
@@ -72,7 +82,7 @@ struct PlayersView: View {
         }
         .scrollContentBackground(.hidden)
         .background(Theme.background.ignoresSafeArea())
-        .navigationTitle("Blind Ten")
+        .navigationTitle("Players")
         .toolbar {
             EditButton()
         }
