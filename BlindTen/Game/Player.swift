@@ -1,6 +1,6 @@
 import Foundation
 
-struct Player: Identifiable, Hashable, Sendable {
+struct Player: Identifiable, Hashable, Codable, Sendable {
     let id: UUID
     var name: String
     var emoji: String

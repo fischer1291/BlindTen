@@ -1,7 +1,7 @@
 import Foundation
 
 /// Accuracy tiers from the SPEC.md "Scoring" table.
-enum Tier: Int, CaseIterable, Sendable {
+enum Tier: Int, CaseIterable, Codable, Sendable {
     case deadOn
     case sharp
     case close
@@ -35,7 +35,7 @@ enum Tier: Int, CaseIterable, Sendable {
 }
 
 /// How a single turn ended.
-enum TurnOutcome: Hashable, Sendable {
+enum TurnOutcome: Hashable, Codable, Sendable {
     case scored(Tier)
     /// Stopped before `Scoring.misfireThreshold` ("Too eager!").
     case misfire

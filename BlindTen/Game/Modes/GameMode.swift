@@ -1,7 +1,7 @@
 import Foundation
 
 /// The game modes from SPEC.md.
-enum ModeKind: String, CaseIterable, Identifiable, Sendable {
+enum ModeKind: String, CaseIterable, Identifiable, Codable, Sendable {
     case classic
     case randomTarget
     case showdown
@@ -36,7 +36,7 @@ enum ModeKind: String, CaseIterable, Identifiable, Sendable {
 }
 
 /// What the blind phase shows, plays or vibrates. Generated per turn.
-enum BlindEffect: Equatable, Sendable {
+enum BlindEffect: Equatable, Codable, Sendable {
     /// Classic dark screen.
     case dark
     /// Beeps at these offsets after START (seconds), at irregular intervals.

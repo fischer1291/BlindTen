@@ -133,7 +133,8 @@ struct GameEngine: Sendable {
     /// Elimination: knocked-out players, in order.
     private(set) var eliminated: [Player.ID] = []
 
-    private var turnID = UUID()
+    /// Identifies the current turn; shared by both players of a Showdown duel.
+    private(set) var turnID = UUID()
     private var participants: [Int: Set<Player.ID>] = [:]
     private var generator: SplitMix64
 

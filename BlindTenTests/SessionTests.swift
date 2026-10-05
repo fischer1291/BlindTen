@@ -1,0 +1,271 @@
+import Foundation
+import Testing
+@testable import BlindTen
+
+struct SessionProtocolTests {
+    let mia = Player(name: "Mia", emoji: "🦊")
+
+    @Test func clientMessagesRoundTrip() throws {
+        let messages: [ClientMessage] = [
+            .hello(player: mia, protocolVersion: SessionProtocol.version),
+            .ready,
+            .started,
+            .stopped(elapsed: 9.87),
+            .voided,
+        ]
+        for message in messages {
+            let data = try #require(SessionCoding.encode(message))
+            #expect(SessionCoding.decode(ClientMessage.self, from: data) == message)
+        }
+    }
+
+    @Test func snapshotRoundTrips() throws {
+        var engine = try GameEngine(players: [mia, Player(name: "Ben", emoji: "🐸")], mode: DistractionMode(), seed: 7)
+        var logic = SessionHostLogic()
+        _ = logic.join(mia, protocolVersion: SessionProtocol.version, gameInProgress: false, maxPlayers: 10)
+        logic.apply(.ready, from: mia.id, to: &engine, now: 100)
+        let snapshot = logic.snapshot(engine: engine, hostName: "🦊🐙", mode: .distraction, revision: 3, revealLanded: false) { _ in nil }
+        let message = HostMessage.snapshot(snapshot)
+        let data = try #require(SessionCoding.encode(message))
+        #expect(SessionCoding.decode(HostMessage.self, from: data) == message)
+        #expect(SessionCoding.decode(HostMessage.self, from: Data("nonsense".utf8)) == nil)
+    }
+}
+
+struct SessionHostLogicTests {
+    let mia = Player(name: "Mia", emoji: "🦊")
+    let ben = Player(name: "Ben", emoji: "🐸")
+    let zoe = Player(name: "Zoe", emoji: "🐙")
+    let version = SessionProtocol.version
+
+    private func lobby(_ players: [Player]) -> SessionHostLogic {
+        var logic = SessionHostLogic()
+        for player in players {
+            _ = logic.join(player, protocolVersion: version, gameInProgress: false, maxPlayers: 10)
+        }
+        return logic
+    }
+
+    // MARK: - Roster
+
+    @Test func playersJoinTheLobby() {
+        var logic = SessionHostLogic()
+        #expect(logic.join(mia, protocolVersion: version, gameInProgress: false, maxPlayers: 10) == .joined)
+        #expect(logic.join(ben, protocolVersion: version, gameInProgress: false, maxPlayers: 10) == .joined)
+        #expect(logic.connectedPlayers == [mia, ben])
+    }
+
+    @Test func lobbyCanBeFull() {
+        var logic = lobby([mia, ben])
+        #expect(logic.join(zoe, protocolVersion: version, gameInProgress: false, maxPlayers: 2) == .rejected(.full))
+    }
+
+    @Test func wrongVersionIsRejected() {
+        var logic = SessionHostLogic()
+        #expect(logic.join(mia, protocolVersion: version + 1, gameInProgress: false, maxPlayers: 10) == .rejected(.incompatibleVersion))
+        #expect(logic.players.isEmpty)
+    }
+
+    @Test func newPlayersCannotJoinAGameInProgress() {
+        var logic = lobby([mia, ben])
+        #expect(logic.join(zoe, protocolVersion: version, gameInProgress: true, maxPlayers: 10) == .rejected(.gameInProgress))
+    }
+
+    @Test func leavingTheLobbyRemovesThePlayer() {
+        var logic = lobby([mia, ben])
+        logic.disconnect(mia.id, gameInProgress: false)
+        #expect(logic.players == [ben])
+    }
+
+    @Test func droppingOutMidGameKeepsTheSeat() {
+        var logic = lobby([mia, ben])
+        logic.disconnect(mia.id, gameInProgress: true)
+        #expect(logic.players == [mia, ben])
+        #expect(logic.connectedPlayers == [ben])
+        #expect(logic.join(mia, protocolVersion: version, gameInProgress: true, maxPlayers: 10) == .rejoined)
+        #expect(logic.connectedPlayers == [mia, ben])
+    }
+
+    @Test func backInTheLobbyTheMissingAreDropped() {
+        var logic = lobby([mia, ben])
+        logic.disconnect(mia.id, gameInProgress: true)
+        logic.dropDisconnected()
+        #expect(logic.players == [ben])
+    }
+
+    // MARK: - Turns
+
+    @Test func playerPlaysATurnFromTheirPhone() throws {
+        var logic = lobby([mia, ben])
+        var engine = try GameEngine(players: [mia, ben])
+        logic.apply(.ready, from: mia.id, to: &engine, now: 100)
+        #expect(engine.phase == .ready)
+        logic.apply(.started, from: mia.id, to: &engine, now: 100.2)
+        #expect(engine.phase == .running)
+        // Elapsed time comes from the phone, so network delay does not count.
+        let result = try #require(logic.apply(.stopped(elapsed: 10.03), from: mia.id, to: &engine, now: 111))
+        #expect(abs(result.stopped - 10.03) < 0.000_1)
+        #expect(result.outcome == .scored(.deadOn))
+        #expect(engine.phase == .reveal)
+    }
+
+    @Test func eventsFromSomeoneElseAreIgnored() throws {
+        var logic = lobby([mia, ben])
+        var engine = try GameEngine(players: [mia, ben])
+        logic.apply(.ready, from: ben.id, to: &engine, now: 100)
+        #expect(engine.phase == .handoff)
+    }
+
+    @Test func showdownWaitsForBothPlayersToBeReady() throws {
+        var logic = lobby([mia, ben])
+        var engine = try GameEngine(players: [mia, ben], mode: ShowdownMode())
+        logic.apply(.ready, from: mia.id, to: &engine, now: 100)
+        #expect(engine.phase == .handoff)
+        let waiting = logic.snapshot(engine: engine, hostName: "", mode: .showdown, revision: 1, revealLanded: false) { _ in nil }
+        #expect(waiting.readyPlayerIDs == [mia.id])
+        logic.apply(.ready, from: ben.id, to: &engine, now: 101)
+        #expect(engine.phase == .ready)
+    }
+
+    @Test func voidReplaysTheTurnAndCountsTheAttempt() throws {
+        var logic = lobby([mia, ben])
+        var engine = try GameEngine(players: [mia, ben])
+        logic.apply(.ready, from: mia.id, to: &engine, now: 100)
+        logic.apply(.started, from: mia.id, to: &engine, now: 101)
+        logic.apply(.voided, from: mia.id, to: &engine, now: 102)
+        #expect(engine.phase == .handoff)
+        #expect(logic.turnAttempt == 1)
+        // A late void after the turn is over changes nothing.
+        logic.apply(.voided, from: mia.id, to: &engine, now: 103)
+        #expect(logic.turnAttempt == 1)
+    }
+
+    @Test func forfeitRecordsATimeout() throws {
+        var logic = lobby([mia, ben])
+        var engine = try GameEngine(players: [mia, ben])
+        logic.disconnect(mia.id, gameInProgress: true)
+        #expect(logic.missingTurnPlayers(in: engine) == [mia.id])
+        let result = try #require(logic.forfeit(mia.id, engine: &engine, now: 200))
+        #expect(result.outcome == .timeout)
+        #expect(engine.phase == .reveal)
+        #expect(logic.missingTurnPlayers(in: engine).isEmpty)
+    }
+
+    // MARK: - Snapshot
+
+    @Test func resultsStayHiddenUntilTheRevealLands() throws {
+        var logic = lobby([mia, ben])
+        var engine = try GameEngine(players: [mia, ben])
+        logic.apply(.ready, from: mia.id, to: &engine, now: 100)
+        logic.apply(.started, from: mia.id, to: &engine, now: 100)
+        logic.apply(.stopped(elapsed: 9.8), from: mia.id, to: &engine, now: 110)
+        let spinning = logic.snapshot(engine: engine, hostName: "", mode: .classic, revision: 1, revealLanded: false) { _ in nil }
+        #expect(spinning.stage == .reveal)
+        #expect(spinning.results.isEmpty)
+        let landed = logic.snapshot(engine: engine, hostName: "", mode: .classic, revision: 2, revealLanded: true) { _ in "Nice" }
+        let result = try #require(landed.results.first)
+        #expect(result.playerID == mia.id)
+        #expect(abs(result.deviation - -0.2) < 0.000_1)
+        #expect(result.reaction == "Nice")
+    }
+
+    @Test func lobbySnapshotListsThePlayers() {
+        var logic = lobby([mia, ben])
+        logic.disconnect(ben.id, gameInProgress: true)
+        let snapshot = logic.snapshot(engine: nil, hostName: "🦊🐙", mode: .teams, revision: 1, revealLanded: false) { _ in nil }
+        #expect(snapshot.stage == .lobby)
+        #expect(snapshot.mode == .teams)
+        #expect(snapshot.players.map(\.isConnected) == [true, false])
+    }
+}
+
+struct ClientTurnTests {
+    let mia = Player(name: "Mia", emoji: "🦊")
+    let ben = Player(name: "Ben", emoji: "🐸")
+
+    private func snapshot(
+        _ stage: SessionSnapshot.Stage,
+        turn: [Player.ID],
+        turnID: UUID? = UUID(),
+        attempt: Int = 0,
+        ready: [Player.ID] = [],
+        finished: [Player.ID] = [],
+        landed: Bool = false,
+        results: [SessionResult] = []
+    ) -> SessionSnapshot {
+        SessionSnapshot(
+            revision: 1, hostName: "", mode: .classic, stage: stage, round: 1, rounds: 3,
+            players: [SessionPlayer(player: mia, isConnected: true), SessionPlayer(player: ben, isConnected: true)],
+            turnID: turnID, turnAttempt: attempt, turnPlayerIDs: turn, target: 10, effect: .dark,
+            readyPlayerIDs: ready, startedPlayerIDs: [], finishedPlayerIDs: finished,
+            revealLanded: landed, results: results, standings: [], winnerID: nil, winningTeam: nil
+        )
+    }
+
+    @Test func noSnapshotMeansConnecting() {
+        #expect(ClientTurn().screen(for: nil, me: mia.id) == .connecting)
+    }
+
+    @Test func fullTurnOnThePhone() {
+        var turn = ClientTurn()
+        let id = UUID()
+        let handoff = snapshot(.handoff, turn: [mia.id], turnID: id)
+        turn.sync(with: handoff)
+        #expect(turn.screen(for: handoff, me: mia.id) == .yourTurn)
+        #expect(turn.markReady())
+        #expect(!turn.markReady())
+
+        let ready = snapshot(.ready, turn: [mia.id], turnID: id, ready: [mia.id])
+        turn.sync(with: ready)
+        #expect(turn.screen(for: ready, me: mia.id) == .start(target: 10))
+        #expect(turn.start(at: 50))
+        #expect(!turn.start(at: 51))
+        #expect(turn.screen(for: ready, me: mia.id) == .blind(startedAt: 50))
+
+        let elapsed = turn.stop(at: 59.9)
+        #expect(elapsed.map { abs($0 - 9.9) < 0.000_1 } == true)
+        #expect(turn.stop(at: 61) == nil)
+        #expect(turn.screen(for: ready, me: mia.id) == .stopped)
+
+        let spinning = snapshot(.reveal, turn: [mia.id], turnID: id)
+        #expect(turn.screen(for: spinning, me: mia.id) == .drumroll)
+        let result = SessionResult(playerID: mia.id, stopped: 9.9, deviation: -0.1, outcome: .scored(.sharp), points: 70, reaction: nil)
+        let landed = snapshot(.reveal, turn: [mia.id], turnID: id, landed: true, results: [result])
+        #expect(turn.screen(for: landed, me: mia.id) == .result(result))
+    }
+
+    @Test func othersWatchTheTurn() {
+        let turn = ClientTurn()
+        let handoff = snapshot(.handoff, turn: [mia.id])
+        #expect(turn.screen(for: handoff, me: ben.id) == .watching(playerIDs: [mia.id]))
+    }
+
+    @Test func aNewTurnOrAReplayResetsThePhone() {
+        var turn = ClientTurn()
+        let id = UUID()
+        let running = snapshot(.running, turn: [mia.id], turnID: id)
+        turn.sync(with: running)
+        _ = turn.markReady()
+        _ = turn.start(at: 10)
+        #expect(turn.isRunning)
+
+        let replay = snapshot(.handoff, turn: [mia.id], turnID: id, attempt: 1)
+        turn.sync(with: replay)
+        #expect(!turn.isRunning)
+        #expect(turn.screen(for: replay, me: mia.id) == .yourTurn)
+    }
+
+    @Test func showdownWaitsForTheOpponent() {
+        var turn = ClientTurn()
+        let handoff = snapshot(.handoff, turn: [mia.id, ben.id])
+        turn.sync(with: handoff)
+        _ = turn.markReady()
+        #expect(turn.screen(for: handoff, me: mia.id) == .waitingForOpponent)
+    }
+
+    @Test func aForfeitedTurnShowsAsStopped() {
+        let turn = ClientTurn()
+        let running = snapshot(.running, turn: [mia.id, ben.id], finished: [mia.id])
+        #expect(turn.screen(for: running, me: mia.id) == .stopped)
+    }
+}
