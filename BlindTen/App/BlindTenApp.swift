@@ -54,7 +54,11 @@ struct RootView: View {
     var body: some View {
         ZStack {
             Theme.background.ignoresSafeArea()
-            if let engine = state.engine {
+            if let host = state.sessionHost {
+                HostSessionView(host: host)
+            } else if let client = state.sessionClient, client.isInSession {
+                ClientSessionView(client: client)
+            } else if let engine = state.engine {
                 GameView(engine: engine)
             } else {
                 NavigationStack {

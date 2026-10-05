@@ -2,6 +2,13 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_blindten._tcp</string>
+		<string>_blindten._udp</string>
+	</array>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Blind Ten connects to nearby iPhones so everyone can play a session on their own phone.</string>
 	<key>UILaunchScreen</key>
 	<dict>
 		<key>UIColorName</key>

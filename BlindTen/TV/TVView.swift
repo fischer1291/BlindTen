@@ -11,6 +11,8 @@ struct TVView: View {
             Color.black.ignoresSafeArea()
             if let engine = state.engine {
                 TVGameView(engine: engine)
+            } else if let host = state.sessionHost {
+                SessionLobbyBoard(host: host)
             } else {
                 TVIdleView()
             }
@@ -44,10 +46,21 @@ private struct TVGameView: View {
             HStack(spacing: 80) {
                 VStack(spacing: 24) {
                     roundLine
-                    Text("Pass the phone to")
-                        .font(.system(size: 48, weight: .semibold, design: .rounded))
-                        .foregroundStyle(Theme.secondaryText)
+                    Group {
+                        if state.sessionHost != nil {
+                            Text("Up now")
+                        } else {
+                            Text("Pass the phone to")
+                        }
+                    }
+                    .font(.system(size: 48, weight: .semibold, design: .rounded))
+                    .foregroundStyle(Theme.secondaryText)
                     playersLine(size: 120)
+                    if state.sessionHost != nil {
+                        Text("Get ready on your phone")
+                            .font(.system(size: 40, weight: .bold, design: .rounded))
+                            .foregroundStyle(Theme.accent)
+                    }
                 }
                 .frame(maxWidth: .infinity)
                 if !engine.results.isEmpty {
@@ -90,7 +103,7 @@ private struct TVGameView: View {
                     .padding(32)
                     .background(Theme.accent, in: RoundedRectangle(cornerRadius: 32))
                 }
-                TVLeaderboard(engine: engine, standings: engine.standings(), highlighted: engine.roundLoser(engine.round)?.id)
+                TVLeaderboard(engine: engine, standings: engine.standings(round: engine.round), highlighted: engine.roundLoser(engine.round)?.id)
                     .frame(maxWidth: 1100)
             }
             .padding(60)

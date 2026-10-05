@@ -1,0 +1,18 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "NSLocalNetworkUsageDescription" : {
+      "comment" : "Permission prompt for finding nearby iPhones in a local session.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blind Ten connects to nearby iPhones so everyone can play a session on their own phone."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

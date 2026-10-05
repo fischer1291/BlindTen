@@ -22,6 +22,23 @@ struct HomeView: View {
                 }
                 .buttonStyle(.primary)
 
+                VStack(spacing: 12) {
+                    Button {
+                        state.hostSession()
+                    } label: {
+                        Label("Host a session", systemImage: "tv")
+                    }
+                    NavigationLink {
+                        JoinSessionView()
+                    } label: {
+                        Label("Join a session", systemImage: "iphone.radiowaves.left.and.right")
+                    }
+                }
+                .buttonStyle(.secondary)
+                Text("Everyone plays on their own iPhone; the host's screen shows the game on the TV.")
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(Theme.secondaryText)
+
                 Text("Modes")
                     .font(.title2.weight(.heavy))
                     .foregroundStyle(Theme.primaryText)
