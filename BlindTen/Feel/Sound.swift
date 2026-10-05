@@ -18,6 +18,11 @@ final class SoundPlayer {
         case drumroll
         case cymbal
         case trombone
+        case beep1
+        case beep2
+        case beep3
+
+        static let beeps: [Effect] = [.beep1, .beep2, .beep3]
     }
 
     private var players: [Effect: AVAudioPlayer] = [:]

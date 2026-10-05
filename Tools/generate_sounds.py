@@ -2,7 +2,7 @@
 """Generates the placeholder sound effects in BlindTen/Resources/Sounds.
 
 Pure standard library, deterministic. Replace the output with produced
-sounds before launch; keep the file names (drumroll, cymbal, trombone).
+sounds before launch; keep the file names (drumroll, cymbal, trombone, beep1-3).
 
     python3 Tools/generate_sounds.py
 """
@@ -91,8 +91,22 @@ def trombone(rng, seconds=2.6):
     return (out + [0.0] * total)[:total]
 
 
+def beep(freq, seconds=0.14):
+    """Short electronic blip for Distraction mode."""
+    n = int(seconds * RATE)
+    out = []
+    for i in range(n):
+        t = i / RATE
+        env = min(1.0, t / 0.004) * math.exp(-t / 0.05)
+        out.append(env * (math.sin(2 * math.pi * freq * t) + 0.3 * math.sin(2 * math.pi * 2 * freq * t)))
+    return out
+
+
 if __name__ == "__main__":
     write("drumroll", drumroll(random.Random(1)))
     write("cymbal", cymbal(random.Random(2)))
     write("trombone", trombone(random.Random(3)))
+    write("beep1", beep(660))
+    write("beep2", beep(990))
+    write("beep3", beep(1480))
     print("Wrote", ", ".join(sorted(p.name for p in OUT.glob("*.wav"))))
