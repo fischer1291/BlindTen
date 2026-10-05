@@ -329,7 +329,8 @@ struct HostPlaysTooTests {
         let started = hostTurn.start(at: 20)
         #expect(started)
         logic.apply(.started, from: host.id, to: &engine, now: 20)
-        let elapsed = try #require(hostTurn.stop(at: 30.01))
+        let stopped = hostTurn.stop(at: 30.01)
+        let elapsed = try #require(stopped)
         let result = logic.apply(.stopped(elapsed: elapsed), from: host.id, to: &engine, now: 31)
         #expect(result?.playerID == host.id)
 
