@@ -19,6 +19,22 @@ struct TurnResult: Identifiable, Hashable, Sendable {
     var displayedStopped: TimeInterval { target + displayedDeviation }
 }
 
+/// Whether a turn stopped before or after the target (SPEC.md: blue = too early, red = too late).
+enum TimingDirection: Sendable {
+    case early
+    case late
+    case exact
+}
+
+extension TurnResult {
+    /// Based on the displayed two-decimal deviation, so "+0.00" counts as exact.
+    var direction: TimingDirection {
+        if displayedDeviation < 0 { return .early }
+        if displayedDeviation > 0 { return .late }
+        return .exact
+    }
+}
+
 /// One row of a leaderboard.
 struct Standing: Identifiable, Hashable, Sendable {
     let player: Player
