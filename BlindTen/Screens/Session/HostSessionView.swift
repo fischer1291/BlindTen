@@ -1,15 +1,120 @@
 import SwiftUI
 
 /// The host phone: the main screen (mirrored to the TV with AirPlay, or the
-/// TV scene with the Party Pack) plus the host's controls.
+/// TV scene with the Party Pack) plus the host's controls. When the host
+/// plays too, the phone switches to START and the blind phase for the
+/// host's own turns and back to the main screen right after.
 struct HostSessionView: View {
     @Environment(AppState.self) private var state
+    @Environment(\.scenePhase) private var scenePhase
     let host: SessionHost
 
+    @AppStorage(SessionIdentity.hostPlaysKey) private var hostPlays = true
+    @AppStorage(SessionIdentity.nameKey) private var name = ""
+    @AppStorage(SessionIdentity.emojiKey) private var emoji = Avatar.pool[0]
     @State private var showsPaywall = false
     @State private var confirmsEnd = false
 
+    /// The host player's screen while it needs the host's hands, else nil.
+    private var hostTurnScreen: ClientTurn.Screen? {
+        guard let screen = host.localScreen, screen.needsPlayer else { return nil }
+        return screen
+    }
+
     var body: some View {
+        Group {
+            if let player = host.localPlayer, let screen = hostTurnScreen {
+                hostTurn(player, screen)
+            } else {
+                mainScreen
+            }
+        }
+        .background(Theme.background.ignoresSafeArea())
+        .foregroundStyle(Theme.primaryText)
+        .onAppear {
+            UIApplication.shared.isIdleTimerDisabled = true
+            syncHostPlayer()
+        }
+        .onDisappear {
+            UIApplication.shared.isIdleTimerDisabled = false
+            ScreenBrightness.restore()
+        }
+        .onChange(of: hostPlays) { syncHostPlayer() }
+        .onChange(of: name) { syncHostPlayer() }
+        .onChange(of: emoji) { syncHostPlayer() }
+        .onChange(of: hostTurnScreen == nil) { _, isMainScreen in
+            if isMainScreen {
+                ScreenBrightness.restore()
+            }
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            // SPEC.md: leaving the app mid-turn voids the turn and it is replayed.
+            if newPhase != .active {
+                host.localVoidIfRunning()
+            }
+        }
+        .sheet(isPresented: $showsPaywall) {
+            PaywallView(mode: .liarsClock)
+        }
+        .confirmationDialog("End the session for everyone?", isPresented: $confirmsEnd, titleVisibility: .visible) {
+            Button("End session", role: .destructive) {
+                state.endHostedSession()
+            }
+        }
+    }
+
+    private func syncHostPlayer() {
+        guard !host.isGameRunning else { return }
+        host.setLocalPlayer(hostPlays ? SessionIdentity.player(name: name, emoji: emoji) : nil)
+    }
+
+    // MARK: - Host's own turn
+
+    @ViewBuilder
+    private func hostTurn(_ player: Player, _ screen: ClientTurn.Screen) -> some View {
+        switch screen {
+        case .yourTurn:
+            SessionYourTurnView(player: player, opponent: opponent(of: player)) {
+                host.localReady()
+            }
+        case .waitingForOpponent:
+            VStack(spacing: 18) {
+                Text("Ready!")
+                    .font(Theme.display(48))
+                Text("Waiting for your opponent…")
+                    .font(.title3.weight(.semibold))
+                    .foregroundStyle(Theme.secondaryText)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        case .start(let target):
+            SessionStartView(target: target) { timestamp in
+                host.localStart(at: timestamp)
+                state.feel.touch()
+            }
+        case .blind(let startedAt):
+            SessionBlindView(
+                effect: host.snapshot?.effect ?? .dark,
+                target: host.snapshot?.target ?? GameEngine.classicTarget,
+                startedAt: startedAt
+            ) { timestamp in
+                if host.localStop(at: timestamp) {
+                    state.feel.touch()
+                }
+            }
+        case .connecting, .lobby, .stopped, .drumroll, .result, .watching, .roundResults, .finished:
+            mainScreen
+        }
+    }
+
+    private func opponent(of player: Player) -> Player? {
+        guard let snapshot = host.snapshot, snapshot.turnPlayerIDs.count == 2 else { return nil }
+        guard let id = snapshot.turnPlayerIDs.first(where: { $0 != player.id }) else { return nil }
+        return snapshot.player(id)
+    }
+
+    // MARK: - Main screen
+
+    private var mainScreen: some View {
         GeometryReader { proxy in
             let isWide = proxy.size.width > proxy.size.height
             Group {
@@ -27,18 +132,6 @@ struct HostSessionView: View {
                 }
             }
             .padding(16)
-        }
-        .background(Theme.background.ignoresSafeArea())
-        .foregroundStyle(Theme.primaryText)
-        .onAppear { UIApplication.shared.isIdleTimerDisabled = true }
-        .onDisappear { UIApplication.shared.isIdleTimerDisabled = false }
-        .sheet(isPresented: $showsPaywall) {
-            PaywallView(mode: .liarsClock)
-        }
-        .confirmationDialog("End the session for everyone?", isPresented: $confirmsEnd, titleVisibility: .visible) {
-            Button("End session", role: .destructive) {
-                state.endHostedSession()
-            }
         }
     }
 
@@ -111,6 +204,8 @@ struct HostSessionView: View {
                 .font(.headline)
         }
 
+        hostPlayerSettings
+
         Button {
             host.startGame()
         } label: {
@@ -122,6 +217,45 @@ struct HostSessionView: View {
             Text("Waiting for at least 2 players…")
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(Theme.secondaryText)
+        }
+    }
+
+    /// "I'm playing too" with the host's name and avatar.
+    @ViewBuilder
+    private var hostPlayerSettings: some View {
+        Toggle("I'm playing too", isOn: $hostPlays)
+            .font(.headline)
+        if hostPlays {
+            TextField("Your name", text: $name)
+                .font(.title3.weight(.bold))
+                .textInputAutocapitalization(.words)
+                .submitLabel(.done)
+                .padding(12)
+                .background(Theme.surface, in: RoundedRectangle(cornerRadius: 14))
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(Avatar.pool, id: \.self) { option in
+                        Button {
+                            emoji = option
+                        } label: {
+                            Text(verbatim: option)
+                                .font(.system(size: 28))
+                                .frame(width: 48, height: 48)
+                                .background(
+                                    option == emoji ? Theme.accent : Theme.surface,
+                                    in: RoundedRectangle(cornerRadius: 12)
+                                )
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityAddTraits(option == emoji ? .isSelected : [])
+                    }
+                }
+            }
+            if host.localPlayer == nil {
+                Text("Enter your name to join your own game.")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(Theme.secondaryText)
+            }
         }
     }
 

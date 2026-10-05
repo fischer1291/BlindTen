@@ -14,6 +14,12 @@ final class SessionHost {
     private(set) var logic = SessionHostLogic()
     /// False while the reveal's drumroll spins.
     private(set) var isRevealLanded = false
+    /// The host's own player when the host plays too, on this phone.
+    private(set) var localPlayer: Player?
+    /// The host player's turn state, like a joined phone's.
+    private(set) var localTurn = ClientTurn()
+    /// The state last sent to every phone.
+    private(set) var snapshot: SessionSnapshot?
 
     private unowned let state: AppState
     @ObservationIgnored private var transport: PeerTransport?
@@ -38,6 +44,11 @@ final class SessionHost {
     var canStart: Bool {
         players.count >= GameEngine.minPlayers
             && PartyPack.canPlay(state.selectedMode, unlocked: state.isPartyPackUnlocked)
+    }
+
+    /// What the host player's turn needs right now, or nil if the host only hosts.
+    var localScreen: ClientTurn.Screen? {
+        localPlayer.map { localTurn.screen(for: snapshot, me: $0.id) }
     }
 
     /// Players of the current turn whose phone dropped out.
@@ -116,6 +127,53 @@ final class SessionHost {
         broadcast()
     }
 
+    // MARK: - Host plays too
+
+    /// Adds, renames or removes the host's own player. Lobby only.
+    func setLocalPlayer(_ player: Player?) {
+        guard !isGameRunning, player != localPlayer else { return }
+        if let old = localPlayer, old.id != player?.id {
+            logic.disconnect(old.id, gameInProgress: false)
+        }
+        localPlayer = nil
+        if let player {
+            let result = logic.join(
+                player,
+                protocolVersion: SessionProtocol.version,
+                gameInProgress: false,
+                maxPlayers: state.maxPlayers
+            )
+            if result == .joined || result == .rejoined {
+                localPlayer = player
+            }
+        }
+        broadcast()
+    }
+
+    func localReady() {
+        guard let id = localPlayer?.id, localTurn.markReady() else { return }
+        apply(.ready, from: id)
+    }
+
+    func localStart(at timestamp: TimeInterval) {
+        guard let id = localPlayer?.id, localTurn.start(at: timestamp) else { return }
+        apply(.started, from: id, now: timestamp)
+    }
+
+    /// Returns true if this touch ended the host player's turn.
+    @discardableResult
+    func localStop(at timestamp: TimeInterval) -> Bool {
+        guard let id = localPlayer?.id, let elapsed = localTurn.stop(at: timestamp) else { return false }
+        apply(.stopped(elapsed: elapsed), from: id)
+        return true
+    }
+
+    /// The host app left the foreground mid-turn: replay the turn.
+    func localVoidIfRunning() {
+        guard let id = localPlayer?.id, localTurn.isRunning else { return }
+        apply(.voided, from: id)
+    }
+
     // MARK: - Network
 
     private func handle(_ event: PeerTransport.Event) {
@@ -143,8 +201,14 @@ final class SessionHost {
             }
             return
         }
-        guard let id = peers[peer], var engine = state.engine else { return }
-        let result = logic.apply(message, from: id, to: &engine, now: ProcessInfo.processInfo.systemUptime)
+        guard let id = peers[peer] else { return }
+        apply(message, from: id)
+    }
+
+    /// A player's turn event, from their phone or from the host's own turn.
+    private func apply(_ message: ClientMessage, from id: Player.ID, now: TimeInterval = ProcessInfo.processInfo.systemUptime) {
+        guard var engine = state.engine else { return }
+        let result = logic.apply(message, from: id, to: &engine, now: now)
         state.engine = engine
         if let result {
             state.assignReaction(to: result)
@@ -168,6 +232,8 @@ final class SessionHost {
         ) { [state] result in
             state.reactionText(for: result)
         }
+        localTurn.sync(with: snapshot)
+        self.snapshot = snapshot
         send(.snapshot(snapshot), to: Array(peers.keys))
     }
 

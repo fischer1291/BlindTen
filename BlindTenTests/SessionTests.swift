@@ -282,3 +282,59 @@ struct ClientTurnTests {
         #expect(turn.screen(for: running, me: mia.id) == .stopped)
     }
 }
+
+struct HostPlaysTooTests {
+    @Test func onlyTurnScreensTakeOverTheHostPhone() {
+        let result = SessionResult(playerID: UUID(), stopped: 10, deviation: 0, outcome: .scored(.deadOn), points: 10, reaction: nil)
+        let needsPlayer: [ClientTurn.Screen] = [.yourTurn, .waitingForOpponent, .start(target: 10), .blind(startedAt: 1)]
+        let mainScreen: [ClientTurn.Screen] = [
+            .connecting, .lobby, .stopped, .drumroll, .result(result), .watching(playerIDs: []), .roundResults, .finished,
+        ]
+        #expect(needsPlayer.allSatisfy(\.needsPlayer))
+        #expect(!mainScreen.contains(where: \.needsPlayer))
+    }
+
+    @Test func identityKeepsItsIDAndNeedsAName() throws {
+        let suite = "SessionIdentityTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+
+        #expect(SessionIdentity.player(name: "   ", emoji: "🦊", defaults: defaults) == nil)
+        let first = try #require(SessionIdentity.player(name: " Mia ", emoji: "🦊", defaults: defaults))
+        let second = try #require(SessionIdentity.player(name: "Mia the Great", emoji: "🐸", defaults: defaults))
+        #expect(first.name == "Mia")
+        #expect(first.id == second.id)
+        let long = try #require(SessionIdentity.player(name: String(repeating: "x", count: 40), emoji: "🦊", defaults: defaults))
+        #expect(long.name.count == 24)
+    }
+
+    @Test func hostAndGuestPlayTheSameGame() throws {
+        let host = Player(name: "Host", emoji: "🦊")
+        let guest = Player(name: "Guest", emoji: "🐸")
+        var logic = SessionHostLogic()
+        let hostJoined = logic.join(host, protocolVersion: SessionProtocol.version, gameInProgress: false, maxPlayers: 10)
+        let guestJoined = logic.join(guest, protocolVersion: SessionProtocol.version, gameInProgress: false, maxPlayers: 10)
+        #expect(hostJoined == .joined)
+        #expect(guestJoined == .joined)
+
+        var engine = try GameEngine(players: logic.connectedPlayers, rounds: 1)
+        var hostTurn = ClientTurn()
+        var snapshot = logic.snapshot(engine: engine, hostName: "", mode: .classic, revision: 1, revealLanded: false) { _ in nil }
+        hostTurn.sync(with: snapshot)
+        #expect(hostTurn.screen(for: snapshot, me: host.id) == .yourTurn)
+
+        let ready = hostTurn.markReady()
+        #expect(ready)
+        logic.apply(.ready, from: host.id, to: &engine, now: 10)
+        let started = hostTurn.start(at: 20)
+        #expect(started)
+        logic.apply(.started, from: host.id, to: &engine, now: 20)
+        let elapsed = try #require(hostTurn.stop(at: 30.01))
+        let result = logic.apply(.stopped(elapsed: elapsed), from: host.id, to: &engine, now: 31)
+        #expect(result?.playerID == host.id)
+
+        snapshot = logic.snapshot(engine: engine, hostName: "", mode: .classic, revision: 2, revealLanded: false) { _ in nil }
+        #expect(hostTurn.screen(for: snapshot, me: host.id) == .drumroll)
+        #expect(!(hostTurn.screen(for: snapshot, me: host.id).needsPlayer))
+    }
+}

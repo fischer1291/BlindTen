@@ -33,6 +33,12 @@ struct ClientSessionView: View {
                 UIApplication.shared.isIdleTimerDisabled = false
                 ScreenBrightness.restore()
             }
+            .onChange(of: client.screen.needsPlayer) { _, needsPlayer in
+                // Full brightness only for START and the blind phase.
+                if !needsPlayer {
+                    ScreenBrightness.restore()
+                }
+            }
             .onChange(of: scenePhase) { _, newPhase in
                 // SPEC.md: leaving the app mid-turn voids the turn and it is replayed.
                 if newPhase != .active {
@@ -70,12 +76,12 @@ struct ClientSessionView: View {
                 spotlight: turnPlayers
             )
         case .start(let target):
-            ClientStartView(target: target) { timestamp in
+            SessionStartView(target: target) { timestamp in
                 state.feel.touch()
                 client.start(at: timestamp)
             }
         case .blind(let startedAt):
-            ClientBlindView(
+            SessionBlindView(
                 effect: snapshot?.effect ?? .dark,
                 target: snapshot?.target ?? GameEngine.classicTarget,
                 startedAt: startedAt
@@ -116,30 +122,12 @@ struct ClientSessionView: View {
     }
 
     private var yourTurn: some View {
-        Button {
+        SessionYourTurnView(
+            player: client.player,
+            opponent: turnPlayers.count == 2 ? turnPlayers.first { $0.id != client.player.id } : nil
+        ) {
             client.ready()
-        } label: {
-            VStack(spacing: 20) {
-                Text(verbatim: client.player.emoji)
-                    .font(.system(size: 96))
-                Text("Your turn!")
-                    .font(Theme.display(56))
-                if turnPlayers.count == 2, let opponent = turnPlayers.first(where: { $0.id != client.player.id }) {
-                    Text("Showdown against \(opponent.name)")
-                        .font(.title2.weight(.heavy))
-                }
-                Text("Tap when ready")
-                    .font(.title2.weight(.bold))
-                    .opacity(0.7)
-            }
-            .foregroundStyle(Theme.onAccent)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Theme.accent, in: RoundedRectangle(cornerRadius: 40))
-            .contentShape(RoundedRectangle(cornerRadius: 40))
         }
-        .buttonStyle(.plain)
-        .padding(24)
-        .sensoryFeedback(.impact(weight: .heavy), trigger: client.screen == .yourTurn)
     }
 
     /// The animated waiting screen: everyone's avatar drifts in the
@@ -184,8 +172,45 @@ struct ClientSessionView: View {
     }
 }
 
+/// "Your turn!" with a whole-screen tap-when-ready button. Shared by joined
+/// phones and the host when the host plays too.
+struct SessionYourTurnView: View {
+    let player: Player
+    /// The other duel player in Showdown.
+    let opponent: Player?
+    let onReady: () -> Void
+
+    var body: some View {
+        Button(action: onReady) {
+            VStack(spacing: 20) {
+                Text(verbatim: player.emoji)
+                    .font(.system(size: 96))
+                Text("Your turn!")
+                    .font(Theme.display(56))
+                if let opponent {
+                    Text("Showdown against \(opponent.name)")
+                        .font(.title2.weight(.heavy))
+                }
+                Text("Tap when ready")
+                    .font(.title2.weight(.bold))
+                    .opacity(0.7)
+            }
+            .foregroundStyle(Theme.onAccent)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Theme.accent, in: RoundedRectangle(cornerRadius: 40))
+            .contentShape(RoundedRectangle(cornerRadius: 40))
+        }
+        .buttonStyle(.plain)
+        .padding(24)
+        .onAppear {
+            // A strong buzz so the phone in a pocket says "you're up".
+            UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+        }
+    }
+}
+
 /// Target and a big START surface, measured with `UITouch.timestamp`.
-private struct ClientStartView: View {
+struct SessionStartView: View {
     @Environment(AppState.self) private var state
     let target: TimeInterval
     let onStart: (TimeInterval) -> Void
@@ -222,7 +247,7 @@ private struct ClientStartView: View {
 }
 
 /// The blind phase, plus a one-shot auto-stop at target × 3.
-private struct ClientBlindView: View {
+struct SessionBlindView: View {
     let effect: BlindEffect
     let target: TimeInterval
     let startedAt: TimeInterval

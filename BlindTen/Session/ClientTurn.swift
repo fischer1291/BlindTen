@@ -100,3 +100,41 @@ struct ClientTurn: Equatable, Sendable {
         }
     }
 }
+
+extension ClientTurn.Screen {
+    /// True while this player has to act on their phone: get ready, START,
+    /// the blind phase. The host phone shows its turn only then and the
+    /// main screen the rest of the time.
+    var needsPlayer: Bool {
+        switch self {
+        case .yourTurn, .waitingForOpponent, .start, .blind: true
+        case .connecting, .lobby, .stopped, .drumroll, .result, .watching, .roundResults, .finished: false
+        }
+    }
+}
+
+/// The player identity this phone uses in sessions, as host or guest. The ID
+/// stays the same so a dropped phone rejoins as the same player.
+enum SessionIdentity {
+    static let idKey = "session.playerID"
+    static let nameKey = "session.playerName"
+    static let emojiKey = "session.playerEmoji"
+    /// Whether the host also plays (on by default).
+    static let hostPlaysKey = "session.hostPlays"
+
+    static func playerID(defaults: UserDefaults = .standard) -> UUID {
+        if let stored = defaults.string(forKey: idKey), let id = UUID(uuidString: stored) {
+            return id
+        }
+        let id = UUID()
+        defaults.set(id.uuidString, forKey: idKey)
+        return id
+    }
+
+    /// Nil until a name is entered. Names are capped so they fit on the TV.
+    static func player(name: String, emoji: String, defaults: UserDefaults = .standard) -> Player? {
+        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+        return Player(id: playerID(defaults: defaults), name: String(trimmed.prefix(24)), emoji: emoji)
+    }
+}

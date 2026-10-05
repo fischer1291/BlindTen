@@ -4,9 +4,8 @@ import SwiftUI
 /// player ID are remembered, so a dropped phone rejoins as the same player.
 struct JoinSessionView: View {
     @Environment(AppState.self) private var state
-    @AppStorage("session.playerID") private var storedID = ""
-    @AppStorage("session.playerName") private var name = ""
-    @AppStorage("session.playerEmoji") private var emoji = Avatar.pool[0]
+    @AppStorage(SessionIdentity.nameKey) private var name = ""
+    @AppStorage(SessionIdentity.emojiKey) private var emoji = Avatar.pool[0]
     @FocusState private var nameFocused: Bool
 
     private var trimmedName: String {
@@ -55,7 +54,9 @@ struct JoinSessionView: View {
                 } else {
                     Button("Find sessions") {
                         nameFocused = false
-                        state.joinSession(as: player)
+                        if let player = SessionIdentity.player(name: name, emoji: emoji) {
+                            state.joinSession(as: player)
+                        }
                     }
                     .buttonStyle(.primary)
                     .disabled(trimmedName.isEmpty)
@@ -71,12 +72,6 @@ struct JoinSessionView: View {
                 state.leaveSession()
             }
         }
-    }
-
-    private var player: Player {
-        let id = UUID(uuidString: storedID) ?? UUID()
-        storedID = id.uuidString
-        return Player(id: id, name: String(trimmedName.prefix(24)), emoji: emoji)
     }
 
     @ViewBuilder
