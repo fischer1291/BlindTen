@@ -290,8 +290,10 @@ struct HostPlaysTooTests {
         let mainScreen: [ClientTurn.Screen] = [
             .connecting, .lobby, .stopped, .drumroll, .result(result), .watching(playerIDs: []), .roundResults, .finished,
         ]
-        #expect(needsPlayer.allSatisfy(\.needsPlayer))
-        #expect(!mainScreen.contains(where: \.needsPlayer))
+        let allNeedPlayer = needsPlayer.allSatisfy { $0.needsPlayer }
+        let anyMainNeedsPlayer = mainScreen.contains { $0.needsPlayer }
+        #expect(allNeedPlayer)
+        #expect(!anyMainNeedsPlayer)
     }
 
     @Test func identityKeepsItsIDAndNeedsAName() throws {
