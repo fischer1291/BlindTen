@@ -15,7 +15,7 @@
           "locale" : "en_US"
         }
       ],
-      "productID" : "com.leroyfischer.blindten.partypack",
+      "productID" : "com.leroyfischer.blindtengame.partypack",
       "referenceName" : "Party Pack",
       "type" : "NonConsumable"
     }

@@ -90,7 +90,7 @@ Primary: Games > Party (Info.plist already says party games). Secondary: Games >
 
 - Type: Non-Consumable
 - Reference name: `Party Pack`
-- Product ID: `com.leroyfischer.blindten.partypack` (the app derives it from the bundle ID)
+- Product ID: `com.leroyfischer.blindtengame.partypack` (the app derives it from the bundle ID)
 - Price: USD 2.99 tier
 - Display name (max 35): `Party Pack`
 - Description (max 55): `All modes, unlimited players, custom house rules`
