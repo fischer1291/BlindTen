@@ -2,13 +2,14 @@ import SwiftUI
 
 /// Drumroll with a slot-machine count-up, then the result lands: tier,
 /// deviation arrow, reaction line, haptics and sound. DEAD ON adds a flash,
-/// confetti and the player's name in huge type. Advances 3 s after landing
-/// or on tap; a tap during the drumroll skips straight to the result.
+/// confetti and the player's name in huge type. Showdown shows both players
+/// and the duel winner. Advances 3 s after landing or on tap; a tap during
+/// the drumroll skips straight to the result.
 struct RevealView: View {
     @Environment(AppState.self) private var state
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     let engine: GameEngine
-    let result: TurnResult
+    let results: [TurnResult]
 
     @State private var drumrollDuration = RevealTiming.randomDrumrollDuration()
     @State private var drumrollStart = ProcessInfo.processInfo.systemUptime
@@ -17,16 +18,14 @@ struct RevealView: View {
     @State private var flashOpacity = 0.0
     @State private var confettiStart: TimeInterval?
 
-    private var player: Player? { engine.player(withID: result.playerID) }
-    private var cue: LandingCue { LandingCue(result.outcome) }
-    private var isDeadOnMoment: Bool { landed && cue == .deadOn }
+    private var isDuel: Bool { results.count == 2 }
 
-    /// The number the count-up lands on.
-    private var finalValue: TimeInterval {
-        switch result.outcome {
-        case .scored: result.displayedStopped
-        case .misfire, .timeout: result.stopped
-        }
+    /// DEAD ON wins over everything; fail only when nobody did better.
+    private var cue: LandingCue {
+        let cues = results.map { LandingCue($0.outcome) }
+        if cues.contains(.deadOn) { return .deadOn }
+        if !cues.isEmpty, cues.allSatisfy({ $0 == .fail }) { return .fail }
+        return .neutral
     }
 
     var body: some View {
@@ -36,10 +35,16 @@ struct RevealView: View {
             Button {
                 handleTap()
             } label: {
-                content
-                    .padding(24)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .contentShape(Rectangle())
+                Group {
+                    if isDuel {
+                        duelContent
+                    } else if let result = results.first {
+                        singleContent(result)
+                    }
+                }
+                .padding(24)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
 
@@ -54,7 +59,7 @@ struct RevealView: View {
         }
         .overlay(alignment: .bottom) {
             if landed {
-                Button("Wrong player? Replay turn") {
+                Button(isDuel ? LocalizedStringKey("Wrong players? Replay duel") : LocalizedStringKey("Wrong player? Replay turn")) {
                     state.engine?.replayTurn()
                 }
                 .font(.headline)
@@ -65,7 +70,7 @@ struct RevealView: View {
                 .padding(.bottom, 24)
             }
         }
-        .task(id: RevealTaskID(resultID: result.id, skipped: skipRequested)) {
+        .task(id: RevealTaskID(resultID: results.first?.id, skipped: skipRequested)) {
             await runReveal()
         }
         .onDisappear {
@@ -73,116 +78,153 @@ struct RevealView: View {
         }
     }
 
-    // MARK: - Content
+    // MARK: - Single
 
-    private var content: some View {
-        VStack(spacing: 16) {
-            Text(player?.name ?? "")
+    private func singleContent(_ result: TurnResult) -> some View {
+        let isDeadOnMoment = landed && LandingCue(result.outcome) == .deadOn
+        return VStack(spacing: 16) {
+            Text(engine.player(withID: result.playerID)?.name ?? "")
                 .font(isDeadOnMoment ? Theme.display(76) : .title.weight(.bold))
                 .foregroundStyle(isDeadOnMoment ? Theme.accent : Theme.secondaryText)
                 .multilineTextAlignment(.center)
                 .lineLimit(2)
                 .minimumScaleFactor(0.4)
 
-            number
+            CountUpNumber(value: shownValue(for: result), size: 96, isLanded: landed)
 
             if landed {
-                verdict
-                    .transition(.scale(scale: 0.6).combined(with: .opacity))
+                VStack(spacing: 16) {
+                    verdict(for: result, compact: false)
+                    reaction(for: result)
+                    Text("+\(result.points) points")
+                        .font(.title2.weight(.heavy))
+                        .foregroundStyle(Theme.secondaryText)
+                }
+                .transition(.scale(scale: 0.6).combined(with: .opacity))
             }
         }
         .animation(.spring(response: 0.35, dampingFraction: 0.6), value: landed)
     }
 
-    private var number: some View {
-        TimelineView(.animation(minimumInterval: nil, paused: landed)) { _ in
-            Group {
-                if let value = shownValue() {
-                    Text("\(TimeFormat.seconds(value)) s")
-                } else {
-                    Text(verbatim: "?")
-                }
+    // MARK: - Duel
+
+    private var duelContent: some View {
+        let winner = GameEngine.duelWinner(of: results)
+        return VStack(spacing: 20) {
+            Text("Showdown")
+                .font(.title2.weight(.heavy))
+                .foregroundStyle(Theme.accent)
+            ForEach(results) { result in
+                duelRow(result, isWinner: landed && result.playerID == winner)
             }
-            .font(Theme.display(96))
-            .monospacedDigit()
-            .foregroundStyle(Theme.primaryText)
-            .lineLimit(1)
-            .minimumScaleFactor(0.4)
-            .scaleEffect(landed ? 1.0 : 0.9)
+            if landed {
+                Group {
+                    if let winner, let name = engine.player(withID: winner)?.name {
+                        Text("\(name) wins the duel!")
+                    } else {
+                        Text("It's a tie!")
+                    }
+                }
+                .font(Theme.display(40))
+                .foregroundStyle(Theme.accent)
+                .multilineTextAlignment(.center)
+                .minimumScaleFactor(0.5)
+                .transition(.scale(scale: 0.6).combined(with: .opacity))
+            }
+        }
+        .animation(.spring(response: 0.35, dampingFraction: 0.6), value: landed)
+    }
+
+    private func duelRow(_ result: TurnResult, isWinner: Bool) -> some View {
+        VStack(spacing: 8) {
+            HStack {
+                Text(verbatim: "\(engine.player(withID: result.playerID)?.emoji ?? "") \(engine.player(withID: result.playerID)?.name ?? "")")
+                    .font(.title2.weight(.heavy))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
+                Spacer()
+                CountUpNumber(value: shownValue(for: result), size: 48, isLanded: landed)
+            }
+            if landed {
+                HStack {
+                    verdict(for: result, compact: true)
+                    Spacer()
+                    Text("+\(result.points) points")
+                        .font(.headline.weight(.heavy))
+                        .foregroundStyle(Theme.secondaryText)
+                }
+                reaction(for: result)
+            }
+        }
+        .padding(16)
+        .background(Theme.surface, in: RoundedRectangle(cornerRadius: 20))
+        .overlay {
+            RoundedRectangle(cornerRadius: 20)
+                .strokeBorder(Theme.accent, lineWidth: isWinner ? 4 : 0)
+        }
+    }
+
+    // MARK: - Shared pieces
+
+    @ViewBuilder
+    private func verdict(for result: TurnResult, compact: Bool) -> some View {
+        switch result.outcome {
+        case .scored(let tier):
+            if compact {
+                HStack(spacing: 10) {
+                    Text(tier.label)
+                        .foregroundStyle(Theme.color(for: tier))
+                    DeviationLabel(result: result, compact: true)
+                }
+                .font(.title3.weight(.heavy))
+            } else {
+                DeviationLabel(result: result, compact: false)
+                Text(tier.label)
+                    .font(Theme.display(60))
+                    .foregroundStyle(Theme.color(for: tier))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
+            }
+        case .misfire:
+            Text("Too eager!")
+                .font(compact ? .title3.weight(.heavy) : Theme.display(56))
+                .foregroundStyle(Theme.early)
+        case .timeout:
+            Text("Still waiting...")
+                .font(compact ? .title3.weight(.heavy) : Theme.display(56))
+                .foregroundStyle(Theme.late)
         }
     }
 
     @ViewBuilder
-    private var verdict: some View {
-        switch result.outcome {
-        case .scored(let tier):
-            deviationRow
-            Text(tier.label)
-                .font(Theme.display(60))
-                .foregroundStyle(Theme.color(for: tier))
-                .lineLimit(1)
-                .minimumScaleFactor(0.5)
-        case .misfire:
-            Text("Too eager!")
-                .font(Theme.display(56))
-                .foregroundStyle(Theme.early)
-        case .timeout:
-            Text("Still waiting...")
-                .font(Theme.display(56))
-                .foregroundStyle(Theme.late)
-        }
-
+    private func reaction(for result: TurnResult) -> some View {
         if let line = state.reactionText(for: result) {
             Text(verbatim: line)
-                .font(.title2.weight(.semibold))
+                .font(isDuel ? .body.weight(.semibold) : .title2.weight(.semibold))
                 .foregroundStyle(Theme.primaryText)
                 .multilineTextAlignment(.center)
-                .padding(.top, 8)
         }
-
-        Text("+\(result.points) points")
-            .font(.title2.weight(.heavy))
-            .foregroundStyle(Theme.secondaryText)
-    }
-
-    /// "+0.27" with a colored arrow: blue = too early, red = too late.
-    private var deviationRow: some View {
-        let direction = result.direction
-        return VStack(spacing: 4) {
-            HStack(spacing: 10) {
-                switch direction {
-                case .early:
-                    Image(systemName: "arrow.down.circle.fill")
-                case .late:
-                    Image(systemName: "arrow.up.circle.fill")
-                case .exact:
-                    EmptyView()
-                }
-                Text(TimeFormat.signedDeviation(result.displayedDeviation))
-                    .monospacedDigit()
-            }
-            .font(Theme.display(40))
-            switch direction {
-            case .early:
-                Text("Too early").font(.headline)
-            case .late:
-                Text("Too late").font(.headline)
-            case .exact:
-                EmptyView()
-            }
-        }
-        .foregroundStyle(Theme.color(for: direction))
-        .accessibilityElement(children: .combine)
     }
 
     // MARK: - Sequence
 
     /// The value shown right now: counting up during the drumroll, final once landed.
-    private func shownValue() -> TimeInterval? {
-        if landed { return finalValue }
-        if reduceMotion { return nil }
-        let elapsed = ProcessInfo.processInfo.systemUptime - drumrollStart
-        return SlotRoll.value(progress: elapsed / drumrollDuration, target: finalValue)
+    private func shownValue(for result: TurnResult) -> () -> TimeInterval? {
+        let final: TimeInterval
+        switch result.outcome {
+        case .scored: final = result.displayedStopped
+        case .misfire, .timeout: final = result.stopped
+        }
+        let isLanded = landed
+        let hidden = reduceMotion
+        let start = drumrollStart
+        let duration = drumrollDuration
+        return {
+            if isLanded { return final }
+            if hidden { return nil }
+            let elapsed = ProcessInfo.processInfo.systemUptime - start
+            return SlotRoll.value(progress: elapsed / duration, target: final)
+        }
     }
 
     private func runReveal() async {
@@ -222,12 +264,75 @@ struct RevealView: View {
 
     /// Advances only if this reveal is still on screen.
     private func advance() {
-        guard case .some(.reveal(let current)) = state.engine?.phase, current.id == result.id else { return }
+        guard state.engine?.phase == .reveal,
+              state.engine?.revealedResults.first?.id == results.first?.id
+        else { return }
         state.engine?.advance()
     }
 }
 
+/// The slot-machine number. Re-evaluates `value` every frame until landed.
+private struct CountUpNumber: View {
+    let value: () -> TimeInterval?
+    let size: CGFloat
+    let isLanded: Bool
+
+    var body: some View {
+        TimelineView(.animation(minimumInterval: nil, paused: isLanded)) { _ in
+            Group {
+                if let current = value() {
+                    Text("\(TimeFormat.seconds(current)) s")
+                } else {
+                    Text(verbatim: "?")
+                }
+            }
+            .font(Theme.display(size))
+            .monospacedDigit()
+            .foregroundStyle(Theme.primaryText)
+            .lineLimit(1)
+            .minimumScaleFactor(0.4)
+        }
+    }
+}
+
+/// "+0.27" with a colored arrow: blue = too early, red = too late.
+private struct DeviationLabel: View {
+    let result: TurnResult
+    let compact: Bool
+
+    var body: some View {
+        let direction = result.direction
+        VStack(spacing: 4) {
+            HStack(spacing: compact ? 4 : 10) {
+                switch direction {
+                case .early:
+                    Image(systemName: "arrow.down.circle.fill")
+                case .late:
+                    Image(systemName: "arrow.up.circle.fill")
+                case .exact:
+                    EmptyView()
+                }
+                Text(TimeFormat.signedDeviation(result.displayedDeviation))
+                    .monospacedDigit()
+            }
+            .font(compact ? .title3.weight(.heavy) : Theme.display(40))
+            if !compact {
+                switch direction {
+                case .early:
+                    Text("Too early").font(.headline)
+                case .late:
+                    Text("Too late").font(.headline)
+                case .exact:
+                    EmptyView()
+                }
+            }
+        }
+        .foregroundStyle(Theme.color(for: direction))
+        .accessibilityElement(children: .combine)
+    }
+}
+
 private struct RevealTaskID: Hashable {
-    let resultID: TurnResult.ID
+    let resultID: TurnResult.ID?
     let skipped: Bool
 }

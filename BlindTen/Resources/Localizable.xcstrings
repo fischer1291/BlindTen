@@ -1,8 +1,33 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "%@ is out!": {},
     "%@ s": {},
     "%@ s off": {},
+    "%@ s per turn": {},
+    "%@ wins the duel!": {},
+    "%lld duel wins": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld duel win"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld duel wins"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld points": {
       "localizations": {
         "en": {
@@ -47,30 +72,53 @@
         }
       }
     },
+    "A countdown runs too fast or too slow. Ignore it.": {},
+    "A new target every turn, from 4 to 20 seconds.": {},
     "Add player": {},
     "Blind Ten": {},
+    "Classic": {},
     "Close": {},
     "DEAD ON": {},
+    "Distraction": {},
+    "Done": {},
+    "Done. Waiting for the other player…": {},
+    "Elimination": {},
     "End game": {},
     "End this game?": {},
     "Final results": {},
+    "Heartbeat": {},
+    "Hold the phone between you. Each thumb on its own half.": {},
+    "It's a tie!": {},
+    "Knocked out": {},
+    "Liar's Clock": {},
     "Lost in time": {},
     "Meh": {},
+    "Mode": {},
+    "Modes": {},
     "New game": {},
     "Next round": {},
     "Off": {},
+    "Out in round %lld": {},
+    "PLAY": {},
+    "Party Pack": {},
     "Pass the phone to": {},
     "Player %lld": {},
     "Players": {},
     "Players: %lld": {},
     "Quick play": {},
+    "Random Target": {},
+    "Random beeps try to throw you off. Heckling allowed.": {},
     "Rematch": {},
     "Round %lld of %lld": {},
     "Round %lld results": {},
+    "Round %lld · %lld players left": {},
     "Round loser": {},
     "Rounds: %lld": {},
+    "Rounds: until one is left": {},
     "START": {},
+    "Settings": {},
     "Sharp": {},
+    "Showdown": {},
     "Skip names and play as Player 1, Player 2, …": {},
     "Sound": {},
     "Sounds follow the silent switch.": {},
@@ -79,16 +127,27 @@
     "Still waiting...": {},
     "Stop": {},
     "Stop at %@": {},
+    "Stop at exactly 10 seconds. Dark screen.": {},
+    "Tap START, the timer vanishes. Stop at exactly the target. Closest wins.": {},
     "Tap anywhere to stop": {},
     "Tap anywhere when ready": {},
+    "Tap anywhere when you're both ready": {},
+    "Team %lld": {},
+    "Team %lld wins!": {},
+    "Teams": {},
+    "The phone pulses at a slightly wrong tempo.": {},
+    "The worst player each round is out until one is left.": {},
     "This round": {},
     "Too eager!": {},
     "Too early": {},
     "Too late": {},
     "Total": {},
+    "Two players at once on a split screen. Closest wins the duel.": {},
+    "Two teams. The lowest combined deviation wins.": {},
     "Up to %lld players. Drag to reorder.": {},
     "Winner": {},
     "Wrong player? Replay turn": {},
+    "Wrong players? Replay duel": {},
     "reaction.close.1": {
       "comment": "Funny one-line reaction shown after Close (within 0.50 s).",
       "extractionState": "manual",
@@ -2488,7 +2547,8 @@
           }
         }
       }
-    }
+    },
+    "vs": {}
   },
   "version": "1.0"
 }
