@@ -11,9 +11,10 @@ struct ShowdownTurnView: View {
         VStack(spacing: 0) {
             half(lane: 0)
                 .rotationEffect(.degrees(180))
+            // A wide black bar so the two yellow START halves read as separate buttons.
             Rectangle()
-                .fill(Theme.accent)
-                .frame(height: 4)
+                .fill(Color.black)
+                .frame(height: 16)
             half(lane: 1)
         }
         .background(Color.black.ignoresSafeArea())

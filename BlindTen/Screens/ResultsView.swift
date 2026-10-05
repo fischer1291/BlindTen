@@ -96,11 +96,6 @@ struct GameResultsView: View {
                         SectionHeader(title: "Teams")
                     }
                 }
-                Section {
-                    StandingsList(engine: engine, standings: engine.standings())
-                } header: {
-                    SectionHeader(title: "Players")
-                }
                 if !state.awards.isEmpty {
                     Section {
                         ForEach(state.awards, id: \.kind) { award in
@@ -113,6 +108,11 @@ struct GameResultsView: View {
                              ? LocalizedStringKey("All-time awards for this group.")
                              : LocalizedStringKey("Awards for this game."))
                     }
+                }
+                Section {
+                    StandingsList(engine: engine, standings: engine.standings())
+                } header: {
+                    SectionHeader(title: "Players")
                 }
             }
             .listStyle(.insetGrouped)

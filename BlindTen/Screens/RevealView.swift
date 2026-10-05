@@ -341,8 +341,11 @@ private struct DeviationLabel: View {
     let result: TurnResult
     let compact: Bool
 
+    /// A DEAD ON is a hit, not "too early" or "too late": no arrow, no hint, in yellow.
+    private var isDeadOn: Bool { result.outcome == .scored(.deadOn) }
+
     var body: some View {
-        let direction = result.direction
+        let direction: TimingDirection = isDeadOn ? .exact : result.direction
         VStack(spacing: 4) {
             HStack(spacing: compact ? 4 : 10) {
                 switch direction {
