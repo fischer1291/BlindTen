@@ -10,31 +10,38 @@ struct HandoffView: View {
         Button {
             state.engine?.beginTurn()
         } label: {
-            VStack(spacing: 24) {
+            VStack(spacing: 20) {
                 Text("Round \(engine.round) of \(engine.rounds)")
-                    .font(.headline)
-                    .foregroundStyle(.secondary)
+                    .font(.title3.weight(.bold))
+                    .foregroundStyle(Theme.secondaryText)
+                Spacer()
                 Text("Pass the phone to")
-                    .font(.title2)
+                    .font(.title.weight(.semibold))
+                    .foregroundStyle(Theme.secondaryText)
                 Text(engine.currentPlayer?.emoji ?? "")
-                    .font(.system(size: 96))
+                    .font(.system(size: 120))
                 Text(engine.currentPlayer?.name ?? "")
-                    .font(.system(size: 56, weight: .bold))
+                    .font(Theme.display(72))
+                    .foregroundStyle(Theme.primaryText)
                     .multilineTextAlignment(.center)
-                    .minimumScaleFactor(0.5)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.4)
+                Spacer()
                 Text("Tap anywhere when ready")
-                    .font(.headline)
-                    .foregroundStyle(.secondary)
+                    .font(.title2.weight(.bold))
+                    .foregroundStyle(Theme.accent)
             }
-            .padding()
+            .padding(24)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .background(Theme.background.ignoresSafeArea())
         .overlay(alignment: .topLeading) {
             Button("End game", role: .destructive) {
                 confirmingEndGame = true
             }
+            .font(.headline)
             .padding()
         }
         .confirmationDialog("End this game?", isPresented: $confirmingEndGame, titleVisibility: .visible) {
