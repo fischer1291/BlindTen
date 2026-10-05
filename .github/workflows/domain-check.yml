@@ -1,0 +1,66 @@
+name: Domain check
+
+# Looks up blindten.com in public DNS and compares it with what GitHub Pages
+# needs. Read-only; start it from the Actions tab when the domain misbehaves.
+
+on:
+  workflow_dispatch:
+    inputs:
+      domain:
+        description: "Domain to check"
+        required: false
+        default: "blindten.com"
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      DOMAIN: ${{ inputs.domain || 'blindten.com' }}
+    steps:
+      - name: DNS records
+        run: |
+          for server in 1.1.1.1 8.8.8.8; do
+            echo "===== via $server"
+            for type in A AAAA CNAME MX TXT NS; do
+              echo "--- $DOMAIN $type"
+              dig +short @"$server" "$DOMAIN" "$type" || true
+            done
+            echo "--- www.$DOMAIN CNAME / A"
+            dig +short @"$server" "www.$DOMAIN" CNAME || true
+            dig +short @"$server" "www.$DOMAIN" A || true
+            echo "--- _github-pages-challenge-fischer1291.$DOMAIN TXT"
+            dig +short @"$server" "_github-pages-challenge-fischer1291.$DOMAIN" TXT || true
+          done
+
+      - name: Compare with GitHub Pages
+        run: |
+          python3 - <<'PY'
+          import os, subprocess
+          d = os.environ["DOMAIN"]
+          def q(name, t):
+              out = subprocess.run(["dig", "+short", "@1.1.1.1", name, t], capture_output=True, text=True).stdout
+              return sorted(l.strip().rstrip(".") for l in out.splitlines() if l.strip())
+          want_a = sorted(f"185.199.{n}.153" for n in (108, 109, 110, 111))
+          want_aaaa = sorted(f"2606:50c0:800{n}::153" for n in range(4))
+          a, aaaa = q(d, "A"), q(d, "AAAA")
+          www = q("www." + d, "CNAME")
+          ok = True
+          def report(label, good, detail):
+              global ok
+              ok &= good
+              print(f"{'OK   ' if good else 'FIX  '} {label}: {detail}")
+          report("A records", a == want_a, f"found {a or 'none'}; want {want_a}")
+          extra6 = [x for x in aaaa if x not in want_aaaa]
+          report("AAAA records", not extra6, f"found {aaaa or 'none'}; want {want_aaaa} or none (delete any other AAAA)")
+          report("www CNAME", www == ["fischer1291.github.io"], f"found {www or 'none'}; want fischer1291.github.io")
+          print()
+          print("All good." if ok else "Change the records marked FIX at the DNS provider (IONOS).")
+          PY
+
+      - name: HTTP check
+        run: |
+          for url in "http://$DOMAIN" "https://$DOMAIN" "https://www.$DOMAIN" "https://fischer1291.github.io/BlindTen/"; do
+            echo "--- $url"
+            curl -sS -o /dev/null -I --max-time 15 -w "status %{http_code}  ->  %{redirect_url}\n" "$url" || true
+          done
