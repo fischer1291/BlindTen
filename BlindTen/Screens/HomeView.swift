@@ -5,6 +5,7 @@ import SwiftUI
 struct HomeView: View {
     @Environment(AppState.self) private var state
     @State private var showingSettings = false
+    @State private var paywallMode: ModeKind?
 
     var body: some View {
         ScrollView {
@@ -27,8 +28,17 @@ struct HomeView: View {
                     .padding(.top, 8)
 
                 ForEach(ModeKind.allCases) { kind in
-                    ModeCard(kind: kind, isSelected: state.selectedMode == kind) {
-                        state.selectedMode = kind
+                    ModeCard(
+                        kind: kind,
+                        isSelected: state.selectedMode == kind,
+                        isLocked: !PartyPack.canPlay(kind, unlocked: state.isPartyPackUnlocked)
+                    ) {
+                        // SPEC.md: the paywall appears only when tapping a locked mode card.
+                        if PartyPack.canPlay(kind, unlocked: state.isPartyPackUnlocked) {
+                            state.selectedMode = kind
+                        } else {
+                            paywallMode = kind
+                        }
                     }
                 }
             }
@@ -50,12 +60,22 @@ struct HomeView: View {
         .sheet(isPresented: $showingSettings) {
             SettingsView()
         }
+        .sheet(item: $paywallMode) { kind in
+            PaywallView(mode: kind)
+        }
+        .onAppear {
+            // A refunded or revoked Party Pack must not leave a locked mode selected.
+            if !PartyPack.canPlay(state.selectedMode, unlocked: state.isPartyPackUnlocked) {
+                state.selectedMode = .classic
+            }
+        }
     }
 }
 
 private struct ModeCard: View {
     let kind: ModeKind
     let isSelected: Bool
+    let isLocked: Bool
     let select: () -> Void
 
     var body: some View {
@@ -72,7 +92,13 @@ private struct ModeCard: View {
                         Text(kind.title)
                             .font(.title2.weight(.heavy))
                         if !kind.isFree {
-                            Text("Party Pack")
+                            Label {
+                                Text("Party Pack")
+                            } icon: {
+                                if isLocked {
+                                    Image(systemName: "lock.fill")
+                                }
+                            }
                                 .font(.caption.weight(.heavy))
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 3)
@@ -104,32 +130,3 @@ private struct ModeCard: View {
     }
 }
 
-/// Settings sheet behind the gear.
-struct SettingsView: View {
-    @Environment(\.dismiss) private var dismiss
-    @AppStorage(SoundSettings.enabledKey) private var soundEnabled = true
-
-    var body: some View {
-        NavigationStack {
-            List {
-                Section {
-                    Toggle("Sound", isOn: $soundEnabled)
-                        .font(.title3)
-                } footer: {
-                    Text("Sounds follow the silent switch.")
-                }
-                .listRowBackground(Theme.surface)
-            }
-            .scrollContentBackground(.hidden)
-            .background(Theme.background.ignoresSafeArea())
-            .navigationTitle("Settings")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") { dismiss() }
-                }
-            }
-        }
-        .preferredColorScheme(.dark)
-    }
-}
