@@ -97,7 +97,7 @@ Primary: Games > Party (Info.plist already says party games). Secondary: Games >
 ## Copyright
 
 ```
-2026 <your name>
+2026 Leroy Fischer
 ```
 
 ## In-app purchase: Party Pack
