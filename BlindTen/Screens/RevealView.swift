@@ -9,7 +9,9 @@ struct RevealView: View {
     private static let autoAdvanceDelay: Duration = .seconds(3)
 
     var body: some View {
-        Button(action: advance) {
+        Button {
+            advance()
+        } label: {
             VStack(spacing: 16) {
                 Text(engine.player(withID: result.playerID)?.name ?? "")
                     .font(.title2)

@@ -17,7 +17,7 @@ struct PlayersView: View {
                     .focused($nameFieldFocused)
                     .submitLabel(.next)
                     .autocorrectionDisabled()
-                    .onSubmit(addPlayer)
+                    .onSubmit { addPlayer() }
                     .disabled(isFull)
                 ForEach(state.roster) { player in
                     HStack(spacing: 12) {
@@ -39,7 +39,7 @@ struct PlayersView: View {
             }
 
             Section {
-                Button("Start game", action: startGame)
+                Button("Start game") { startGame() }
                     .font(.title2.bold())
                     .frame(maxWidth: .infinity, minHeight: 56)
                     .disabled(state.roster.count < GameEngine.minPlayers)
@@ -47,7 +47,7 @@ struct PlayersView: View {
 
             Section {
                 Stepper("Players: \(quickPlayCount)", value: $quickPlayCount, in: GameEngine.minPlayers...AppState.maxFreePlayers)
-                Button("Quick play", action: quickPlay)
+                Button("Quick play") { quickPlay() }
                     .frame(maxWidth: .infinity, minHeight: 44)
             } header: {
                 Text("Quick play")
