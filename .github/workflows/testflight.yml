@@ -59,9 +59,36 @@ jobs:
       - name: Write the API key
         env:
           KEY: ${{ secrets.APP_STORE_CONNECT_KEY }}
+        # Accepts the .p8 as pasted: with or without the BEGIN/END lines, on
+        # one line or many, with Windows line endings, or base64-encoded.
+        # Only lengths are printed, never the key.
         run: |
           mkdir -p "$RUNNER_TEMP/keys"
-          printf '%s\n' "$KEY" > "$RUNNER_TEMP/keys/AuthKey.p8"
+          python3 - "$RUNNER_TEMP/keys/AuthKey.p8" <<'PY'
+          import base64, binascii, os, re, sys
+          raw = os.environ["KEY"].replace("\r", "").strip().strip('"').strip("'")
+          raw = raw.replace("\\n", "\n")
+          if "BEGIN" not in raw:
+              try:
+                  decoded = base64.b64decode(re.sub(r"\s", "", raw), validate=True).decode()
+                  if "BEGIN" in decoded:
+                      raw = decoded
+              except (binascii.Error, UnicodeDecodeError, ValueError):
+                  pass
+          body = re.sub(r"-----(BEGIN|END)[A-Z ]*-----", "", raw)
+          body = re.sub(r"\s", "", body)
+          try:
+              der = base64.b64decode(body, validate=True)
+          except binascii.Error:
+              sys.exit("::error::APP_STORE_CONNECT_KEY is not a valid .p8 key. Paste the whole text of AuthKey_XXXX.p8.")
+          print(f"Key body: {len(body)} base64 characters, {len(der)} bytes")
+          lines = [body[i:i + 64] for i in range(0, len(body), 64)]
+          pem = "-----BEGIN PRIVATE KEY-----\n" + "\n".join(lines) + "\n-----END PRIVATE KEY-----\n"
+          with open(sys.argv[1], "w") as f:
+              f.write(pem)
+          PY
+          openssl pkey -in "$RUNNER_TEMP/keys/AuthKey.p8" -noout \
+            || { echo "::error::APP_STORE_CONNECT_KEY could not be read as a private key. Paste the whole text of AuthKey_XXXX.p8."; exit 1; }
           echo "KEY_PATH=$RUNNER_TEMP/keys/AuthKey.p8" >> "$GITHUB_ENV"
 
       - name: Pick the build number
