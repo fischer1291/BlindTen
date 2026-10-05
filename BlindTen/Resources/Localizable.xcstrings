@@ -85,7 +85,2407 @@
     "Total": {},
     "Up to %lld players. Drag to reorder.": {},
     "Winner": {},
-    "Wrong player? Replay turn": {}
+    "Wrong player? Replay turn": {},
+    "reaction.close.1": {
+      "comment": "Funny one-line reaction shown after Close (within 0.50 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Close, but no trophy."
+          }
+        }
+      }
+    },
+    "reaction.close.10": {
+      "comment": "Funny one-line reaction shown after Close (within 0.50 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Room for improvement."
+          }
+        }
+      }
+    },
+    "reaction.close.11": {
+      "comment": "Funny one-line reaction shown after Close (within 0.50 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Respectable effort."
+          }
+        }
+      }
+    },
+    "reaction.close.12": {
+      "comment": "Funny one-line reaction shown after Close (within 0.50 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You were thinking about it too hard."
+          }
+        }
+      }
+    },
+    "reaction.close.13": {
+      "comment": "Funny one-line reaction shown after Close (within 0.50 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Close enough for a party."
+          }
+        }
+      }
+    },
+    "reaction.close.14": {
+      "comment": "Funny one-line reaction shown after Close (within 0.50 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fine. Totally fine."
+          }
+        }
+      }
+    },
+    "reaction.close.15": {
+      "comment": "Funny one-line reaction shown after Close (within 0.50 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Middle of the pack energy."
+          }
+        }
+      }
+    },
+    "reaction.close.16": {
+      "comment": "Funny one-line reaction shown after Close (within 0.50 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hm. Solid-ish."
+          }
+        }
+      }
+    },
+    "reaction.close.17": {
+      "comment": "Funny one-line reaction shown after Close (within 0.50 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your rhythm wobbled."
+          }
+        }
+      }
+    },
+    "reaction.close.18": {
+      "comment": "Funny one-line reaction shown after Close (within 0.50 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That's a B-minus."
+          }
+        }
+      }
+    },
+    "reaction.close.19": {
+      "comment": "Funny one-line reaction shown after Close (within 0.50 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Almost had it."
+          }
+        }
+      }
+    },
+    "reaction.close.2": {
+      "comment": "Funny one-line reaction shown after Close (within 0.50 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In the neighborhood."
+          }
+        }
+      }
+    },
+    "reaction.close.20": {
+      "comment": "Funny one-line reaction shown after Close (within 0.50 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not quite the sweet spot."
+          }
+        }
+      }
+    },
+    "reaction.close.21": {
+      "comment": "Funny one-line reaction shown after Close (within 0.50 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Near miss."
+          }
+        }
+      }
+    },
+    "reaction.close.22": {
+      "comment": "Funny one-line reaction shown after Close (within 0.50 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Close. Like, emotionally close."
+          }
+        }
+      }
+    },
+    "reaction.close.23": {
+      "comment": "Funny one-line reaction shown after Close (within 0.50 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The clock shrugs."
+          }
+        }
+      }
+    },
+    "reaction.close.24": {
+      "comment": "Funny one-line reaction shown after Close (within 0.50 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Decent hustle."
+          }
+        }
+      }
+    },
+    "reaction.close.25": {
+      "comment": "Funny one-line reaction shown after Close (within 0.50 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "So-so seconds."
+          }
+        }
+      }
+    },
+    "reaction.close.26": {
+      "comment": "Funny one-line reaction shown after Close (within 0.50 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mildly impressive."
+          }
+        }
+      }
+    },
+    "reaction.close.27": {
+      "comment": "Funny one-line reaction shown after Close (within 0.50 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "On the edge of greatness. The far edge."
+          }
+        }
+      }
+    },
+    "reaction.close.28": {
+      "comment": "Funny one-line reaction shown after Close (within 0.50 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not a disaster."
+          }
+        }
+      }
+    },
+    "reaction.close.29": {
+      "comment": "Funny one-line reaction shown after Close (within 0.50 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Good, not great."
+          }
+        }
+      }
+    },
+    "reaction.close.3": {
+      "comment": "Funny one-line reaction shown after Close (within 0.50 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Warm. Getting warmer."
+          }
+        }
+      }
+    },
+    "reaction.close.30": {
+      "comment": "Funny one-line reaction shown after Close (within 0.50 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep practicing, champ."
+          }
+        }
+      }
+    },
+    "reaction.close.4": {
+      "comment": "Funny one-line reaction shown after Close (within 0.50 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Decent. Not dazzling."
+          }
+        }
+      }
+    },
+    "reaction.close.5": {
+      "comment": "Funny one-line reaction shown after Close (within 0.50 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your clock runs on vibes."
+          }
+        }
+      }
+    },
+    "reaction.close.6": {
+      "comment": "Funny one-line reaction shown after Close (within 0.50 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Half a second of doubt."
+          }
+        }
+      }
+    },
+    "reaction.close.7": {
+      "comment": "Funny one-line reaction shown after Close (within 0.50 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not bad. Not great. Close."
+          }
+        }
+      }
+    },
+    "reaction.close.8": {
+      "comment": "Funny one-line reaction shown after Close (within 0.50 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ballpark: achieved."
+          }
+        }
+      }
+    },
+    "reaction.close.9": {
+      "comment": "Funny one-line reaction shown after Close (within 0.50 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Right street, wrong house."
+          }
+        }
+      }
+    },
+    "reaction.deadOn.1": {
+      "comment": "Funny one-line reaction shown after DEAD ON (within 0.05 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Surgical."
+          }
+        }
+      }
+    },
+    "reaction.deadOn.10": {
+      "comment": "Funny one-line reaction shown after DEAD ON (within 0.05 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "NASA is on line one."
+          }
+        }
+      }
+    },
+    "reaction.deadOn.11": {
+      "comment": "Funny one-line reaction shown after DEAD ON (within 0.05 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Precision level: laser."
+          }
+        }
+      }
+    },
+    "reaction.deadOn.12": {
+      "comment": "Funny one-line reaction shown after DEAD ON (within 0.05 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That was illegal levels of accurate."
+          }
+        }
+      }
+    },
+    "reaction.deadOn.13": {
+      "comment": "Funny one-line reaction shown after DEAD ON (within 0.05 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bow down."
+          }
+        }
+      }
+    },
+    "reaction.deadOn.14": {
+      "comment": "Funny one-line reaction shown after DEAD ON (within 0.05 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The universe blinked first."
+          }
+        }
+      }
+    },
+    "reaction.deadOn.15": {
+      "comment": "Funny one-line reaction shown after DEAD ON (within 0.05 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Perfect. Now never do that again, it's unsettling."
+          }
+        }
+      }
+    },
+    "reaction.deadOn.16": {
+      "comment": "Funny one-line reaction shown after DEAD ON (within 0.05 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Metronomes everywhere are jealous."
+          }
+        }
+      }
+    },
+    "reaction.deadOn.17": {
+      "comment": "Funny one-line reaction shown after DEAD ON (within 0.05 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Somebody film this. Oh wait, too late."
+          }
+        }
+      }
+    },
+    "reaction.deadOn.18": {
+      "comment": "Funny one-line reaction shown after DEAD ON (within 0.05 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clockwork. Literally."
+          }
+        }
+      }
+    },
+    "reaction.deadOn.19": {
+      "comment": "Funny one-line reaction shown after DEAD ON (within 0.05 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "History will remember this tap."
+          }
+        }
+      }
+    },
+    "reaction.deadOn.2": {
+      "comment": "Funny one-line reaction shown after DEAD ON (within 0.05 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Atomic clock energy."
+          }
+        }
+      }
+    },
+    "reaction.deadOn.20": {
+      "comment": "Funny one-line reaction shown after DEAD ON (within 0.05 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mic drop. Phone stays."
+          }
+        }
+      }
+    },
+    "reaction.deadOn.21": {
+      "comment": "Funny one-line reaction shown after DEAD ON (within 0.05 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Is that a heartbeat or a quartz crystal?"
+          }
+        }
+      }
+    },
+    "reaction.deadOn.22": {
+      "comment": "Funny one-line reaction shown after DEAD ON (within 0.05 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Textbook."
+          }
+        }
+      }
+    },
+    "reaction.deadOn.23": {
+      "comment": "Funny one-line reaction shown after DEAD ON (within 0.05 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The ten-second whisperer."
+          }
+        }
+      }
+    },
+    "reaction.deadOn.24": {
+      "comment": "Funny one-line reaction shown after DEAD ON (within 0.05 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bullseye."
+          }
+        }
+      }
+    },
+    "reaction.deadOn.25": {
+      "comment": "Funny one-line reaction shown after DEAD ON (within 0.05 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dead on. Deadly."
+          }
+        }
+      }
+    },
+    "reaction.deadOn.26": {
+      "comment": "Funny one-line reaction shown after DEAD ON (within 0.05 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Even the phone is impressed."
+          }
+        }
+      }
+    },
+    "reaction.deadOn.27": {
+      "comment": "Funny one-line reaction shown after DEAD ON (within 0.05 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Legend status: unlocked."
+          }
+        }
+      }
+    },
+    "reaction.deadOn.28": {
+      "comment": "Funny one-line reaction shown after DEAD ON (within 0.05 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time bends to your will."
+          }
+        }
+      }
+    },
+    "reaction.deadOn.29": {
+      "comment": "Funny one-line reaction shown after DEAD ON (within 0.05 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nobody breathe. That was perfect."
+          }
+        }
+      }
+    },
+    "reaction.deadOn.3": {
+      "comment": "Funny one-line reaction shown after DEAD ON (within 0.05 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Frame it. Seriously."
+          }
+        }
+      }
+    },
+    "reaction.deadOn.30": {
+      "comment": "Funny one-line reaction shown after DEAD ON (within 0.05 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chef's kiss."
+          }
+        }
+      }
+    },
+    "reaction.deadOn.4": {
+      "comment": "Funny one-line reaction shown after DEAD ON (within 0.05 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your inner clock has a Swiss passport."
+          }
+        }
+      }
+    },
+    "reaction.deadOn.5": {
+      "comment": "Funny one-line reaction shown after DEAD ON (within 0.05 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That's not luck. That's witchcraft."
+          }
+        }
+      }
+    },
+    "reaction.deadOn.6": {
+      "comment": "Funny one-line reaction shown after DEAD ON (within 0.05 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Somebody check this person for batteries."
+          }
+        }
+      }
+    },
+    "reaction.deadOn.7": {
+      "comment": "Funny one-line reaction shown after DEAD ON (within 0.05 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time itself just took notes."
+          }
+        }
+      }
+    },
+    "reaction.deadOn.8": {
+      "comment": "Funny one-line reaction shown after DEAD ON (within 0.05 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Flawless. Disgusting. Beautiful."
+          }
+        }
+      }
+    },
+    "reaction.deadOn.9": {
+      "comment": "Funny one-line reaction shown after DEAD ON (within 0.05 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You ARE the stopwatch."
+          }
+        }
+      }
+    },
+    "reaction.lostInTime.1": {
+      "comment": "Funny one-line reaction shown after Lost in time (more than 2 s off).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lost in time. Truly lost."
+          }
+        }
+      }
+    },
+    "reaction.lostInTime.10": {
+      "comment": "Funny one-line reaction shown after Lost in time (more than 2 s off).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The clock filed a complaint."
+          }
+        }
+      }
+    },
+    "reaction.lostInTime.11": {
+      "comment": "Funny one-line reaction shown after Lost in time (more than 2 s off).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That's a new record. The bad kind."
+          }
+        }
+      }
+    },
+    "reaction.lostInTime.12": {
+      "comment": "Funny one-line reaction shown after Lost in time (more than 2 s off).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Were you counting in dog years?"
+          }
+        }
+      }
+    },
+    "reaction.lostInTime.13": {
+      "comment": "Funny one-line reaction shown after Lost in time (more than 2 s off).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Please return the phone to the timeline."
+          }
+        }
+      }
+    },
+    "reaction.lostInTime.14": {
+      "comment": "Funny one-line reaction shown after Lost in time (more than 2 s off).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Absolutely lost."
+          }
+        }
+      }
+    },
+    "reaction.lostInTime.15": {
+      "comment": "Funny one-line reaction shown after Lost in time (more than 2 s off).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not even in the same universe."
+          }
+        }
+      }
+    },
+    "reaction.lostInTime.16": {
+      "comment": "Funny one-line reaction shown after Lost in time (more than 2 s off).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your sense of time is a mystery to science."
+          }
+        }
+      }
+    },
+    "reaction.lostInTime.17": {
+      "comment": "Funny one-line reaction shown after Lost in time (more than 2 s off).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delightfully terrible."
+          }
+        }
+      }
+    },
+    "reaction.lostInTime.18": {
+      "comment": "Funny one-line reaction shown after Lost in time (more than 2 s off).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This will be talked about. Negatively."
+          }
+        }
+      }
+    },
+    "reaction.lostInTime.19": {
+      "comment": "Funny one-line reaction shown after Lost in time (more than 2 s off).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your rhythm is in another dimension."
+          }
+        }
+      }
+    },
+    "reaction.lostInTime.2": {
+      "comment": "Funny one-line reaction shown after Lost in time (more than 2 s off).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Did you go on vacation?"
+          }
+        }
+      }
+    },
+    "reaction.lostInTime.20": {
+      "comment": "Funny one-line reaction shown after Lost in time (more than 2 s off).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Somebody call a search party."
+          }
+        }
+      }
+    },
+    "reaction.lostInTime.21": {
+      "comment": "Funny one-line reaction shown after Lost in time (more than 2 s off).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A bold reinterpretation of time."
+          }
+        }
+      }
+    },
+    "reaction.lostInTime.22": {
+      "comment": "Funny one-line reaction shown after Lost in time (more than 2 s off).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chaos incarnate."
+          }
+        }
+      }
+    },
+    "reaction.lostInTime.23": {
+      "comment": "Funny one-line reaction shown after Lost in time (more than 2 s off).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zero points, maximum entertainment."
+          }
+        }
+      }
+    },
+    "reaction.lostInTime.24": {
+      "comment": "Funny one-line reaction shown after Lost in time (more than 2 s off).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "We'll pretend that didn't happen."
+          }
+        }
+      }
+    },
+    "reaction.lostInTime.25": {
+      "comment": "Funny one-line reaction shown after Lost in time (more than 2 s off).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time is a flat circle, and you missed it."
+          }
+        }
+      }
+    },
+    "reaction.lostInTime.26": {
+      "comment": "Funny one-line reaction shown after Lost in time (more than 2 s off).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Legendary. For all the wrong reasons."
+          }
+        }
+      }
+    },
+    "reaction.lostInTime.27": {
+      "comment": "Funny one-line reaction shown after Lost in time (more than 2 s off).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The seconds wandered off without you."
+          }
+        }
+      }
+    },
+    "reaction.lostInTime.28": {
+      "comment": "Funny one-line reaction shown after Lost in time (more than 2 s off).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Did your thumb get stuck?"
+          }
+        }
+      }
+    },
+    "reaction.lostInTime.29": {
+      "comment": "Funny one-line reaction shown after Lost in time (more than 2 s off).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Even the sundial was faster."
+          }
+        }
+      }
+    },
+    "reaction.lostInTime.3": {
+      "comment": "Funny one-line reaction shown after Lost in time (more than 2 s off).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time traveler detected."
+          }
+        }
+      }
+    },
+    "reaction.lostInTime.30": {
+      "comment": "Funny one-line reaction shown after Lost in time (more than 2 s off).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thanks for the laugh."
+          }
+        }
+      }
+    },
+    "reaction.lostInTime.4": {
+      "comment": "Funny one-line reaction shown after Lost in time (more than 2 s off).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That wasn't ten. That was a lifetime."
+          }
+        }
+      }
+    },
+    "reaction.lostInTime.5": {
+      "comment": "Funny one-line reaction shown after Lost in time (more than 2 s off).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hello? Anyone in there?"
+          }
+        }
+      }
+    },
+    "reaction.lostInTime.6": {
+      "comment": "Funny one-line reaction shown after Lost in time (more than 2 s off).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your inner clock has left the chat."
+          }
+        }
+      }
+    },
+    "reaction.lostInTime.7": {
+      "comment": "Funny one-line reaction shown after Lost in time (more than 2 s off).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "We aged during that turn."
+          }
+        }
+      }
+    },
+    "reaction.lostInTime.8": {
+      "comment": "Funny one-line reaction shown after Lost in time (more than 2 s off).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seconds? You meant minutes."
+          }
+        }
+      }
+    },
+    "reaction.lostInTime.9": {
+      "comment": "Funny one-line reaction shown after Lost in time (more than 2 s off).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spectacularly wrong."
+          }
+        }
+      }
+    },
+    "reaction.meh.1": {
+      "comment": "Funny one-line reaction shown after Meh (within 1 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meh."
+          }
+        }
+      }
+    },
+    "reaction.meh.10": {
+      "comment": "Funny one-line reaction shown after Meh (within 1 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Approximately approximate."
+          }
+        }
+      }
+    },
+    "reaction.meh.11": {
+      "comment": "Funny one-line reaction shown after Meh (within 1 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Close-ish. Very -ish."
+          }
+        }
+      }
+    },
+    "reaction.meh.12": {
+      "comment": "Funny one-line reaction shown after Meh (within 1 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Were you counting or daydreaming?"
+          }
+        }
+      }
+    },
+    "reaction.meh.13": {
+      "comment": "Funny one-line reaction shown after Meh (within 1 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That's what we call an estimate."
+          }
+        }
+      }
+    },
+    "reaction.meh.14": {
+      "comment": "Funny one-line reaction shown after Meh (within 1 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Interesting interpretation of ten."
+          }
+        }
+      }
+    },
+    "reaction.meh.15": {
+      "comment": "Funny one-line reaction shown after Meh (within 1 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Points for confidence."
+          }
+        }
+      }
+    },
+    "reaction.meh.16": {
+      "comment": "Funny one-line reaction shown after Meh (within 1 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your rhythm took a coffee break."
+          }
+        }
+      }
+    },
+    "reaction.meh.17": {
+      "comment": "Funny one-line reaction shown after Meh (within 1 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mediocre, but with style."
+          }
+        }
+      }
+    },
+    "reaction.meh.18": {
+      "comment": "Funny one-line reaction shown after Meh (within 1 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Let's call it a warm-up."
+          }
+        }
+      }
+    },
+    "reaction.meh.19": {
+      "comment": "Funny one-line reaction shown after Meh (within 1 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A for effort. C for timing."
+          }
+        }
+      }
+    },
+    "reaction.meh.2": {
+      "comment": "Funny one-line reaction shown after Meh (within 1 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your inner clock is buffering."
+          }
+        }
+      }
+    },
+    "reaction.meh.20": {
+      "comment": "Funny one-line reaction shown after Meh (within 1 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The seconds slipped away."
+          }
+        }
+      }
+    },
+    "reaction.meh.21": {
+      "comment": "Funny one-line reaction shown after Meh (within 1 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not your finest moment."
+          }
+        }
+      }
+    },
+    "reaction.meh.22": {
+      "comment": "Funny one-line reaction shown after Meh (within 1 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your clock needs new batteries."
+          }
+        }
+      }
+    },
+    "reaction.meh.23": {
+      "comment": "Funny one-line reaction shown after Meh (within 1 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hmm. Hmmmm."
+          }
+        }
+      }
+    },
+    "reaction.meh.24": {
+      "comment": "Funny one-line reaction shown after Meh (within 1 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Average. Painfully average."
+          }
+        }
+      }
+    },
+    "reaction.meh.25": {
+      "comment": "Funny one-line reaction shown after Meh (within 1 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A second off. A whole second."
+          }
+        }
+      }
+    },
+    "reaction.meh.26": {
+      "comment": "Funny one-line reaction shown after Meh (within 1 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That tap had doubts."
+          }
+        }
+      }
+    },
+    "reaction.meh.27": {
+      "comment": "Funny one-line reaction shown after Meh (within 1 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Somewhere near ten. Ish."
+          }
+        }
+      }
+    },
+    "reaction.meh.28": {
+      "comment": "Funny one-line reaction shown after Meh (within 1 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your internal metronome hiccupped."
+          }
+        }
+      }
+    },
+    "reaction.meh.29": {
+      "comment": "Funny one-line reaction shown after Meh (within 1 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Next time, try counting."
+          }
+        }
+      }
+    },
+    "reaction.meh.3": {
+      "comment": "Funny one-line reaction shown after Meh (within 1 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That was... a guess."
+          }
+        }
+      }
+    },
+    "reaction.meh.30": {
+      "comment": "Funny one-line reaction shown after Meh (within 1 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unremarkable. Moving on."
+          }
+        }
+      }
+    },
+    "reaction.meh.4": {
+      "comment": "Funny one-line reaction shown after Meh (within 1 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A full second of creative freedom."
+          }
+        }
+      }
+    },
+    "reaction.meh.5": {
+      "comment": "Funny one-line reaction shown after Meh (within 1 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sure. Why not."
+          }
+        }
+      }
+    },
+    "reaction.meh.6": {
+      "comment": "Funny one-line reaction shown after Meh (within 1 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Timing is not your love language."
+          }
+        }
+      }
+    },
+    "reaction.meh.7": {
+      "comment": "Funny one-line reaction shown after Meh (within 1 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You counted Mississippis, didn't you?"
+          }
+        }
+      }
+    },
+    "reaction.meh.8": {
+      "comment": "Funny one-line reaction shown after Meh (within 1 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vaguely in the right direction."
+          }
+        }
+      }
+    },
+    "reaction.meh.9": {
+      "comment": "Funny one-line reaction shown after Meh (within 1 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The clock is disappointed, but not surprised."
+          }
+        }
+      }
+    },
+    "reaction.misfire.1": {
+      "comment": "Funny one-line reaction shown after a misfire (stopped before 1 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Patience is a virtue. Not yours."
+          }
+        }
+      }
+    },
+    "reaction.misfire.10": {
+      "comment": "Funny one-line reaction shown after a misfire (stopped before 1 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Somebody's in a hurry."
+          }
+        }
+      }
+    },
+    "reaction.misfire.2": {
+      "comment": "Funny one-line reaction shown after a misfire (stopped before 1 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slow down, speed racer."
+          }
+        }
+      }
+    },
+    "reaction.misfire.3": {
+      "comment": "Funny one-line reaction shown after a misfire (stopped before 1 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That was barely a second."
+          }
+        }
+      }
+    },
+    "reaction.misfire.4": {
+      "comment": "Funny one-line reaction shown after a misfire (stopped before 1 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The finger slipped. Sure it did."
+          }
+        }
+      }
+    },
+    "reaction.misfire.5": {
+      "comment": "Funny one-line reaction shown after a misfire (stopped before 1 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ten seconds, not ten milliseconds."
+          }
+        }
+      }
+    },
+    "reaction.misfire.6": {
+      "comment": "Funny one-line reaction shown after a misfire (stopped before 1 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eager beaver."
+          }
+        }
+      }
+    },
+    "reaction.misfire.7": {
+      "comment": "Funny one-line reaction shown after a misfire (stopped before 1 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hold your horses."
+          }
+        }
+      }
+    },
+    "reaction.misfire.8": {
+      "comment": "Funny one-line reaction shown after a misfire (stopped before 1 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You didn't even let it start."
+          }
+        }
+      }
+    },
+    "reaction.misfire.9": {
+      "comment": "Funny one-line reaction shown after a misfire (stopped before 1 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Speedrun mode: activated."
+          }
+        }
+      }
+    },
+    "reaction.off.1": {
+      "comment": "Funny one-line reaction shown after Off (within 2 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Did you fall asleep?"
+          }
+        }
+      }
+    },
+    "reaction.off.10": {
+      "comment": "Funny one-line reaction shown after Off (within 2 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That's not ten. That's a vibe."
+          }
+        }
+      }
+    },
+    "reaction.off.11": {
+      "comment": "Funny one-line reaction shown after Off (within 2 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oof."
+          }
+        }
+      }
+    },
+    "reaction.off.12": {
+      "comment": "Funny one-line reaction shown after Off (within 2 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Swing and a miss."
+          }
+        }
+      }
+    },
+    "reaction.off.13": {
+      "comment": "Funny one-line reaction shown after Off (within 2 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Somebody lend this person a watch."
+          }
+        }
+      }
+    },
+    "reaction.off.14": {
+      "comment": "Funny one-line reaction shown after Off (within 2 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seconds are hard. We get it."
+          }
+        }
+      }
+    },
+    "reaction.off.15": {
+      "comment": "Funny one-line reaction shown after Off (within 2 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Creative, but wrong."
+          }
+        }
+      }
+    },
+    "reaction.off.16": {
+      "comment": "Funny one-line reaction shown after Off (within 2 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your rhythm left the building."
+          }
+        }
+      }
+    },
+    "reaction.off.17": {
+      "comment": "Funny one-line reaction shown after Off (within 2 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Well, that happened."
+          }
+        }
+      }
+    },
+    "reaction.off.18": {
+      "comment": "Funny one-line reaction shown after Off (within 2 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Two seconds of pure chaos."
+          }
+        }
+      }
+    },
+    "reaction.off.19": {
+      "comment": "Funny one-line reaction shown after Off (within 2 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Points? Barely."
+          }
+        }
+      }
+    },
+    "reaction.off.2": {
+      "comment": "Funny one-line reaction shown after Off (within 2 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Way off."
+          }
+        }
+      }
+    },
+    "reaction.off.20": {
+      "comment": "Funny one-line reaction shown after Off (within 2 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That tap got lost on the way."
+          }
+        }
+      }
+    },
+    "reaction.off.21": {
+      "comment": "Funny one-line reaction shown after Off (within 2 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not even close. Okay, a little close."
+          }
+        }
+      }
+    },
+    "reaction.off.22": {
+      "comment": "Funny one-line reaction shown after Off (within 2 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ten seconds, your way."
+          }
+        }
+      }
+    },
+    "reaction.off.23": {
+      "comment": "Funny one-line reaction shown after Off (within 2 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The clock is laughing at you."
+          }
+        }
+      }
+    },
+    "reaction.off.24": {
+      "comment": "Funny one-line reaction shown after Off (within 2 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Interesting choice."
+          }
+        }
+      }
+    },
+    "reaction.off.25": {
+      "comment": "Funny one-line reaction shown after Off (within 2 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You blinked, didn't you?"
+          }
+        }
+      }
+    },
+    "reaction.off.26": {
+      "comment": "Funny one-line reaction shown after Off (within 2 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rough."
+          }
+        }
+      }
+    },
+    "reaction.off.27": {
+      "comment": "Funny one-line reaction shown after Off (within 2 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your timing is fashionably off."
+          }
+        }
+      }
+    },
+    "reaction.off.28": {
+      "comment": "Funny one-line reaction shown after Off (within 2 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remember: one, two, three... ten."
+          }
+        }
+      }
+    },
+    "reaction.off.29": {
+      "comment": "Funny one-line reaction shown after Off (within 2 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yikes."
+          }
+        }
+      }
+    },
+    "reaction.off.3": {
+      "comment": "Funny one-line reaction shown after Off (within 2 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That was a different ten."
+          }
+        }
+      }
+    },
+    "reaction.off.30": {
+      "comment": "Funny one-line reaction shown after Off (within 2 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Better luck next round."
+          }
+        }
+      }
+    },
+    "reaction.off.4": {
+      "comment": "Funny one-line reaction shown after Off (within 2 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your clock is in another time zone."
+          }
+        }
+      }
+    },
+    "reaction.off.5": {
+      "comment": "Funny one-line reaction shown after Off (within 2 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bold strategy."
+          }
+        }
+      }
+    },
+    "reaction.off.6": {
+      "comment": "Funny one-line reaction shown after Off (within 2 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Were you even counting?"
+          }
+        }
+      }
+    },
+    "reaction.off.7": {
+      "comment": "Funny one-line reaction shown after Off (within 2 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time is a construct, apparently."
+          }
+        }
+      }
+    },
+    "reaction.off.8": {
+      "comment": "Funny one-line reaction shown after Off (within 2 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Close... to something else."
+          }
+        }
+      }
+    },
+    "reaction.off.9": {
+      "comment": "Funny one-line reaction shown after Off (within 2 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your inner clock needs a reboot."
+          }
+        }
+      }
+    },
+    "reaction.sharp.1": {
+      "comment": "Funny one-line reaction shown after Sharp (within 0.25 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "So close you can taste it."
+          }
+        }
+      }
+    },
+    "reaction.sharp.10": {
+      "comment": "Funny one-line reaction shown after Sharp (within 0.25 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Well played, timekeeper."
+          }
+        }
+      }
+    },
+    "reaction.sharp.11": {
+      "comment": "Funny one-line reaction shown after Sharp (within 0.25 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Practically perfect."
+          }
+        }
+      }
+    },
+    "reaction.sharp.12": {
+      "comment": "Funny one-line reaction shown after Sharp (within 0.25 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Close enough to brag about."
+          }
+        }
+      }
+    },
+    "reaction.sharp.13": {
+      "comment": "Funny one-line reaction shown after Sharp (within 0.25 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Precision with a side of nerves."
+          }
+        }
+      }
+    },
+    "reaction.sharp.14": {
+      "comment": "Funny one-line reaction shown after Sharp (within 0.25 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "One blink away from glory."
+          }
+        }
+      }
+    },
+    "reaction.sharp.15": {
+      "comment": "Funny one-line reaction shown after Sharp (within 0.25 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Very nice. Not legendary, but very nice."
+          }
+        }
+      }
+    },
+    "reaction.sharp.16": {
+      "comment": "Funny one-line reaction shown after Sharp (within 0.25 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Smooth operator."
+          }
+        }
+      }
+    },
+    "reaction.sharp.17": {
+      "comment": "Funny one-line reaction shown after Sharp (within 0.25 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clean tap."
+          }
+        }
+      }
+    },
+    "reaction.sharp.18": {
+      "comment": "Funny one-line reaction shown after Sharp (within 0.25 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The clock nods approvingly."
+          }
+        }
+      }
+    },
+    "reaction.sharp.19": {
+      "comment": "Funny one-line reaction shown after Sharp (within 0.25 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Solid. Like a good handshake."
+          }
+        }
+      }
+    },
+    "reaction.sharp.2": {
+      "comment": "Funny one-line reaction shown after Sharp (within 0.25 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sharp as a tack."
+          }
+        }
+      }
+    },
+    "reaction.sharp.20": {
+      "comment": "Funny one-line reaction shown after Sharp (within 0.25 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You've done this before, haven't you?"
+          }
+        }
+      }
+    },
+    "reaction.sharp.21": {
+      "comment": "Funny one-line reaction shown after Sharp (within 0.25 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tidy."
+          }
+        }
+      }
+    },
+    "reaction.sharp.22": {
+      "comment": "Funny one-line reaction shown after Sharp (within 0.25 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sharp. Now get sharper."
+          }
+        }
+      }
+    },
+    "reaction.sharp.23": {
+      "comment": "Funny one-line reaction shown after Sharp (within 0.25 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nearly flawless timing."
+          }
+        }
+      }
+    },
+    "reaction.sharp.24": {
+      "comment": "Funny one-line reaction shown after Sharp (within 0.25 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That's the good stuff."
+          }
+        }
+      }
+    },
+    "reaction.sharp.25": {
+      "comment": "Funny one-line reaction shown after Sharp (within 0.25 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Within striking distance."
+          }
+        }
+      }
+    },
+    "reaction.sharp.26": {
+      "comment": "Funny one-line reaction shown after Sharp (within 0.25 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Big brain timing."
+          }
+        }
+      }
+    },
+    "reaction.sharp.27": {
+      "comment": "Funny one-line reaction shown after Sharp (within 0.25 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not bad at all."
+          }
+        }
+      }
+    },
+    "reaction.sharp.28": {
+      "comment": "Funny one-line reaction shown after Sharp (within 0.25 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A whisker from perfect."
+          }
+        }
+      }
+    },
+    "reaction.sharp.29": {
+      "comment": "Funny one-line reaction shown after Sharp (within 0.25 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The pros would approve."
+          }
+        }
+      }
+    },
+    "reaction.sharp.3": {
+      "comment": "Funny one-line reaction shown after Sharp (within 0.25 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A hair off. A very thin hair."
+          }
+        }
+      }
+    },
+    "reaction.sharp.30": {
+      "comment": "Funny one-line reaction shown after Sharp (within 0.25 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Strong tap. Strong vibes."
+          }
+        }
+      }
+    },
+    "reaction.sharp.4": {
+      "comment": "Funny one-line reaction shown after Sharp (within 0.25 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Respectable. Annoyingly respectable."
+          }
+        }
+      }
+    },
+    "reaction.sharp.5": {
+      "comment": "Funny one-line reaction shown after Sharp (within 0.25 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your inner clock needs a tiny tune-up."
+          }
+        }
+      }
+    },
+    "reaction.sharp.6": {
+      "comment": "Funny one-line reaction shown after Sharp (within 0.25 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nearly a masterpiece."
+          }
+        }
+      }
+    },
+    "reaction.sharp.7": {
+      "comment": "Funny one-line reaction shown after Sharp (within 0.25 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That's a podium finish."
+          }
+        }
+      }
+    },
+    "reaction.sharp.8": {
+      "comment": "Funny one-line reaction shown after Sharp (within 0.25 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Almost robotic. Almost."
+          }
+        }
+      }
+    },
+    "reaction.sharp.9": {
+      "comment": "Funny one-line reaction shown after Sharp (within 0.25 s).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tick, tock, nicely done."
+          }
+        }
+      }
+    },
+    "reaction.timeout.1": {
+      "comment": "Funny one-line reaction shown after a timeout (never stopped).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hello? Is anybody there?"
+          }
+        }
+      }
+    },
+    "reaction.timeout.10": {
+      "comment": "Funny one-line reaction shown after a timeout (never stopped).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap. The. Screen."
+          }
+        }
+      }
+    },
+    "reaction.timeout.2": {
+      "comment": "Funny one-line reaction shown after a timeout (never stopped).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "We waited. And waited."
+          }
+        }
+      }
+    },
+    "reaction.timeout.3": {
+      "comment": "Funny one-line reaction shown after a timeout (never stopped).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The phone fell asleep. So did you."
+          }
+        }
+      }
+    },
+    "reaction.timeout.4": {
+      "comment": "Funny one-line reaction shown after a timeout (never stopped).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ten seconds came and went. Twice."
+          }
+        }
+      }
+    },
+    "reaction.timeout.5": {
+      "comment": "Funny one-line reaction shown after a timeout (never stopped).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Did you forget to tap?"
+          }
+        }
+      }
+    },
+    "reaction.timeout.6": {
+      "comment": "Funny one-line reaction shown after a timeout (never stopped).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Earth to player."
+          }
+        }
+      }
+    },
+    "reaction.timeout.7": {
+      "comment": "Funny one-line reaction shown after a timeout (never stopped).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The moment has passed."
+          }
+        }
+      }
+    },
+    "reaction.timeout.8": {
+      "comment": "Funny one-line reaction shown after a timeout (never stopped).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Still counting? We stopped."
+          }
+        }
+      }
+    },
+    "reaction.timeout.9": {
+      "comment": "Funny one-line reaction shown after a timeout (never stopped).",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time ran out. Like, all of it."
+          }
+        }
+      }
+    }
   },
   "version": "1.0"
 }

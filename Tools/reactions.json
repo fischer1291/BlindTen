@@ -1,0 +1,80 @@
+{
+  "deadOn": [
+    "Surgical.", "Atomic clock energy.", "Frame it. Seriously.", "Your inner clock has a Swiss passport.",
+    "That's not luck. That's witchcraft.", "Somebody check this person for batteries.", "Time itself just took notes.",
+    "Flawless. Disgusting. Beautiful.", "You ARE the stopwatch.", "NASA is on line one.", "Precision level: laser.",
+    "That was illegal levels of accurate.", "Bow down.", "The universe blinked first.",
+    "Perfect. Now never do that again, it's unsettling.", "Metronomes everywhere are jealous.",
+    "Somebody film this. Oh wait, too late.", "Clockwork. Literally.", "History will remember this tap.",
+    "Mic drop. Phone stays.", "Is that a heartbeat or a quartz crystal?", "Textbook.", "The ten-second whisperer.",
+    "Bullseye.", "Dead on. Deadly.", "Even the phone is impressed.", "Legend status: unlocked.",
+    "Time bends to your will.", "Nobody breathe. That was perfect.", "Chef's kiss."
+  ],
+  "sharp": [
+    "So close you can taste it.", "Sharp as a tack.", "A hair off. A very thin hair.",
+    "Respectable. Annoyingly respectable.", "Your inner clock needs a tiny tune-up.", "Nearly a masterpiece.",
+    "That's a podium finish.", "Almost robotic. Almost.", "Tick, tock, nicely done.", "Well played, timekeeper.",
+    "Practically perfect.", "Close enough to brag about.", "Precision with a side of nerves.",
+    "One blink away from glory.", "Very nice. Not legendary, but very nice.", "Smooth operator.", "Clean tap.",
+    "The clock nods approvingly.", "Solid. Like a good handshake.", "You've done this before, haven't you?",
+    "Tidy.", "Sharp. Now get sharper.", "Nearly flawless timing.", "That's the good stuff.",
+    "Within striking distance.", "Big brain timing.", "Not bad at all.", "A whisker from perfect.",
+    "The pros would approve.", "Strong tap. Strong vibes."
+  ],
+  "close": [
+    "Close, but no trophy.", "In the neighborhood.", "Warm. Getting warmer.", "Decent. Not dazzling.",
+    "Your clock runs on vibes.", "Half a second of doubt.", "Not bad. Not great. Close.", "Ballpark: achieved.",
+    "Right street, wrong house.", "Room for improvement.", "Respectable effort.",
+    "You were thinking about it too hard.", "Close enough for a party.", "Fine. Totally fine.",
+    "Middle of the pack energy.", "Hm. Solid-ish.", "Your rhythm wobbled.", "That's a B-minus.",
+    "Almost had it.", "Not quite the sweet spot.", "Near miss.", "Close. Like, emotionally close.",
+    "The clock shrugs.", "Decent hustle.", "So-so seconds.", "Mildly impressive.",
+    "On the edge of greatness. The far edge.", "Not a disaster.", "Good, not great.", "Keep practicing, champ."
+  ],
+  "meh": [
+    "Meh.", "Your inner clock is buffering.", "That was... a guess.", "A full second of creative freedom.",
+    "Sure. Why not.", "Timing is not your love language.", "You counted Mississippis, didn't you?",
+    "Vaguely in the right direction.", "The clock is disappointed, but not surprised.",
+    "Approximately approximate.", "Close-ish. Very -ish.", "Were you counting or daydreaming?",
+    "That's what we call an estimate.", "Interesting interpretation of ten.", "Points for confidence.",
+    "Your rhythm took a coffee break.", "Mediocre, but with style.", "Let's call it a warm-up.",
+    "A for effort. C for timing.", "The seconds slipped away.", "Not your finest moment.",
+    "Your clock needs new batteries.", "Hmm. Hmmmm.", "Average. Painfully average.",
+    "A second off. A whole second.", "That tap had doubts.", "Somewhere near ten. Ish.",
+    "Your internal metronome hiccupped.", "Next time, try counting.", "Unremarkable. Moving on."
+  ],
+  "off": [
+    "Did you fall asleep?", "Way off.", "That was a different ten.", "Your clock is in another time zone.",
+    "Bold strategy.", "Were you even counting?", "Time is a construct, apparently.", "Close... to something else.",
+    "Your inner clock needs a reboot.", "That's not ten. That's a vibe.", "Oof.", "Swing and a miss.",
+    "Somebody lend this person a watch.", "Seconds are hard. We get it.", "Creative, but wrong.",
+    "Your rhythm left the building.", "Well, that happened.", "Two seconds of pure chaos.", "Points? Barely.",
+    "That tap got lost on the way.", "Not even close. Okay, a little close.", "Ten seconds, your way.",
+    "The clock is laughing at you.", "Interesting choice.", "You blinked, didn't you?", "Rough.",
+    "Your timing is fashionably off.", "Remember: one, two, three... ten.", "Yikes.", "Better luck next round."
+  ],
+  "lostInTime": [
+    "Lost in time. Truly lost.", "Did you go on vacation?", "Time traveler detected.",
+    "That wasn't ten. That was a lifetime.", "Hello? Anyone in there?", "Your inner clock has left the chat.",
+    "We aged during that turn.", "Seconds? You meant minutes.", "Spectacularly wrong.",
+    "The clock filed a complaint.", "That's a new record. The bad kind.", "Were you counting in dog years?",
+    "Please return the phone to the timeline.", "Absolutely lost.", "Not even in the same universe.",
+    "Your sense of time is a mystery to science.", "Delightfully terrible.",
+    "This will be talked about. Negatively.", "Your rhythm is in another dimension.",
+    "Somebody call a search party.", "A bold reinterpretation of time.", "Chaos incarnate.",
+    "Zero points, maximum entertainment.", "We'll pretend that didn't happen.",
+    "Time is a flat circle, and you missed it.", "Legendary. For all the wrong reasons.",
+    "The seconds wandered off without you.", "Did your thumb get stuck?", "Even the sundial was faster.",
+    "Thanks for the laugh."
+  ],
+  "misfire": [
+    "Patience is a virtue. Not yours.", "Slow down, speed racer.", "That was barely a second.",
+    "The finger slipped. Sure it did.", "Ten seconds, not ten milliseconds.", "Eager beaver.",
+    "Hold your horses.", "You didn't even let it start.", "Speedrun mode: activated.", "Somebody's in a hurry."
+  ],
+  "timeout": [
+    "Hello? Is anybody there?", "We waited. And waited.", "The phone fell asleep. So did you.",
+    "Ten seconds came and went. Twice.", "Did you forget to tap?", "Earth to player.", "The moment has passed.",
+    "Still counting? We stopped.", "Time ran out. Like, all of it.", "Tap. The. Screen."
+  ]
+}
