@@ -8,7 +8,8 @@ costs nothing for shots already done). Standard library only.
 
     GEMINI_API_KEY=... python3 marketing/reel60/generate_clips.py [--shots S01,S04] [--model veo-...]
 
-Without --model it picks the newest Veo model the key can use.
+Without --model it picks a "fast" Veo model when the key has one: close to
+the full model's look at a fraction of the price. Pass --model for another.
 """
 import argparse
 import json
@@ -24,6 +25,10 @@ API = "https://generativelanguage.googleapis.com/v1beta"
 NEGATIVE = "text, captions, watermark, logo, readable phone screen, distorted hands, extra fingers, alcohol bottles"
 
 
+class APIError(Exception):
+    pass
+
+
 def request(method, url, key, body=None):
     data = json.dumps(body).encode() if body is not None else None
     req = urllib.request.Request(url, data=data, method=method, headers={
@@ -34,7 +39,7 @@ def request(method, url, key, body=None):
         with urllib.request.urlopen(req, timeout=120) as resp:
             return json.loads(resp.read() or b"{}")
     except urllib.error.HTTPError as err:
-        sys.exit(f"{method} {url.split('?')[0]} failed: {err.code} {err.read().decode(errors='replace')[:600]}")
+        raise APIError(f"{method} {url.split('?')[0]} failed: {err.code} {err.read().decode(errors='replace')[:600]}")
 
 
 def pick_model(key):
@@ -46,9 +51,12 @@ def pick_model(key):
     if not veo:
         sys.exit("This API key has no Veo model. Enable billing in Google AI Studio and try again.")
     print("Veo models available:", ", ".join(veo))
-    # Prefer the newest full model over fast/preview variants.
-    stable = [m for m in veo if "fast" not in m and "preview" not in m] or veo
-    return stable[-1]
+    # Fast first (good look, moderate price), then the full model; "lite" last.
+    for kind in ("fast", "full", "lite"):
+        match = [m for m in veo if (kind in m) or (kind == "full" and "fast" not in m and "lite" not in m)]
+        if match:
+            return match[-1]
+    return veo[-1]
 
 
 def download(uri, key, out):
@@ -59,18 +67,26 @@ def download(uri, key, out):
 
 
 def generate(shot, style, model, key):
-    body = {
-        "instances": [{"prompt": f"{shot['prompt']} {style}"}],
-        "parameters": {"aspectRatio": "9:16", "negativePrompt": NEGATIVE},
-    }
-    op = request("POST", f"{API}/models/{model}:predictLongRunning", key, body)
+    prompt = f"{shot['prompt']} {style}"
+    body = {"instances": [{"prompt": prompt}], "parameters": {"aspectRatio": "9:16", "negativePrompt": NEGATIVE}}
+    try:
+        op = request("POST", f"{API}/models/{model}:predictLongRunning", key, body)
+    except APIError as err:
+        if "negativePrompt" not in str(err):
+            raise
+        # Some models take no negative prompt: say it in the prompt instead.
+        body = {"instances": [{"prompt": f"{prompt} Avoid: {NEGATIVE}."}], "parameters": {"aspectRatio": "9:16"}}
+        op = request("POST", f"{API}/models/{model}:predictLongRunning", key, body)
     name = op["name"]
     started = time.time()
     while not op.get("done"):
         if time.time() - started > 900:
             sys.exit(f"{shot['id']}: no video after 15 minutes")
         time.sleep(10)
-        op = request("GET", f"{API}/{name}", key)
+        try:
+            op = request("GET", f"{API}/{name}", key)
+        except APIError as err:
+            print(f"{shot['id']}: polling hiccup, retrying ({err})")
     if "error" in op:
         print(f"{shot['id']}: failed: {op['error'].get('message')}")
         return None
@@ -109,7 +125,11 @@ def main():
     failed = []
     for shot in todo:
         print(f"{shot['id']}: generating…", flush=True)
-        uri = generate(shot, config["style"], model, key)
+        try:
+            uri = generate(shot, config["style"], model, key)
+        except APIError as err:
+            print(f"{shot['id']}: {err}")
+            uri = None
         if uri:
             download(uri, key, clips / f"{shot['id']}.mp4")
             print(f"{shot['id']}: saved")
