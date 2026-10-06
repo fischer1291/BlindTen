@@ -53,7 +53,19 @@ python3 marketing/reel60/build.py
 The app screens are re-drawn from the app's design, so they always match the
 real game and need no screen recording.
 
-## Generating the AI clips
+## Generating the AI clips automatically (Gemini API / Veo)
+
+1. Create an API key in Google AI Studio and turn on billing (Veo is paid
+   per generated second).
+2. Add it as repository secret `GEMINI_API_KEY` (Settings → Secrets and
+   variables → Actions).
+3. Run the **Reel** workflow (Actions → Reel → Run workflow). It generates
+   every missing shot with `generate_clips.py`, builds the video and commits
+   the clips and `marketing/video/reel-60s.mp4` to the branch.
+4. Not happy with a shot? Run it again with e.g. `S04,S10` and "redo" on;
+   only those shots are generated again.
+
+## Generating the AI clips by hand
 
 Any text-to-video tool works (for example Sora, Veo, Runway or Kling). For
 each shot:

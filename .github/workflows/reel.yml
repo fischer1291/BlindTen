@@ -1,0 +1,75 @@
+name: Reel
+
+# Generates the missing AI shots of the 60 s reel with Veo (Gemini API),
+# builds the video and commits clips and result to this branch.
+# Needs the repository secret GEMINI_API_KEY (Google AI Studio, billing on).
+
+on:
+  workflow_dispatch:
+    inputs:
+      shots:
+        description: "Shot IDs to (re)generate, e.g. S04,S10 (empty: all missing)"
+        required: false
+      redo:
+        description: "Regenerate those shots even if a clip exists"
+        type: boolean
+        default: false
+      model:
+        description: "Veo model (empty: newest available)"
+        required: false
+      generate:
+        description: "Generate AI clips (off: only rebuild the video)"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: reel
+  cancel-in-progress: false
+
+jobs:
+  reel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install tools
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg fonts-noto-color-emoji
+          pip install -q playwright pillow
+          python -m playwright install --with-deps chromium
+
+      - name: Generate AI clips
+        if: inputs.generate
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          SHOTS: ${{ inputs.shots }}
+          MODEL: ${{ inputs.model }}
+          REDO: ${{ inputs.redo }}
+        run: |
+          args=(--shots "$SHOTS")
+          [ -n "$MODEL" ] && args+=(--model "$MODEL")
+          [ "$REDO" = "true" ] && args+=(--redo)
+          python marketing/reel60/generate_clips.py "${args[@]}"
+
+      - name: Build the reel
+        run: python marketing/reel60/build.py
+
+      - name: Commit clips and video
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add marketing/reel60/clips marketing/video
+          if git diff --cached --quiet; then
+            echo "Nothing new to commit."
+          else
+            git commit -m "Update reel clips and video [skip ci]"
+            git push
+          fi
