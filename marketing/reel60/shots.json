@@ -4,61 +4,227 @@
   "height": 1920,
   "style": "Vertical 9:16 video, shot on a smartphone, handheld and candid, warm practical lighting, shallow depth of field, natural skin tones, friends in their twenties and thirties from diverse backgrounds, energetic and joyful party mood. Phone screens face away from the camera or show only a bright yellow glow. No readable text, no logos, no alcohol in focus.",
   "shots": [
-    {"id": "S01", "start": 0.0, "duration": 2.0, "type": "ai",
-     "prompt": "Extreme close-up of a thumb about to tap a phone screen in a dim, cozy bar at night; four friends lean in behind it, faces lit by warm bar lights and the phone's yellow glow, holding their breath.",
-     "overlay": {"text": "Can you feel"}},
-    {"id": "S02", "start": 2.0, "duration": 2.0, "type": "ai",
-     "prompt": "Five friends on a living-room couch explode into cheers and laughter, arms in the air, one grabbing another's shoulder, handheld camera shaking with the energy.",
-     "overlay": {"text": "[10 seconds]?"}},
-    {"id": "S03", "start": 4.0, "duration": 2.5, "type": "app", "scene": "start",
-     "overlay": {"step": "1", "text": "Tap START"}},
-    {"id": "S04", "start": 6.5, "duration": 2.0, "type": "ai",
-     "prompt": "A young woman in a bar closes her eyes and concentrates hard while holding a phone; her friends around the table silently watch her, biting their lips, trying not to laugh.",
-     "overlay": {"step": "2", "text": "The timer vanishes"}},
-    {"id": "S05", "start": 8.5, "duration": 2.0, "type": "app", "scene": "blind",
-     "overlay": {"step": "3", "text": "Stop at exactly [10.00]"}},
-    {"id": "S06", "start": 10.5, "duration": 2.0, "type": "ai",
-     "prompt": "Close-up of a guy in a hoodie secretly counting on his fingers under a bar table; his friends catch him and point at him, laughing.",
-     "overlay": {"text": "No peeking."}},
-    {"id": "S07", "start": 12.5, "duration": 2.5, "type": "app", "scene": "reveal-lost"},
-    {"id": "S08", "start": 15.0, "duration": 1.5, "type": "ai",
-     "prompt": "A friend facepalms dramatically while everyone around a kitchen table laughs hysterically, evening light, snacks on the table."},
-    {"id": "S09", "start": 16.5, "duration": 2.0, "type": "ai",
-     "prompt": "Hands quickly passing a smartphone from person to person across a crowded bar table with snacks and soft drinks, fast motion, shallow depth of field.",
-     "overlay": {"text": "Pass the phone"}},
-    {"id": "S10", "start": 18.5, "duration": 2.0, "type": "ai",
-     "prompt": "A grandmother and her twenty-something granddaughter on a cozy couch high-five and burst out laughing, a phone in the granddaughter's hand.",
-     "overlay": {"text": "Anyone can play"}},
-    {"id": "S11", "start": 20.5, "duration": 2.0, "type": "app", "scene": "showdown",
-     "overlay": {"text": "Showdown: [1 vs 1]"}},
-    {"id": "S12", "start": 22.5, "duration": 2.0, "type": "ai",
-     "prompt": "Two friends face to face over one phone lying flat on a table, each with a thumb ready on their half of the screen, intense rivalry, friends cheering behind them."},
-    {"id": "S13", "start": 24.5, "duration": 2.0, "type": "ai",
-     "prompt": "Friends at a rooftop party at golden hour scream with joy around a phone, string lights and a city skyline behind them."},
-    {"id": "S14", "start": 26.5, "duration": 2.0, "type": "app", "scene": "reveal-sharp"},
-    {"id": "S15", "start": 28.5, "duration": 1.8, "type": "ai",
-     "prompt": "A young man celebrates with both arms up at a house party in a kitchen, friends hugging him and laughing."},
-    {"id": "S16", "start": 30.3, "duration": 1.7, "type": "ai",
-     "prompt": "A young woman laughs so hard she cries and falls back into the couch cushions, friends laughing around her."},
-    {"id": "S17", "start": 32.0, "duration": 3.0, "type": "ai",
-     "prompt": "Wide shot of a living room at night: six friends on a sofa, each holding their own phone, a large TV on the wall glowing with bright yellow light, everyone leaning forward in suspense.",
-     "overlay": {"text": "Play together on the [TV]"}},
-    {"id": "S18", "start": 35.0, "duration": 3.0, "type": "app", "scene": "tv",
-     "overlay": {"text": "Everyone joins with their own iPhone"}},
-    {"id": "S19", "start": 38.0, "duration": 3.0, "type": "ai",
-     "prompt": "Over-the-shoulder shot of a young man staring at his phone in a dim living room while the whole room watches the glowing TV in suspense."},
-    {"id": "S20", "start": 41.0, "duration": 3.0, "type": "ai",
-     "prompt": "The whole group jumps up from the couch cheering, popcorn flying through the air, one friend pointing at the TV in disbelief, slow motion."},
-    {"id": "S21", "start": 44.0, "duration": 2.0, "type": "app", "scene": "drumroll"},
-    {"id": "S22", "start": 46.0, "duration": 3.0, "type": "app", "scene": "dead-on"},
-    {"id": "S23", "start": 49.0, "duration": 3.0, "type": "ai",
-     "prompt": "Slow motion: friends lift the winner onto their shoulders in a lively bar, confetti in the air, everyone screaming with joy.",
-     "overlay": {"text": "[DEAD ON.]"}},
-    {"id": "S24", "start": 52.0, "duration": 8.0, "type": "card", "scene": "end"}
+    {
+      "id": "S01",
+      "start": 0.0,
+      "duration": 2.0,
+      "type": "ai",
+      "prompt": "Extreme close-up of a thumb about to tap a phone screen in a dim, cozy bar at night; four friends lean in behind it, faces lit by warm bar lights and the phone's yellow glow, holding their breath.",
+      "overlay": {
+        "text": "Can you feel"
+      }
+    },
+    {
+      "id": "S02",
+      "start": 2.0,
+      "duration": 2.0,
+      "type": "ai",
+      "prompt": "Five friends on a living-room couch explode into cheers and laughter, arms in the air, one grabbing another's shoulder, handheld camera shaking with the energy.",
+      "overlay": {
+        "text": "[10 seconds]?"
+      },
+      "zoom": 1.14
+    },
+    {
+      "id": "S03",
+      "start": 4.0,
+      "duration": 2.5,
+      "type": "app",
+      "scene": "start",
+      "overlay": {
+        "step": "1",
+        "text": "Tap START"
+      }
+    },
+    {
+      "id": "S04",
+      "start": 6.5,
+      "duration": 2.0,
+      "type": "ai",
+      "prompt": "A young woman in a bar closes her eyes and concentrates hard while holding a phone; her friends around the table silently watch her, biting their lips, trying not to laugh.",
+      "overlay": {
+        "step": "2",
+        "text": "The timer vanishes"
+      }
+    },
+    {
+      "id": "S05",
+      "start": 8.5,
+      "duration": 2.0,
+      "type": "app",
+      "scene": "blind",
+      "overlay": {
+        "step": "3",
+        "text": "Stop at exactly [10.00]"
+      }
+    },
+    {
+      "id": "S06",
+      "start": 10.5,
+      "duration": 2.0,
+      "type": "ai",
+      "prompt": "Close-up of a guy in a hoodie secretly counting on his fingers under a bar table; his friends catch him and point at him, laughing.",
+      "overlay": {
+        "text": "No peeking."
+      }
+    },
+    {
+      "id": "S07",
+      "start": 12.5,
+      "duration": 2.5,
+      "type": "app",
+      "scene": "reveal-lost"
+    },
+    {
+      "id": "S08",
+      "start": 15.0,
+      "duration": 1.5,
+      "type": "ai",
+      "prompt": "A friend facepalms dramatically while everyone around a kitchen table laughs hysterically, evening light, snacks on the table."
+    },
+    {
+      "id": "S09",
+      "start": 16.5,
+      "duration": 2.0,
+      "type": "ai",
+      "prompt": "Hands quickly passing a smartphone from person to person across a crowded bar table with snacks and soft drinks, fast motion, shallow depth of field.",
+      "overlay": {
+        "text": "Pass the phone"
+      }
+    },
+    {
+      "id": "S10",
+      "start": 18.5,
+      "duration": 2.0,
+      "type": "ai",
+      "prompt": "A grandmother and her twenty-something granddaughter on a cozy couch high-five and burst out laughing, a phone in the granddaughter's hand.",
+      "overlay": {
+        "text": "Anyone can play"
+      }
+    },
+    {
+      "id": "S11",
+      "start": 20.5,
+      "duration": 2.0,
+      "type": "app",
+      "scene": "showdown",
+      "overlay": {
+        "text": "Showdown: [1 vs 1]"
+      }
+    },
+    {
+      "id": "S12",
+      "start": 22.5,
+      "duration": 2.0,
+      "type": "ai",
+      "prompt": "Two friends face to face over one phone lying flat on a table, each with a thumb ready on their half of the screen, intense rivalry, friends cheering behind them."
+    },
+    {
+      "id": "S13",
+      "start": 24.5,
+      "duration": 2.0,
+      "type": "ai",
+      "prompt": "Friends at a rooftop party at golden hour scream with joy around a phone, string lights and a city skyline behind them."
+    },
+    {
+      "id": "S14",
+      "start": 26.5,
+      "duration": 2.0,
+      "type": "app",
+      "scene": "reveal-sharp"
+    },
+    {
+      "id": "S15",
+      "start": 28.5,
+      "duration": 1.8,
+      "type": "ai",
+      "prompt": "A young man celebrates with both arms up at a house party in a kitchen, friends hugging him and laughing."
+    },
+    {
+      "id": "S16",
+      "start": 30.3,
+      "duration": 1.7,
+      "type": "ai",
+      "prompt": "A young woman laughs so hard she cries and falls back into the couch cushions, friends laughing around her."
+    },
+    {
+      "id": "S17",
+      "start": 32.0,
+      "duration": 3.0,
+      "type": "ai",
+      "prompt": "Wide shot of a living room at night: six friends on a sofa, each holding their own phone, a large TV on the wall glowing with bright yellow light, everyone leaning forward in suspense.",
+      "overlay": {
+        "text": "Play together on the [TV]"
+      }
+    },
+    {
+      "id": "S18",
+      "start": 35.0,
+      "duration": 3.0,
+      "type": "app",
+      "scene": "tv",
+      "overlay": {
+        "text": "Everyone joins with their own iPhone"
+      }
+    },
+    {
+      "id": "S19",
+      "start": 38.0,
+      "duration": 3.0,
+      "type": "ai",
+      "prompt": "Over-the-shoulder shot of a young man staring at his phone in a dim living room while the whole room watches the glowing TV in suspense."
+    },
+    {
+      "id": "S20",
+      "start": 41.0,
+      "duration": 3.0,
+      "type": "ai",
+      "prompt": "The whole group jumps up from the couch cheering, popcorn flying through the air, one friend pointing at the TV in disbelief, slow motion."
+    },
+    {
+      "id": "S21",
+      "start": 44.0,
+      "duration": 2.0,
+      "type": "app",
+      "scene": "drumroll"
+    },
+    {
+      "id": "S22",
+      "start": 46.0,
+      "duration": 3.0,
+      "type": "app",
+      "scene": "dead-on"
+    },
+    {
+      "id": "S23",
+      "start": 49.0,
+      "duration": 3.0,
+      "type": "ai",
+      "prompt": "Slow motion: friends lift the winner onto their shoulders in a lively bar, confetti in the air, everyone screaming with joy.",
+      "overlay": {
+        "text": "[DEAD ON.]"
+      }
+    },
+    {
+      "id": "S24",
+      "start": 52.0,
+      "duration": 8.0,
+      "type": "card",
+      "scene": "end"
+    }
   ],
   "sfx": [
-    {"file": "trombone.wav", "at": 13.75},
-    {"file": "drumroll.wav", "at": 44.3},
-    {"file": "cymbal.wav", "at": 46.05}
+    {
+      "file": "trombone.wav",
+      "at": 13.75
+    },
+    {
+      "file": "drumroll.wav",
+      "at": 44.3
+    },
+    {
+      "file": "cymbal.wav",
+      "at": 46.05
+    }
   ]
 }

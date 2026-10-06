@@ -138,6 +138,11 @@ def main():
             uri = generate(shot, config["style"], model, key)
         except APIError as err:
             print(f"{shot['id']}: {err}")
+            if " 429 " in str(err):
+                rest = [s["id"] for s in todo[todo.index(shot):]]
+                print("Daily quota reached; run again later for:", ", ".join(rest))
+                failed += rest
+                break
             uri = None
         if uri:
             download(uri, key, clips / f"{shot['id']}.mp4")

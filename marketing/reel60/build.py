@@ -296,8 +296,12 @@ def build_segment(pg, shot):
     else:
         clip = find_clip(shot["id"])
         if clip:
-            ffmpeg("-i", str(clip), "-t", f"{dur}", "-an", "-vf",
-                   f"scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},setsar=1,fps={FPS}",
+            # "offset" skips the calm start of a generated clip; "zoom" crops
+            # into the middle, e.g. to hide UI the model drew at the edges.
+            offset, zoom = shot.get("offset", 1.0), shot.get("zoom", 1.0)
+            zw, zh = round(W * zoom / 2) * 2, round(H * zoom / 2) * 2
+            ffmpeg("-ss", f"{offset}", "-i", str(clip), "-t", f"{dur}", "-an", "-vf",
+                   f"scale={zw}:{zh}:force_original_aspect_ratio=increase,crop={W}:{H},setsar=1,fps={FPS}",
                    *ENCODE, *frames, str(base))
         else:
             missing = True
