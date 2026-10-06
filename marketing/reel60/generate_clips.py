@@ -68,15 +68,24 @@ def download(uri, key, out):
 
 def generate(shot, style, model, key):
     prompt = f"{shot['prompt']} {style}"
-    body = {"instances": [{"prompt": prompt}], "parameters": {"aspectRatio": "9:16", "negativePrompt": NEGATIVE}}
-    try:
-        op = request("POST", f"{API}/models/{model}:predictLongRunning", key, body)
-    except APIError as err:
-        if "negativePrompt" not in str(err):
-            raise
-        # Some models take no negative prompt: say it in the prompt instead.
-        body = {"instances": [{"prompt": f"{prompt} Avoid: {NEGATIVE}."}], "parameters": {"aspectRatio": "9:16"}}
-        op = request("POST", f"{API}/models/{model}:predictLongRunning", key, body)
+    params = {"aspectRatio": "9:16", "resolution": "1080p", "negativePrompt": NEGATIVE}
+    op = None
+    for _ in range(3):
+        body = {"instances": [{"prompt": prompt}], "parameters": params}
+        try:
+            op = request("POST", f"{API}/models/{model}:predictLongRunning", key, body)
+            break
+        except APIError as err:
+            # Drop what this model does not support and try again.
+            if "negativePrompt" in str(err) and "negativePrompt" in params:
+                params.pop("negativePrompt")
+                prompt = f"{prompt} Avoid: {NEGATIVE}."
+            elif "resolution" in str(err) and "resolution" in params:
+                params.pop("resolution")
+            else:
+                raise
+    if op is None:
+        raise APIError("request rejected")
     name = op["name"]
     started = time.time()
     while not op.get("done"):
