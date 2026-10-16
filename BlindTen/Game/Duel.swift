@@ -16,6 +16,12 @@ struct DuelState: Codable, Equatable, Sendable {
         let isFinal: Bool
     }
 
+    /// A quick-chat phrase sent along with a turn.
+    struct Message: Codable, Equatable, Sendable {
+        let player: Int
+        let phraseID: String
+    }
+
     enum RoundResult: Equatable, Sendable {
         case won(by: Int)
         case tie
@@ -40,6 +46,10 @@ struct DuelState: Codable, Equatable, Sendable {
     let seed: UInt64
     /// turns[player][round], player 0 = the duel's creator.
     private(set) var turns: [[Turn?]]
+    /// Quick-chat phrases, oldest first.
+    private(set) var messages: [Message] = []
+
+    static let maxMessages = 20
 
     init(kind: ChallengeKind, seed: UInt64 = UInt64.random(in: 0...UInt64.max)) {
         version = Self.currentVersion
@@ -98,6 +108,15 @@ struct DuelState: Codable, Equatable, Sendable {
         turns[player][round] = Turn(stopped: stopped, isFinal: true)
     }
 
+    /// Adds a preset phrase; unknown phrase IDs are dropped.
+    mutating func say(_ phraseID: String, player: Int) {
+        guard QuickChat.phrase(phraseID) != nil else { return }
+        messages.append(Message(player: player, phraseID: phraseID))
+        if messages.count > Self.maxMessages {
+            messages.removeFirst(messages.count - Self.maxMessages)
+        }
+    }
+
     // MARK: - Results
 
     /// The round's winner, once both have played it.
@@ -145,6 +164,22 @@ struct DuelState: Codable, Equatable, Sendable {
     }
 
     // MARK: - Match data
+
+    private enum CodingKeys: String, CodingKey {
+        case version, kind, seed, turns, messages
+    }
+
+    /// Duels saved before messages existed still load.
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        version = try container.decode(Int.self, forKey: .version)
+        kind = try container.decode(ChallengeKind.self, forKey: .kind)
+        seed = try container.decode(UInt64.self, forKey: .seed)
+        turns = try container.decode([[Turn?]].self, forKey: .turns)
+        messages = (try? container.decodeIfPresent([Message].self, forKey: .messages)) ?? []
+        // A modified app could send anything; keep only known phrases.
+        messages = messages.filter { QuickChat.phrase($0.phraseID) != nil && (0...1).contains($0.player) }
+    }
 
     func encoded() -> Data? {
         try? JSONEncoder().encode(self)

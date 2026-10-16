@@ -7,6 +7,7 @@ struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @AppStorage(SoundSettings.enabledKey) private var soundEnabled = true
     @AppStorage(HouseRuleSettings.enabledKey) private var houseRulesEnabled = false
+    @AppStorage(QuickChatSettings.showOthersKey) private var showsQuickChat = true
     @State private var showingPaywall = false
 
     var body: some View {
@@ -17,6 +18,14 @@ struct SettingsView: View {
                         .font(.title3)
                 } footer: {
                     Text("Sounds follow the silent switch.")
+                }
+                .listRowBackground(Theme.surface)
+
+                Section {
+                    Toggle("Show reactions from others", isOn: $showsQuickChat)
+                        .font(.title3)
+                } footer: {
+                    Text("In online play, players can only send preset phrases and emoji, never their own text.")
                 }
                 .listRowBackground(Theme.surface)
 

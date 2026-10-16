@@ -41,6 +41,8 @@ final class DuelCenter {
     var pendingMatchID: String?
     /// True while the duel list is on screen, so Home does not push a second one.
     @ObservationIgnored var isListVisible = false
+    /// The duel being played right now; its turn is passed from the summary.
+    @ObservationIgnored var activeMatchID: String?
 
     @ObservationIgnored private var matches: [String: GKTurnBasedMatch] = [:]
     /// The kind picked for the last new duel; a creator's match starts empty.
@@ -70,6 +72,7 @@ final class DuelCenter {
             duels = loaded.compactMap(summary(for:)).sorted(by: Self.order)
             lastError = nil
             countFinishedDuels()
+            passFinishedTurns()
         } catch {
             lastError = error.localizedDescription
         }
@@ -149,7 +152,14 @@ final class DuelCenter {
                 onFinished?(id, Self.result(outcome, me: me))
             } else {
                 let opponent = match.participants[1 - me]
-                match.message = String(localized: "\(GKLocalPlayer.local.displayName) played. Your turn!")
+                let previous = DuelState.decode(match.matchData)?.messages.count ?? 0
+                let newState = DuelState.decode(data)
+                if let newState, newState.messages.count > previous, let last = newState.messages.last,
+                   last.player == me, let phrase = QuickChat.text(for: last.phraseID) {
+                    match.message = "\(GKLocalPlayer.local.displayName): \(phrase)"
+                } else {
+                    match.message = String(localized: "\(GKLocalPlayer.local.displayName) played. Your turn!")
+                }
                 try await match.endTurn(withNextParticipants: [opponent], turnTimeout: GKTurnTimeoutDefault, match: data)
             }
             lastError = nil
@@ -240,6 +250,17 @@ final class DuelCenter {
             lastChange: match.participants.compactMap(\.lastTurnDate).max() ?? match.creationDate,
             opponentQuit: opponentQuit
         )
+    }
+
+    /// A turn whose rounds are all played but that never went on (the app
+    /// was closed on the summary) is passed on now.
+    private func passFinishedTurns() {
+        for duel in duels where duel.status == .yourTurn && duel.id != activeMatchID {
+            guard let state = duel.state, state.nextRound(for: duel.me) == nil,
+                  state.turn(player: duel.me, round: 0) != nil
+            else { continue }
+            update(duel.id, state: state, isTurnComplete: true)
+        }
     }
 
     private func countFinishedDuels() {

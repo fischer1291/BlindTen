@@ -15,6 +15,7 @@ struct DuelDetailView: View {
                 if let duel {
                     header(duel)
                     rounds(duel)
+                    messages(duel)
                     actions(duel)
                 } else {
                     ProgressView()
@@ -28,6 +29,7 @@ struct DuelDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .refreshable { await state.duels.refresh() }
         .fullScreenCover(item: $session, onDismiss: {
+            state.duels.activeMatchID = nil
             Task { await state.duels.refresh() }
         }, content: { session in
             ChallengeRunView(session: session) {}
@@ -81,6 +83,33 @@ struct DuelDetailView: View {
         }
     }
 
+    /// The preset phrases sent with each turn, newest first.
+    @ViewBuilder
+    private func messages(_ duel: DuelCenter.Summary) -> some View {
+        if let messages = duel.state?.messages, !messages.isEmpty {
+            VStack(alignment: .leading, spacing: 8) {
+                ForEach(Array(messages.suffix(6).reversed().enumerated()), id: \.offset) { _, message in
+                    let isMine = message.player == duel.me
+                    HStack {
+                        if isMine { Spacer(minLength: 40) }
+                        VStack(alignment: isMine ? .trailing : .leading, spacing: 2) {
+                            Text(verbatim: isMine ? String(localized: "You") : (duel.opponentName ?? String(localized: "Opponent")))
+                                .font(.caption.weight(.heavy))
+                                .foregroundStyle(Theme.secondaryText)
+                            Text(verbatim: QuickChat.text(for: message.phraseID) ?? "")
+                                .font(.headline.weight(.bold))
+                                .padding(.horizontal, 14)
+                                .padding(.vertical, 8)
+                                .foregroundStyle(isMine ? Theme.onAccent : Theme.primaryText)
+                                .background(isMine ? Theme.accent : Theme.surface, in: Capsule())
+                        }
+                        if !isMine { Spacer(minLength: 40) }
+                    }
+                }
+            }
+        }
+    }
+
     @ViewBuilder
     private func actions(_ duel: DuelCenter.Summary) -> some View {
         VStack(spacing: 12) {
@@ -88,6 +117,7 @@ struct DuelDetailView: View {
             case .yourTurn:
                 Button("Play your turn") {
                     if let plan = state.duels.plan(for: matchID) {
+                        state.duels.activeMatchID = matchID
                         session = state.makeDuelSession(plan)
                     }
                 }

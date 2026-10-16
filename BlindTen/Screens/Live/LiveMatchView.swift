@@ -16,6 +16,22 @@ struct LiveMatchView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Theme.background.ignoresSafeArea())
             .foregroundStyle(Theme.primaryText)
+            .overlay(alignment: .top) {
+                if chatContext != nil {
+                    QuickChatBubbles(feed: chat, player: player(withID:), me: me?.id)
+                        .padding(.top, 8)
+                }
+            }
+            .safeAreaInset(edge: .bottom) {
+                if let chatContext {
+                    QuickChatBar(context: chatContext) { id in
+                        sendReaction(id)
+                    }
+                    .padding(.vertical, 10)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
+            }
+            .animation(Motion.spring, value: chatContext)
             .onAppear {
                 UIApplication.shared.isIdleTimerDisabled = true
                 state.feel.prepare()
@@ -80,6 +96,53 @@ struct LiveMatchView: View {
         switch client.status {
         case .reconnecting, .rejected: return true
         case .browsing, .connecting, .connected: return false
+        }
+    }
+
+    // MARK: - Quick chat
+
+    private var chat: QuickChatFeed {
+        switch match {
+        case .host(let host): host.chat
+        case .client(let client): client.chat
+        }
+    }
+
+    private func sendReaction(_ id: String) {
+        switch match {
+        case .host(let host): host.sendReaction(id)
+        case .client(let client): client.sendReaction(id)
+        }
+    }
+
+    private func player(withID id: String) -> Player? {
+        snapshot?.players.first { $0.player.id.uuidString == id }?.player
+    }
+
+    /// Phrases that fit the moment; nil hides the chat (START and the blind
+    /// phase must stay free of distractions).
+    private var chatContext: QuickChat.Context? {
+        guard !lostHost else { return nil }
+        switch screen {
+        case .connecting, .start, .blind:
+            return nil
+        case .lobby:
+            return .lobby
+        case .yourTurn, .waitingForOpponent, .stopped, .drumroll, .watching:
+            return .waiting
+        case .result(let result):
+            switch result.outcome {
+            case .scored(.deadOn), .scored(.sharp), .scored(.close): return .goodResult
+            case .scored, .misfire, .timeout: return .badResult
+            }
+        case .roundResults:
+            return .roundOver
+        case .finished:
+            guard let snapshot else { return .draw }
+            if let winner = snapshot.winnerID {
+                return winner == me?.id ? .won : .lost
+            }
+            return .draw
         }
     }
 

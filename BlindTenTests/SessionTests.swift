@@ -408,4 +408,36 @@ struct SessionTransportTests {
         #expect(sent.peers == [hostPeer])
         #expect(SessionCoding.decode(ClientMessage.self, from: sent.data) == .hello(player: mia, protocolVersion: SessionProtocol.version))
     }
+
+    @Test func hostPassesKnownPhrasesOnToEveryoneElse() throws {
+        let fake = FakeTransport()
+        let state = AppState(store: nil)
+        defer { withExtendedLifetime(state) {} }
+        let host = SessionHost(state: state) { _, handler in
+            fake.handler = handler
+            return fake
+        }
+        host.open()
+        let handler = try #require(fake.handler)
+        let ben = Player(name: "Ben", emoji: "🐸")
+        let otherPhone = TransportPeer(id: "phone-2", displayName: "Ben")
+        for (player, peer) in [(mia, phone), (ben, otherPhone)] {
+            let hello = try #require(SessionCoding.encode(ClientMessage.hello(player: player, protocolVersion: SessionProtocol.version)))
+            handler(.received(hello, from: peer))
+        }
+
+        let reaction = try #require(SessionCoding.encode(ClientMessage.reaction(phraseID: "gg")))
+        let before = fake.sent.count
+        handler(.received(reaction, from: phone))
+        let relayed = try #require(fake.sent.last)
+        #expect(fake.sent.count == before + 1)
+        #expect(relayed.peers == [otherPhone])
+        #expect(SessionCoding.decode(HostMessage.self, from: relayed.data) == .reaction(from: mia.id, phraseID: "gg"))
+        #expect(host.chat.messages.count == 1)
+
+        let freeText = try #require(SessionCoding.encode(ClientMessage.reaction(phraseID: "meet me at 8")))
+        let sentBefore = fake.sent.count
+        handler(.received(freeText, from: otherPhone))
+        #expect(fake.sent.count == sentBefore)
+    }
 }

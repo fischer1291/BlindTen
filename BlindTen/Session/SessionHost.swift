@@ -20,6 +20,8 @@ final class SessionHost {
     private(set) var localTurn = ClientTurn()
     /// The state last sent to every phone.
     private(set) var snapshot: SessionSnapshot?
+    /// Recent quick-chat phrases (Live Match).
+    private(set) var chat = QuickChatFeed()
     /// Live Match: everyone plays each turn at once, and the roster has its own limit.
     var playsAllAtOnce = false
     var playerLimit: Int?
@@ -183,6 +185,14 @@ final class SessionHost {
         return true
     }
 
+    /// The host player sends a preset phrase to everyone.
+    func sendReaction(_ phraseID: String) {
+        guard let id = localPlayer?.id,
+              chat.receive(phraseID: phraseID, from: id.uuidString, at: ProcessInfo.processInfo.systemUptime) != nil
+        else { return }
+        send(.reaction(from: id, phraseID: phraseID), to: Array(peers.keys))
+    }
+
     /// The host app left the foreground mid-turn: replay the turn.
     func localVoidIfRunning() {
         guard let id = localPlayer?.id, localTurn.isRunning else { return }
@@ -217,6 +227,13 @@ final class SessionHost {
             return
         }
         guard let id = peers[peer] else { return }
+        if case .reaction(let phraseID) = message {
+            // Checked and throttled here, then passed on to everyone else.
+            guard chat.receive(phraseID: phraseID, from: id.uuidString, at: ProcessInfo.processInfo.systemUptime) != nil
+            else { return }
+            send(.reaction(from: id, phraseID: phraseID), to: peers.keys.filter { $0 != peer })
+            return
+        }
         apply(message, from: id)
     }
 

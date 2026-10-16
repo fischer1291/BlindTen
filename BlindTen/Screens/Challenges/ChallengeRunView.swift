@@ -426,6 +426,22 @@ private struct ChallengeSummaryView: View {
         }
     }
 
+    /// Phrases for the end of a duel turn: the duel's result, or how the
+    /// last round went.
+    private var duelChatContext: QuickChat.Context {
+        guard case .duel(let plan) = session.mode, let duel = session.duel else { return .waiting }
+        switch duel.outcome {
+        case .won(let winner)?: return winner == plan.me ? .won : .lost
+        case .draw?: return .draw
+        case nil:
+            guard let round = session.duelRound else { return .waiting }
+            switch duel.result(round: round) {
+            case .won(let winner)?: return winner == plan.me ? .goodResult : .badResult
+            case .tie?, nil: return .waiting
+            }
+        }
+    }
+
     private var summary: some View {
         VStack(spacing: 20) {
             HStack {
@@ -472,6 +488,30 @@ private struct ChallengeSummaryView: View {
                         .font(.headline)
                         .foregroundStyle(Theme.secondaryText)
                         .frame(maxWidth: .infinity, minHeight: 44)
+                } else if case .duel = session.mode {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(session.duel?.outcome == nil ? LocalizedStringKey("Send a message with your turn") : LocalizedStringKey("Send a message"))
+                            .font(.caption.weight(.heavy))
+                            .foregroundStyle(Theme.secondaryText)
+                            .textCase(.uppercase)
+                        QuickChatBar(context: duelChatContext, selected: session.duelMessage) { id in
+                            withAnimation(Motion.snappy) {
+                                session.duelMessage = session.duelMessage == id ? nil : id
+                            }
+                        }
+                        .padding(.horizontal, -20)
+                    }
+                    Button {
+                        session.sendDuelTurn()
+                        close()
+                    } label: {
+                        Text(session.duel?.outcome == nil ? LocalizedStringKey("Send turn") : LocalizedStringKey("Done"))
+                    }
+                    .buttonStyle(.primary)
+                    ShareLink(item: shareText) {
+                        Label("Share", systemImage: "square.and.arrow.up")
+                    }
+                    .buttonStyle(.secondary)
                 } else {
                     Button("Done", action: close)
                         .buttonStyle(.primary)

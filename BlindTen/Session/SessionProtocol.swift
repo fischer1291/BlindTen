@@ -28,12 +28,16 @@ enum ClientMessage: Codable, Equatable, Sendable {
     case stopped(elapsed: TimeInterval)
     /// The player's app left the foreground mid-turn: replay the turn.
     case voided
+    /// A preset quick-chat phrase (`QuickChat`), by ID only.
+    case reaction(phraseID: String)
 }
 
 /// Host → player.
 enum HostMessage: Codable, Equatable, Sendable {
     case snapshot(SessionSnapshot)
     case rejected(SessionRejection)
+    /// A player's quick-chat phrase, passed on to everyone else.
+    case reaction(from: Player.ID, phraseID: String)
 }
 
 enum SessionRejection: String, Codable, Sendable {

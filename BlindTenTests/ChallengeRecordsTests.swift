@@ -280,8 +280,17 @@ struct ChallengeSessionTests {
         #expect(session.isOverAfterResult)
         session.continueAfterResult(now: 40)
         #expect(session.phase == .finished)
+        // The turn waits on the summary, so a phrase can go along.
+        let beforeSending = try #require(updates.last)
+        #expect(!beforeSending.1)
+        session.duelMessage = "gg"
+        session.sendDuelTurn()
+        session.sendDuelTurn()
+        let completed = updates.filter { $0.1 }
+        #expect(completed.count == 1)
         let last = try #require(updates.last)
         #expect(last.1)
+        #expect(last.0.messages == [DuelState.Message(player: 1, phraseID: "gg")])
         #expect(last.0.result(round: 0) == .won(by: 1))
         #expect(last.0.nextRound(for: 0) == 1)
     }

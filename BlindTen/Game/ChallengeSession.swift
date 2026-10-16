@@ -59,6 +59,10 @@ final class ChallengeSession {
     private(set) var duelRound: Int?
     /// Duel rounds played in this session.
     private(set) var duelTurns: [ChallengeTurnResult] = []
+    /// Duel: the phrase picked on the summary, sent along with the turn.
+    var duelMessage: String?
+    /// Duel: the turn went to the opponent (or the duel ended).
+    private(set) var isDuelTurnSent = false
     /// Taps during "Get ready", each of which restarted the wait.
     private(set) var falseStarts = 0
     /// Streak: the finished run beat the personal best. Daily: this session
@@ -223,6 +227,7 @@ final class ChallengeSession {
     func quit() {
         switch phase {
         case .finished:
+            sendDuelTurn()
             return
         case .running:
             appDidLeaveForeground()
@@ -236,9 +241,22 @@ final class ChallengeSession {
         }
         if shouldFinish {
             finish()
+            sendDuelTurn()
         } else {
             phase = .intro
         }
+    }
+
+    /// Duel: passes the turn on (or ends the duel) with the picked phrase.
+    /// Runs once, from the summary or when the run is closed.
+    func sendDuelTurn() {
+        guard case .duel(let plan) = mode, case .finished = phase, !isDuelTurnSent, var state = duel else { return }
+        if let duelMessage {
+            state.say(duelMessage, player: plan.me)
+        }
+        duel = state
+        isDuelTurnSent = true
+        onDuelUpdate(state, true)
     }
 
     // MARK: - Summary
@@ -331,9 +349,8 @@ final class ChallengeSession {
         case .daily:
             break
         case .duel:
-            if let duel {
-                onDuelUpdate(duel, true)
-            }
+            // Sent from the summary, so a phrase can go along.
+            break
         }
         phase = .finished
     }

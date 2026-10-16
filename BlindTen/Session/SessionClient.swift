@@ -28,6 +28,8 @@ final class SessionClient {
     private(set) var status: Status = .browsing
     private(set) var snapshot: SessionSnapshot?
     private(set) var turn = ClientTurn()
+    /// Recent quick-chat phrases (Live Match).
+    private(set) var chat = QuickChatFeed()
 
     @ObservationIgnored private var transport: (any GuestTransport)?
     private let makeTransport: @MainActor (String, @escaping TransportEventHandler) -> any GuestTransport
@@ -93,6 +95,13 @@ final class SessionClient {
         return true
     }
 
+    /// Sends a preset phrase; shown here right away, the host passes it on.
+    func sendReaction(_ phraseID: String) {
+        guard chat.receive(phraseID: phraseID, from: player.id.uuidString, at: ProcessInfo.processInfo.systemUptime) != nil
+        else { return }
+        send(.reaction(phraseID: phraseID))
+    }
+
     /// The app left the foreground mid-turn: the host replays the turn.
     func voidIfRunning() {
         guard turn.isRunning else { return }
@@ -140,6 +149,9 @@ final class SessionClient {
             case .snapshot(let snapshot):
                 turn.sync(with: snapshot)
                 self.snapshot = snapshot
+            case .reaction(let sender, let phraseID):
+                guard sender != player.id else { return }
+                chat.receive(phraseID: phraseID, from: sender.uuidString, at: ProcessInfo.processInfo.systemUptime)
             case .rejected(let reason):
                 status = .rejected(reason)
                 snapshot = nil

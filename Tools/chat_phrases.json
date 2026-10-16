@@ -1,0 +1,52 @@
+{
+  "_comment": "Quick chat phrases for online play. IDs are sent over the network and must never change; edit only the text. Emoji-only phrases live in QuickChat.swift.",
+  "greeting": {
+    "hi": "Hi!",
+    "goodLuck": "Good luck!",
+    "letsGo": "Let's go!",
+    "readyWhenYouAre": "Ready when you are."
+  },
+  "hype": {
+    "bringIt": "Bring it on!",
+    "noPressure": "No pressure 😏",
+    "canYouFeelIt": "Can you feel 10 seconds?",
+    "focus": "Focus…"
+  },
+  "praise": {
+    "niceOne": "Nice one!",
+    "wow": "Wow!",
+    "deadOnQuestion": "DEAD ON?!",
+    "howDidYou": "How did you do that?",
+    "respect": "Respect.",
+    "machine": "You're a machine 🤖",
+    "impressive": "Impressive."
+  },
+  "sympathy": {
+    "soClose": "So close!",
+    "unlucky": "Unlucky!",
+    "nextTime": "Next time!",
+    "almost": "Almost had it."
+  },
+  "selfTalk": {
+    "oops": "Oops 🙈",
+    "tooEager": "Too eager…",
+    "brainLag": "My brain lagged 😵",
+    "pureLuck": "Pure luck 🍀",
+    "nailedIt": "Nailed it 😎",
+    "warmingUp": "Just warming up."
+  },
+  "taunt": {
+    "beatThat": "Beat that!",
+    "tooEasy": "Too easy 😎",
+    "yourMove": "Your move.",
+    "catchMe": "Catch me if you can!"
+  },
+  "end": {
+    "gg": "GG",
+    "wellPlayed": "Well played.",
+    "rematch": "Rematch?",
+    "thanks": "Thanks for playing!",
+    "whatAGame": "What a game!",
+    "oneMore": "One more?"
+  }
+}

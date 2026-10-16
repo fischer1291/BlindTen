@@ -34,6 +34,9 @@ struct SessionHostLogic: Sendable {
     /// A new player joins the lobby; a known player may rejoin at any time.
     mutating func join(_ player: Player, protocolVersion: Int, gameInProgress: Bool, maxPlayers: Int) -> JoinResult {
         guard protocolVersion == SessionProtocol.version else { return .rejected(.incompatibleVersion) }
+        // Avatars come from the emoji catalog only, never as free text.
+        var player = player
+        player.emoji = AvatarCatalog.sanitized(player.emoji)
         if let index = players.firstIndex(where: { $0.id == player.id }) {
             if !gameInProgress {
                 players[index] = player
@@ -93,6 +96,8 @@ struct SessionHostLogic: Sendable {
         case .stopped(let elapsed):
             guard elapsed.isFinite, let startedAt = engine.lanes[lane].startedAt else { return nil }
             return engine.stop(lane: lane, at: startedAt + max(0, elapsed))
+        case .reaction:
+            return nil
         case .voided:
             guard engine.phase == .ready || engine.phase == .running else { return nil }
             engine.voidTurn()

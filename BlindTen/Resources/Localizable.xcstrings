@@ -181,6 +181,7 @@
     "A hit: %@": {},
     "A new target every turn, from 4 to 20 seconds.": {},
     "A new target every turn.": {},
+    "About me": {},
     "Achievements": {},
     "Add player": {},
     "Against %@": {},
@@ -188,6 +189,7 @@
     "All-time awards for this group.": {},
     "Always 10 seconds.": {},
     "And the times are…": {},
+    "Animals": {},
     "Ask the host to tap \"Host a session\". Both phones need Wi-Fi or Bluetooth turned on.": {},
     "Attempts left: %lld": {},
     "Average deviation of hits": {},
@@ -221,7 +223,9 @@
     "Cancel": {},
     "Cards stay on this phone.": {},
     "Challenges": {},
+    "Change avatar": {},
     "Cheer the others on!": {},
+    "Choose your avatar": {},
     "Classic": {},
     "Classic 10 s": {},
     "Close": {},
@@ -252,16 +256,21 @@
     "Duel type": {},
     "Edit cards": {},
     "Elimination": {},
+    "Emoji": {},
     "End game": {},
     "End session": {},
     "End the session for everyone?": {},
     "End this game?": {},
     "Enter your name to join your own game.": {},
     "Everyone's result lands at once.": {},
+    "Faces": {},
     "Final results": {},
     "Find sessions": {},
     "Finished": {},
+    "Food": {},
+    "Friendly trash talk": {},
     "Game Center": {},
+    "Game over": {},
     "Get ready on your phone": {},
     "Get ready…": {},
     "Get the Party Pack": {},
@@ -270,6 +279,7 @@
     "HIT": {},
     "Hair Trigger": {},
     "Heartbeat": {},
+    "Hello": {},
     "Here comes your time…": {},
     "Hit after hit until a miss": {},
     "Hit after hit until the first miss. Pro is tight, Close is forgiving.": {},
@@ -278,11 +288,13 @@
     "Host": {},
     "Host a session": {},
     "House rules": {},
+    "Hype": {},
     "I hit %lld in a row in Blind Ten, the game where the timer disappears. Can you beat it?": {},
     "I just won a Blind Ten duel %lld–%lld. Who's next?": {},
     "I'm playing too": {},
     "I'm ready": {},
     "Imprint": {},
+    "In online play, players can only send preset phrases and emoji, never their own text.": {},
     "Instead, the timer starts automatically at a random moment, a few seconds after you tap \"I'm ready\". Watch for the yellow flash and the buzz, then stop at exactly the target.": {},
     "Invite a friend": {},
     "Invite friends": {},
@@ -316,7 +328,9 @@
     "Mode": {},
     "Modes": {},
     "More modes with the Party Pack": {},
+    "More phrases": {},
     "My Blind Ten results": {},
+    "Nature & things": {},
     "New challenge tomorrow.": {},
     "New game": {},
     "New personal best!": {},
@@ -353,10 +367,12 @@
     "Players join with \"Join a session\" on their iPhone. Share this screen with AirPlay so everyone sees the game.": {},
     "Players: %lld": {},
     "Playing on their phone": {},
+    "Praise": {},
     "Prepare yourself now. The timer starts any moment.": {},
     "Privacy Policy": {},
     "Pro": {},
     "Profile": {},
+    "Quick chat": {},
     "Quick match": {},
     "Quick play": {},
     "Random Target": {},
@@ -377,15 +393,20 @@
     "Rounds: %lld": {},
     "Rounds: until one is left": {},
     "START": {},
+    "Send a message": {},
+    "Send a message with your turn": {},
+    "Send turn": {},
     "Session %@": {},
     "Settings": {},
     "Share": {},
     "Share results": {},
     "Sharp": {},
+    "Show reactions from others": {},
     "Show the game on the TV": {},
     "Showdown": {},
     "Showdown against %@": {},
     "Showing on the TV": {},
+    "Shown when you host, join or play a live match.": {},
     "Sign in to Game Center in the Settings app to compete on the leaderboards. Your personal bests are saved either way.": {},
     "Signed in as %@": {},
     "Silence…": {},
@@ -395,6 +416,7 @@
     "Something went wrong. Please try again.": {},
     "Sound": {},
     "Sounds follow the silent switch.": {},
+    "Sports & fun": {},
     "Start": {},
     "Start game": {},
     "Starting a live match needs the Party Pack. Friends you invite can join for free.": {},
@@ -410,6 +432,7 @@
     "Streak: %lld": {},
     "Streaks": {},
     "Switched-off cards are never drawn.": {},
+    "Sympathy": {},
     "Tap START, the timer vanishes. Stop at exactly the target. Closest wins.": {},
     "Tap anywhere to stop": {},
     "Tap anywhere when ready": {},
@@ -495,6 +518,426 @@
     "Your turn": {},
     "Your turn against %@": {},
     "Your turn!": {},
+    "chat.almost": {
+      "comment": "Preset quick-chat phrase players send to each other in online play. Short, friendly, no swearing.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Almost had it."
+          }
+        }
+      }
+    },
+    "chat.beatThat": {
+      "comment": "Preset quick-chat phrase players send to each other in online play. Short, friendly, no swearing.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beat that!"
+          }
+        }
+      }
+    },
+    "chat.brainLag": {
+      "comment": "Preset quick-chat phrase players send to each other in online play. Short, friendly, no swearing.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "My brain lagged 😵"
+          }
+        }
+      }
+    },
+    "chat.bringIt": {
+      "comment": "Preset quick-chat phrase players send to each other in online play. Short, friendly, no swearing.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bring it on!"
+          }
+        }
+      }
+    },
+    "chat.canYouFeelIt": {
+      "comment": "Preset quick-chat phrase players send to each other in online play. Short, friendly, no swearing.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Can you feel 10 seconds?"
+          }
+        }
+      }
+    },
+    "chat.catchMe": {
+      "comment": "Preset quick-chat phrase players send to each other in online play. Short, friendly, no swearing.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Catch me if you can!"
+          }
+        }
+      }
+    },
+    "chat.deadOnQuestion": {
+      "comment": "Preset quick-chat phrase players send to each other in online play. Short, friendly, no swearing.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "DEAD ON?!"
+          }
+        }
+      }
+    },
+    "chat.focus": {
+      "comment": "Preset quick-chat phrase players send to each other in online play. Short, friendly, no swearing.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Focus…"
+          }
+        }
+      }
+    },
+    "chat.gg": {
+      "comment": "Preset quick-chat phrase players send to each other in online play. Short, friendly, no swearing.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GG"
+          }
+        }
+      }
+    },
+    "chat.goodLuck": {
+      "comment": "Preset quick-chat phrase players send to each other in online play. Short, friendly, no swearing.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Good luck!"
+          }
+        }
+      }
+    },
+    "chat.hi": {
+      "comment": "Preset quick-chat phrase players send to each other in online play. Short, friendly, no swearing.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hi!"
+          }
+        }
+      }
+    },
+    "chat.howDidYou": {
+      "comment": "Preset quick-chat phrase players send to each other in online play. Short, friendly, no swearing.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "How did you do that?"
+          }
+        }
+      }
+    },
+    "chat.impressive": {
+      "comment": "Preset quick-chat phrase players send to each other in online play. Short, friendly, no swearing.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impressive."
+          }
+        }
+      }
+    },
+    "chat.letsGo": {
+      "comment": "Preset quick-chat phrase players send to each other in online play. Short, friendly, no swearing.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Let's go!"
+          }
+        }
+      }
+    },
+    "chat.machine": {
+      "comment": "Preset quick-chat phrase players send to each other in online play. Short, friendly, no swearing.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You're a machine 🤖"
+          }
+        }
+      }
+    },
+    "chat.nailedIt": {
+      "comment": "Preset quick-chat phrase players send to each other in online play. Short, friendly, no swearing.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nailed it 😎"
+          }
+        }
+      }
+    },
+    "chat.nextTime": {
+      "comment": "Preset quick-chat phrase players send to each other in online play. Short, friendly, no swearing.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Next time!"
+          }
+        }
+      }
+    },
+    "chat.niceOne": {
+      "comment": "Preset quick-chat phrase players send to each other in online play. Short, friendly, no swearing.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nice one!"
+          }
+        }
+      }
+    },
+    "chat.noPressure": {
+      "comment": "Preset quick-chat phrase players send to each other in online play. Short, friendly, no swearing.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No pressure 😏"
+          }
+        }
+      }
+    },
+    "chat.oneMore": {
+      "comment": "Preset quick-chat phrase players send to each other in online play. Short, friendly, no swearing.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "One more?"
+          }
+        }
+      }
+    },
+    "chat.oops": {
+      "comment": "Preset quick-chat phrase players send to each other in online play. Short, friendly, no swearing.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oops 🙈"
+          }
+        }
+      }
+    },
+    "chat.pureLuck": {
+      "comment": "Preset quick-chat phrase players send to each other in online play. Short, friendly, no swearing.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pure luck 🍀"
+          }
+        }
+      }
+    },
+    "chat.readyWhenYouAre": {
+      "comment": "Preset quick-chat phrase players send to each other in online play. Short, friendly, no swearing.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ready when you are."
+          }
+        }
+      }
+    },
+    "chat.rematch": {
+      "comment": "Preset quick-chat phrase players send to each other in online play. Short, friendly, no swearing.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rematch?"
+          }
+        }
+      }
+    },
+    "chat.respect": {
+      "comment": "Preset quick-chat phrase players send to each other in online play. Short, friendly, no swearing.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Respect."
+          }
+        }
+      }
+    },
+    "chat.soClose": {
+      "comment": "Preset quick-chat phrase players send to each other in online play. Short, friendly, no swearing.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "So close!"
+          }
+        }
+      }
+    },
+    "chat.thanks": {
+      "comment": "Preset quick-chat phrase players send to each other in online play. Short, friendly, no swearing.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thanks for playing!"
+          }
+        }
+      }
+    },
+    "chat.tooEager": {
+      "comment": "Preset quick-chat phrase players send to each other in online play. Short, friendly, no swearing.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Too eager…"
+          }
+        }
+      }
+    },
+    "chat.tooEasy": {
+      "comment": "Preset quick-chat phrase players send to each other in online play. Short, friendly, no swearing.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Too easy 😎"
+          }
+        }
+      }
+    },
+    "chat.unlucky": {
+      "comment": "Preset quick-chat phrase players send to each other in online play. Short, friendly, no swearing.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlucky!"
+          }
+        }
+      }
+    },
+    "chat.warmingUp": {
+      "comment": "Preset quick-chat phrase players send to each other in online play. Short, friendly, no swearing.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Just warming up."
+          }
+        }
+      }
+    },
+    "chat.wellPlayed": {
+      "comment": "Preset quick-chat phrase players send to each other in online play. Short, friendly, no swearing.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Well played."
+          }
+        }
+      }
+    },
+    "chat.whatAGame": {
+      "comment": "Preset quick-chat phrase players send to each other in online play. Short, friendly, no swearing.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What a game!"
+          }
+        }
+      }
+    },
+    "chat.wow": {
+      "comment": "Preset quick-chat phrase players send to each other in online play. Short, friendly, no swearing.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wow!"
+          }
+        }
+      }
+    },
+    "chat.yourMove": {
+      "comment": "Preset quick-chat phrase players send to each other in online play. Short, friendly, no swearing.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your move."
+          }
+        }
+      }
+    },
     "hits in a row": {},
     "houseRule.default.1": {
       "comment": "Built-in house-rule card the round loser may draw. Keep it neutral and alcohol-free.",

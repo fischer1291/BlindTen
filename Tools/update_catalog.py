@@ -3,6 +3,7 @@
 
 - Tools/reactions.json   -> reaction.<category>.<n>   (reaction lines)
 - Tools/house_rules.json -> houseRule.default.<n>     (built-in house-rule cards)
+- Tools/chat_phrases.json -> chat.<id>                (quick chat phrases for online play)
 
 Numbers are 1-based. Generated keys are replaced; every other catalog
 entry is left untouched.
@@ -38,7 +39,7 @@ def entry(comment, value):
 catalog = json.loads(CATALOG.read_text())
 strings = {
     k: v for k, v in catalog["strings"].items()
-    if not k.startswith("reaction.") and not k.startswith("houseRule.default.")
+    if not k.startswith("reaction.") and not k.startswith("houseRule.default.") and not k.startswith("chat.")
 }
 
 for category, lines in json.loads((TOOLS / "reactions.json").read_text()).items():
@@ -52,8 +53,17 @@ for number, rule in enumerate(json.loads((TOOLS / "house_rules.json").read_text(
         "Built-in house-rule card the round loser may draw. Keep it neutral and alcohol-free.", rule
     )
 
+for category, phrases in json.loads((TOOLS / "chat_phrases.json").read_text()).items():
+    if category.startswith("_"):
+        continue
+    for phrase_id, text in phrases.items():
+        strings[f"chat.{phrase_id}"] = entry(
+            "Preset quick-chat phrase players send to each other in online play. Short, friendly, no swearing.", text
+        )
+
 catalog["strings"] = dict(sorted(strings.items()))
 CATALOG.write_text(json.dumps(catalog, indent=2, ensure_ascii=False) + "\n")
 reactions = sum(k.startswith("reaction.") for k in strings)
 rules = sum(k.startswith("houseRule.default.") for k in strings)
-print(f"{reactions} reaction lines and {rules} house rules in {CATALOG.name}")
+phrases = sum(k.startswith("chat.") for k in strings)
+print(f"{reactions} reaction lines, {rules} house rules and {phrases} chat phrases in {CATALOG.name}")
