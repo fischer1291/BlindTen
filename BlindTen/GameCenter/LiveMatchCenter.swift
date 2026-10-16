@@ -86,9 +86,10 @@ final class LiveMatchCenter {
         ))
     }
 
-    private final class MatchmakerDelegate: NSObject, GKMatchmakerViewControllerDelegate {
-        var onMatch: (@MainActor (GKMatch) -> Void)?
-        var onError: (@MainActor (String) -> Void)?
+    /// Set up once on the main actor, then only read from GameKit's callbacks.
+    private final class MatchmakerDelegate: NSObject, GKMatchmakerViewControllerDelegate, @unchecked Sendable {
+        var onMatch: (@MainActor @Sendable (GKMatch) -> Void)?
+        var onError: (@MainActor @Sendable (String) -> Void)?
 
         nonisolated func matchmakerViewControllerWasCancelled(_ viewController: GKMatchmakerViewController) {
             MainActor.assumeIsolated {
@@ -105,6 +106,7 @@ final class LiveMatchCenter {
         }
 
         nonisolated func matchmakerViewController(_ viewController: GKMatchmakerViewController, didFind match: GKMatch) {
+            nonisolated(unsafe) let match = match
             MainActor.assumeIsolated {
                 viewController.dismiss(animated: true)
                 onMatch?(match)
