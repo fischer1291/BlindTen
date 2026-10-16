@@ -11,10 +11,12 @@ final class GameStore {
     }
 
     static func makeContainer(inMemory: Bool = false) throws -> ModelContainer {
-        let schema = Schema([
-            StoredPlayer.self, PlayerGroup.self, GameRecord.self, TurnRecord.self, HouseRule.self,
-        ])
-        return try ModelContainer(for: schema, configurations: ModelConfiguration(isStoredInMemoryOnly: inMemory))
+        let schema = Schema(versionedSchema: BlindTenSchemaV1.self)
+        return try ModelContainer(
+            for: schema,
+            migrationPlan: BlindTenMigrationPlan.self,
+            configurations: ModelConfiguration(schema: schema, isStoredInMemoryOnly: inMemory)
+        )
     }
 
     func save() {
