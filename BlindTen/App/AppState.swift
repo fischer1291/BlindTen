@@ -42,7 +42,9 @@ final class AppState {
     var sessionClient: SessionClient?
     /// Game Center sign-in, leaderboards and achievements.
     let gameCenter = GameCenterManager()
-    /// Personal bests and statistics of the solo challenges.
+    /// Online duels (Game Center turn-based matches).
+    let duels = DuelCenter()
+    /// Personal bests and statistics of the solo challenges and duels.
     private(set) var challengeRecords = ChallengeRecordsStorage.load()
 
     /// Reaction line key chosen for each finished turn.
@@ -65,6 +67,12 @@ final class AppState {
 
     init(store: GameStore?) {
         self.store = store
+        gameCenter.onAuthenticated = { [weak self] in
+            self?.duels.start()
+        }
+        duels.onFinished = { [weak self] id, result in
+            self?.recordDuel(id: id, result: result)
+        }
     }
 
     var isPartyPackUnlocked: Bool { purchases.isPartyPackUnlocked }
@@ -234,10 +242,31 @@ final class AppState {
         })
     }
 
+    /// A duel turn: saves each round as it is played and passes the turn on
+    /// at the end.
+    func makeDuelSession(_ plan: DuelPlan) -> ChallengeSession {
+        ChallengeSession(mode: .duel(plan), records: challengeRecords, onDuelUpdate: { [weak self] state, isTurnComplete in
+            self?.duels.update(plan.matchID, state: state, isTurnComplete: isTurnComplete)
+        })
+    }
+
+    private func recordDuel(id: String, result: ChallengeRecords.DuelResult) {
+        if challengeRecords.recordDuel(id: id, result: result) {
+            ChallengeRecordsStorage.save(challengeRecords)
+        }
+    }
+
     /// Sends the run's score and achievements to Game Center.
     func reportChallenge(_ session: ChallengeSession) {
         guard case .finished = session.phase, !session.hasReported else { return }
         session.hasReported = true
+        if case .duel = session.mode {
+            let deadOns = session.duelTurns.filter { ChallengeRecords.isDeadOn(stopped: $0.stopped, target: $0.target) }.count
+            if deadOns > 0 {
+                challengeRecords.addDeadOns(deadOns)
+                ChallengeRecordsStorage.save(challengeRecords)
+            }
+        }
         if let submission = session.leaderboardSubmission {
             gameCenter.submit(submission.score, to: submission.leaderboardID)
         }

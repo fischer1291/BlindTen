@@ -13,17 +13,36 @@ final class GameCenterManager {
     private(set) var hasAnswered = false
 
     @ObservationIgnored private var didStart = false
+    @ObservationIgnored private var showsLogin = false
+    /// Apple's sign-in screen, held back until the player opens a Game Center feature.
+    @ObservationIgnored private var pendingLogin: UIViewController?
     @ObservationIgnored private let dismissDelegate = DismissDelegate()
+    /// Called once when the player is signed in.
+    @ObservationIgnored var onAuthenticated: (() -> Void)?
 
-    /// Asks Game Center to sign in. Shows Apple's sign-in sheet if needed.
-    func authenticate() {
-        guard !didStart, !ScreenshotMode.isActive else { return }
+    /// Signs in to Game Center. With `showLogin` false (at launch) Apple's
+    /// sign-in screen is held back until a Game Center feature is opened;
+    /// a player who is already signed in is signed in silently.
+    func authenticate(showLogin: Bool = true) {
+        guard !ScreenshotMode.isActive else { return }
+        if showLogin {
+            showsLogin = true
+            if let pendingLogin {
+                self.pendingLogin = nil
+                TopViewController.find()?.present(pendingLogin, animated: true)
+            }
+        }
+        guard !didStart else { return }
         didStart = true
         GKLocalPlayer.local.authenticateHandler = Self.makeAuthenticateHandler { viewController in
             DispatchQueue.main.async {
                 MainActor.assumeIsolated {
                     if let viewController {
-                        Self.topViewController()?.present(viewController, animated: true)
+                        if self.showsLogin {
+                            TopViewController.find()?.present(viewController, animated: true)
+                        } else {
+                            self.pendingLogin = viewController
+                        }
                     }
                     self.refresh()
                 }
@@ -41,7 +60,11 @@ final class GameCenterManager {
 
     private func refresh() {
         let player = GKLocalPlayer.local
+        let wasAuthenticated = isAuthenticated
         isAuthenticated = player.isAuthenticated
+        if isAuthenticated, !wasAuthenticated {
+            onAuthenticated?()
+        }
         playerName = player.isAuthenticated ? player.displayName : nil
         hasAnswered = true
     }
@@ -81,17 +104,29 @@ final class GameCenterManager {
             viewController = GKGameCenterViewController(state: .leaderboards)
         }
         viewController.gameCenterDelegate = dismissDelegate
-        Self.topViewController()?.present(viewController, animated: true)
+        TopViewController.find()?.present(viewController, animated: true)
     }
 
     func showAchievements() {
         guard isAuthenticated else { return }
         let viewController = GKGameCenterViewController(state: .achievements)
         viewController.gameCenterDelegate = dismissDelegate
-        Self.topViewController()?.present(viewController, animated: true)
+        TopViewController.find()?.present(viewController, animated: true)
     }
 
-    private static func topViewController() -> UIViewController? {
+    private final class DismissDelegate: NSObject, GKGameCenterControllerDelegate {
+        nonisolated func gameCenterViewControllerDidFinish(_ gameCenterViewController: GKGameCenterViewController) {
+            MainActor.assumeIsolated {
+                gameCenterViewController.dismiss(animated: true)
+            }
+        }
+    }
+}
+
+/// The view controller to present Game Center's own screens from.
+@MainActor
+enum TopViewController {
+    static func find() -> UIViewController? {
         let scenes: [UIWindowScene] = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
         let appScenes = scenes.filter { $0.session.role == .windowApplication }
         let active = appScenes.first { $0.activationState == .foregroundActive }
@@ -102,13 +137,5 @@ final class GameCenterManager {
             top = presented
         }
         return top
-    }
-
-    private final class DismissDelegate: NSObject, GKGameCenterControllerDelegate {
-        nonisolated func gameCenterViewControllerDidFinish(_ gameCenterViewController: GKGameCenterViewController) {
-            MainActor.assumeIsolated {
-                gameCenterViewController.dismiss(animated: true)
-            }
-        }
     }
 }

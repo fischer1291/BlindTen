@@ -42,6 +42,8 @@ struct BlindTenApp: App {
                     state.feel.prepare()
                     state.purchases.start()
                     state.store?.seedDefaultHouseRules()
+                    // Silent: needed so "your turn" notifications open the duel.
+                    state.gameCenter.authenticate(showLogin: false)
                 }
         }
     }
