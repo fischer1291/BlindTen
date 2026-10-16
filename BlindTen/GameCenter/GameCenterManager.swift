@@ -92,13 +92,12 @@ final class GameCenterManager {
     }
 
     private static func topViewController() -> UIViewController? {
-        let scene = UIApplication.shared.connectedScenes
-            .compactMap { $0 as? UIWindowScene }
-            .first { $0.session.role == .windowApplication && $0.activationState == .foregroundActive }
-            ?? UIApplication.shared.connectedScenes
-            .compactMap { $0 as? UIWindowScene }
-            .first { $0.session.role == .windowApplication }
-        var top = scene?.keyWindow?.rootViewController ?? scene?.windows.first?.rootViewController
+        let scenes: [UIWindowScene] = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+        let appScenes = scenes.filter { $0.session.role == .windowApplication }
+        let active = appScenes.first { $0.activationState == .foregroundActive }
+        let scene: UIWindowScene? = active ?? appScenes.first
+        let window: UIWindow? = scene?.keyWindow ?? scene?.windows.first
+        var top: UIViewController? = window?.rootViewController
         while let presented = top?.presentedViewController {
             top = presented
         }
