@@ -271,7 +271,7 @@ struct SessionBlindView: View {
 }
 
 /// This player's own result, the same moment the TV lands.
-private struct ClientResultView: View {
+struct ClientResultView: View {
     let result: SessionResult
 
     var body: some View {
@@ -330,7 +330,7 @@ private struct ClientResultView: View {
 }
 
 /// Round or final leaderboard, with this player highlighted.
-private struct ClientStandingsView: View {
+struct ClientStandingsView: View {
     let snapshot: SessionSnapshot?
     let me: Player.ID
     let isFinal: Bool

@@ -56,7 +56,9 @@ struct RootView: View {
     var body: some View {
         ZStack {
             Theme.background.ignoresSafeArea()
-            if let host = state.sessionHost {
+            if let live = state.liveMatch {
+                LiveMatchView(match: live)
+            } else if let host = state.sessionHost {
                 HostSessionView(host: host)
             } else if let client = state.sessionClient, client.isInSession {
                 ClientSessionView(client: client)

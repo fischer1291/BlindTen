@@ -56,6 +56,13 @@ struct HomeView: View {
                 ) {
                     DuelListView()
                 }
+                FeatureCard(
+                    title: "Live Match",
+                    subtitle: "2 to 8 players online at the same time. Party Pack.",
+                    symbol: "bolt.horizontal.fill"
+                ) {
+                    LiveMatchMenuView()
+                }
 
                 Text("Modes")
                     .font(.title2.weight(.heavy))
