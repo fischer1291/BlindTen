@@ -66,7 +66,15 @@ struct RootView: View {
                 GameView(engine: engine)
             } else {
                 NavigationStack {
+                    #if DEBUG
+                    if let scene = ScreenshotMode.scene, scene.isPreviewRoot {
+                        ScreenshotPreviewRoot(scene: scene)
+                    } else {
+                        HomeView()
+                    }
+                    #else
                     HomeView()
+                    #endif
                 }
             }
             if showsSplash {

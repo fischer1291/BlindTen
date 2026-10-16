@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 import UIKit
 
 /// App Store screenshot mode. Debug builds only: launched with
@@ -16,6 +17,31 @@ enum ScreenshotMode {
         case paywall
         /// Renders the Party Pack promotional image to Documents.
         case partyPackArt
+        // UI previews (Preview workflow), not App Store screenshots.
+        case homeReturning
+        /// Home scrolled to the bottom.
+        case homeBottom
+        case players
+        case streaks
+        case profile
+        case challengeIntro
+        case challengeGetReady
+        case challengeResult
+        case challengeSummary
+        case duels
+        case liveMenu
+        case liveLobby
+
+        /// Scenes that replace the Home screen with another root view.
+        var isPreviewRoot: Bool {
+            switch self {
+            case .players, .streaks, .profile, .challengeIntro, .challengeGetReady,
+                 .challengeResult, .challengeSummary, .duels, .liveMenu:
+                true
+            default:
+                false
+            }
+        }
     }
 
     static let scene: Scene? = {
@@ -77,7 +103,60 @@ enum ScreenshotFixtures {
             }
         case .partyPackArt:
             writePartyPackArt()
+        case .homeReturning, .homeBottom, .profile, .streaks:
+            state.setChallengeRecordsForPreview(previewRecords())
+        case .players, .duels, .liveMenu:
+            break
+        case .challengeIntro:
+            session = state.makeChallengeSession(.daily(DailyChallenge(date: .now)))
+        case .challengeGetReady:
+            let session = ChallengeSession(mode: .streak(.classic, .pro), records: ChallengeRecords(), seed: 1, delay: { 1_000 })
+            session.getReady(now: ProcessInfo.processInfo.systemUptime)
+            self.session = session
+        case .challengeResult:
+            let session = ChallengeSession(mode: .streak(.classic, .close), records: ChallengeRecords(), seed: 1, delay: { 0 })
+            let now = ProcessInfo.processInfo.systemUptime
+            session.getReady(now: now)
+            session.go(at: now)
+            session.stop(at: now + 10.12)
+            self.session = session
+        case .challengeSummary:
+            let session = ChallengeSession(mode: .streak(.classic, .close), records: ChallengeRecords(), seed: 1, delay: { 0 })
+            var now = ProcessInfo.processInfo.systemUptime
+            for stop in [10.12, 9.81, 10.03, 10.31, 11.2] {
+                session.getReady(now: now)
+                session.go(at: now)
+                session.stop(at: now + stop)
+                now += 20
+                session.continueAfterResult(now: now)
+            }
+            self.session = session
+        case .liveLobby:
+            let host = SessionHost(state: state)
+            host.playsAllAtOnce = true
+            host.playerLimit = LiveMatchRules.maxPlayers
+            host.setLocalPlayer(players[0])
+            state.setLiveMatchForPreview(.host(host))
         }
+    }
+
+    /// The challenge run shown by the challenge preview scenes.
+    static var session: ChallengeSession?
+
+    /// A player who has played a few streaks, Dailies and duels.
+    private static func previewRecords() -> ChallengeRecords {
+        var records = ChallengeRecords()
+        for stops in [[10.1, 9.9, 10.2, 11.0], [10.05, 9.8, 10.3, 10.1, 9.95, 10.2, 10.6]] {
+            var run = StreakRun(kind: .classic, difficulty: .close, seed: 1)
+            for stop in stops {
+                run.record(stopped: stop)
+            }
+            records.record(run)
+        }
+        records.recordDuel(id: "a", result: .win)
+        records.recordDuel(id: "b", result: .win)
+        records.recordDuel(id: "c", result: .loss)
+        return records
     }
 
     /// 1024 × 1024 JPEG without transparency, as App Store Connect requires
@@ -88,6 +167,29 @@ enum ScreenshotFixtures {
               let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
         else { return }
         try? data.write(to: documents.appendingPathComponent("PartyPackPromo.jpg"))
+    }
+}
+#endif
+
+#if DEBUG
+/// The root view of a UI preview scene.
+struct ScreenshotPreviewRoot: View {
+    let scene: ScreenshotMode.Scene
+
+    var body: some View {
+        switch scene {
+        case .players: PlayersView()
+        case .streaks: StreaksView()
+        case .profile: ProfileView()
+        case .duels: DuelListView()
+        case .liveMenu: LiveMatchMenuView()
+        case .challengeIntro, .challengeGetReady, .challengeResult, .challengeSummary:
+            if let session = ScreenshotFixtures.session {
+                ChallengeRunView(session: session) {}
+            }
+        default:
+            HomeView()
+        }
     }
 }
 #endif

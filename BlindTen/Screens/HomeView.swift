@@ -80,6 +80,7 @@ struct HomeView: View {
             .buttonStyle(.plain)
             .padding(20)
         }
+        .defaultScrollAnchor(ScreenshotMode.scene == .homeBottom ? .bottom : .top)
         .background(Theme.background.ignoresSafeArea())
         .navigationTitle("Blind Ten")
         .toolbar {

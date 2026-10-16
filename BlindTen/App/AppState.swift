@@ -336,6 +336,16 @@ final class AppState {
         gameCenter.unlock(session.earnedAchievements)
     }
 
+    #if DEBUG
+    func setChallengeRecordsForPreview(_ records: ChallengeRecords) {
+        challengeRecords = records
+    }
+
+    func setLiveMatchForPreview(_ match: LiveMatch) {
+        liveMatch = match
+    }
+    #endif
+
     /// Call right after asking for a rating.
     func didRequestReview() {
         wantsReviewPrompt = false

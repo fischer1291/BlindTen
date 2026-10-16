@@ -1,0 +1,89 @@
+name: UI Preview
+
+# Launches the app in the simulator, opens each screen with a demo scene
+# (ScreenshotMode, Debug builds only) and pushes the captures to the
+# ui-previews branch for review. Not the App Store screenshots.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ui-preview
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    runs-on: macos-15
+    timeout-minutes: 40
+    env:
+      BUNDLE_ID: com.leroyfischer.blindtengame
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Boot an iPhone simulator
+        run: |
+          UDID=$(xcrun simctl list devices available -j | python3 -c '
+          import json, sys
+          devices = [d for rt, ds in json.load(sys.stdin)["devices"].items() if ".iOS-" in rt for d in ds]
+          for wanted in ("iPhone 16 Pro", "iPhone 17 Pro", "iPhone 16 Pro Max"):
+              for d in devices:
+                  if d["name"] == wanted:
+                      print(d["udid"]); sys.exit(0)
+          sys.exit("No iPhone simulator found")
+          ')
+          echo "UDID=$UDID" >> "$GITHUB_ENV"
+          xcrun simctl boot "$UDID"
+          xcrun simctl bootstatus "$UDID" -b
+          xcrun simctl ui "$UDID" appearance dark
+          xcrun simctl status_bar "$UDID" override --time "9:41" --batteryState charged --batteryLevel 100
+
+      - name: Build the app (Debug, simulator)
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project BlindTen.xcodeproj \
+            -scheme BlindTen \
+            -configuration Debug \
+            -destination "id=$UDID" \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO | tail -20
+          xcrun simctl install "$UDID" build/Build/Products/Debug-iphonesimulator/BlindTen.app
+
+      - name: Capture screens
+        run: |
+          mkdir -p previews
+          capture() {
+            xcrun simctl terminate "$UDID" "$BUNDLE_ID" 2>/dev/null || true
+            xcrun simctl launch "$UDID" "$BUNDLE_ID" -screenshotScene "$1"
+            sleep "$2"
+            xcrun simctl io "$UDID" screenshot --type=jpeg "previews/$3.jpg"
+          }
+          capture home 8 warmup && rm previews/warmup.jpg
+          capture home 4 01-home
+          capture homeReturning 4 02-home-returning
+          capture players 4 03-players
+          capture streaks 4 04-streaks
+          capture profile 4 05-profile
+          capture challengeIntro 4 06-challenge-intro
+          capture challengeGetReady 3 07-challenge-get-ready
+          capture challengeResult 3 08-challenge-result
+          capture challengeSummary 3 09-challenge-summary
+          capture duels 4 10-duels
+          capture liveMenu 4 11-live-menu
+          capture liveLobby 4 12-live-lobby
+          capture homeBottom 4 13-home-bottom
+
+      - name: Push to the ui-previews branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rm -rf /tmp/previews && cp -R previews /tmp/previews
+          git checkout --orphan ui-previews
+          git rm -rf --quiet .
+          cp -R /tmp/previews previews
+          git add previews
+          git commit -m "UI previews from ${GITHUB_SHA::7} [skip ci]"
+          git push --force origin ui-previews
