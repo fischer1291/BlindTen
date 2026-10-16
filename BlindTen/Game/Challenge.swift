@@ -101,10 +101,10 @@ struct StreakRun: Sendable {
     }
 }
 
-/// Leaderboard scores are integers where higher is better.
+/// Integer scores for personal bests and the Game Center leaderboards.
 enum ChallengeScore {
-    /// Streak length first; within the same length a lower average
-    /// deviation ranks higher (in milliseconds, capped at 999).
+    /// Ranks streaks for personal bests: length first; within the same
+    /// length a lower average deviation ranks higher (milliseconds, capped at 999).
     static func streak(length: Int, averageDeviation: TimeInterval) -> Int {
         let millis = min(999, max(0, Int((averageDeviation * 1000).rounded())))
         return length * 1000 + (999 - millis)
@@ -114,11 +114,15 @@ enum ChallengeScore {
         score / 1000
     }
 
-    /// Daily Challenge: lower deviation is better, so the score is the
-    /// remaining hundredths below a 99.99 s ceiling.
+    /// Streak leaderboards show the plain streak length (integer, high to low).
+    static func streakLeaderboard(length: Int) -> Int {
+        length
+    }
+
+    /// The Daily leaderboard shows the absolute deviation in hundredths of a
+    /// second (fixed point with 2 decimals, low to high), e.g. 27 → "0.27".
     static func daily(deviation: TimeInterval) -> Int {
-        let hundredths = Scoring.hundredths(deviation) ?? 9_999
-        return max(0, 9_999 - min(9_999, hundredths))
+        min(9_999, Scoring.hundredths(deviation) ?? 9_999)
     }
 }
 

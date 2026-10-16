@@ -158,6 +158,7 @@ struct ChallengeSessionTests {
         #expect(session.isNewBest)
         #expect(session.records.stats(.classic, .close).best == 1)
         #expect(session.leaderboardSubmission?.leaderboardID == LeaderboardID.streak(.classic, .close))
+        #expect(session.leaderboardSubmission?.score == 1)
     }
 
     @Test func leavingTheAppMidTurnIsAMiss() {
@@ -211,6 +212,7 @@ struct ChallengeSessionTests {
         session.continueAfterResult(now: 1_000)
         #expect(session.phase == .finished)
         #expect(session.leaderboardSubmission?.leaderboardID == LeaderboardID.daily)
+        #expect(session.leaderboardSubmission?.score == 10)
         let earned = session.earnedAchievements
         #expect(earned.contains(.dailyPlayer))
     }

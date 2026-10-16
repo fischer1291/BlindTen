@@ -201,8 +201,7 @@ final class ChallengeSession {
         switch mode {
         case .streak(let kind, let difficulty):
             guard let run, run.length > 0 else { return nil }
-            return (ChallengeScore.streak(length: run.length, averageDeviation: run.averageDeviation),
-                    LeaderboardID.streak(kind, difficulty))
+            return (ChallengeScore.streakLeaderboard(length: run.length), LeaderboardID.streak(kind, difficulty))
         case .daily(let challenge):
             guard let best = records.dailyResult(for: challenge.day).best else { return nil }
             return (ChallengeScore.daily(deviation: best), LeaderboardID.daily)

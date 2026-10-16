@@ -96,10 +96,15 @@ struct ChallengeScoreTests {
         #expect(ChallengeScore.streakLength(fromScore: precise) == 5)
     }
 
-    @Test func dailyScoreRewardsSmallDeviation() {
-        #expect(ChallengeScore.daily(deviation: 0) == 9_999)
-        #expect(ChallengeScore.daily(deviation: -0.27) == 9_972)
-        #expect(ChallengeScore.daily(deviation: 0.27) > ChallengeScore.daily(deviation: 1.5))
+    @Test func dailyScoreIsTheDeviationInHundredths() {
+        #expect(ChallengeScore.daily(deviation: 0) == 0)
+        #expect(ChallengeScore.daily(deviation: -0.27) == 27)
+        #expect(ChallengeScore.daily(deviation: 0.27) < ChallengeScore.daily(deviation: 1.5))
+        #expect(ChallengeScore.daily(deviation: 500) == 9_999)
+    }
+
+    @Test func streakLeaderboardShowsThePlainLength() {
+        #expect(ChallengeScore.streakLeaderboard(length: 7) == 7)
     }
 }
 
