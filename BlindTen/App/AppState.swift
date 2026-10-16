@@ -40,6 +40,10 @@ final class AppState {
     var sessionHost: SessionHost?
     /// The local session this phone joined, if any.
     var sessionClient: SessionClient?
+    /// Game Center sign-in, leaderboards and achievements.
+    let gameCenter = GameCenterManager()
+    /// Personal bests and statistics of the solo challenges.
+    private(set) var challengeRecords = ChallengeRecordsStorage.load()
 
     /// Reaction line key chosen for each finished turn.
     private(set) var reactionKeys: [TurnResult.ID: String] = [:]
@@ -218,6 +222,26 @@ final class AppState {
     func leaveSession() {
         sessionClient?.close()
         sessionClient = nil
+    }
+
+    // MARK: - Challenges
+
+    /// A new streak or Daily Challenge run. Records are saved as it goes.
+    func makeChallengeSession(_ mode: ChallengeMode) -> ChallengeSession {
+        ChallengeSession(mode: mode, records: challengeRecords) { [weak self] records in
+            self?.challengeRecords = records
+            ChallengeRecordsStorage.save(records)
+        }
+    }
+
+    /// Sends the run's score and achievements to Game Center.
+    func reportChallenge(_ session: ChallengeSession) {
+        guard case .finished = session.phase, !session.hasReported else { return }
+        session.hasReported = true
+        if let submission = session.leaderboardSubmission {
+            gameCenter.submit(submission.score, to: submission.leaderboardID)
+        }
+        gameCenter.unlock(session.earnedAchievements)
     }
 
     /// Call right after asking for a rating.
