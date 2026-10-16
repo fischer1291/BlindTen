@@ -151,3 +151,35 @@ enum Teams {
         index % count
     }
 }
+
+/// Live Match: every player plays each turn at the same time, with the same
+/// target and one shared reveal. Wraps a regular mode for its target and
+/// blind effect.
+struct TogetherMode: GameMode {
+    let base: any GameMode
+
+    var kind: ModeKind { base.kind }
+    var eliminatesRoundLoser: Bool { base.eliminatesRoundLoser }
+    var hasTeams: Bool { base.hasTeams }
+
+    /// Showdown is about pairs, so it has no "everyone at once" version.
+    static func supports(_ kind: ModeKind) -> Bool {
+        kind != .showdown
+    }
+
+    func roundCount(requested: Int, playerCount: Int) -> Int {
+        base.roundCount(requested: requested, playerCount: playerCount)
+    }
+
+    func makeTarget<G: RandomNumberGenerator>(using generator: inout G) -> TimeInterval {
+        base.makeTarget(using: &generator)
+    }
+
+    func makeBlindEffect<G: RandomNumberGenerator>(target: TimeInterval, using generator: inout G) -> BlindEffect {
+        base.makeBlindEffect(target: target, using: &generator)
+    }
+
+    func turns(round: Int, players: [Player.ID]) -> [[Player.ID]] {
+        [players]
+    }
+}

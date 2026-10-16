@@ -20,6 +20,9 @@ final class SessionHost {
     private(set) var localTurn = ClientTurn()
     /// The state last sent to every phone.
     private(set) var snapshot: SessionSnapshot?
+    /// Live Match: everyone plays each turn at once, and the roster has its own limit.
+    var playsAllAtOnce = false
+    var playerLimit: Int?
 
     private unowned let state: AppState
     @ObservationIgnored private var transport: (any HostTransport)?
@@ -46,12 +49,15 @@ final class SessionHost {
 
     var isGameRunning: Bool { state.engine != nil }
 
+    private var maxPlayers: Int { playerLimit ?? state.maxPlayers }
+
     /// Joined players who are still connected, in joining order.
     var players: [Player] { logic.connectedPlayers }
 
     var canStart: Bool {
         players.count >= GameEngine.minPlayers
             && PartyPack.canPlay(state.selectedMode, unlocked: state.isPartyPackUnlocked)
+            && (!playsAllAtOnce || TogetherMode.supports(state.selectedMode))
     }
 
     /// What the host player's turn needs right now, or nil if the host only hosts.
@@ -88,7 +94,8 @@ final class SessionHost {
     func startGame() {
         guard canStart else { return }
         do {
-            try state.startGame(players: players, rounds: rounds, remember: false)
+            let mode: (any GameMode)? = playsAllAtOnce ? TogetherMode(base: state.selectedMode.mode) : nil
+            try state.startGame(players: players, rounds: rounds, remember: false, mode: mode)
         } catch {
             return
         }
@@ -149,7 +156,7 @@ final class SessionHost {
                 player,
                 protocolVersion: SessionProtocol.version,
                 gameInProgress: false,
-                maxPlayers: state.maxPlayers
+                maxPlayers: maxPlayers
             )
             if result == .joined || result == .rejoined {
                 localPlayer = player
@@ -200,7 +207,7 @@ final class SessionHost {
 
     private func receive(_ message: ClientMessage, from peer: TransportPeer) {
         if case .hello(let player, let version) = message {
-            let result = logic.join(player, protocolVersion: version, gameInProgress: isGameRunning, maxPlayers: state.maxPlayers)
+            let result = logic.join(player, protocolVersion: version, gameInProgress: isGameRunning, maxPlayers: maxPlayers)
             if case .rejected(let reason) = result {
                 send(.rejected(reason), to: [peer])
             } else {
