@@ -85,7 +85,7 @@ The app has six screens, and a first game must start within 15 seconds of the fi
 | Players | Add names with one text field + Return, emoji avatar auto-assigned, drag to reorder | Last group is remembered. "Quick play" skips names (Player 1, 2...). Min 2, max 10 free (unlimited in Party Pack). |
 | Handoff | "Pass to Mia" in huge type, avatar, tap to continue | Prevents the wrong person from playing. |
 | Turn | Target, START, then the mode's blind state, whole-screen STOP | Max brightness, idle timer disabled. |
-| Reveal | Drumroll, time, deviation, tier label, reaction line | Auto-advances after 3 s or on tap. |
+| Reveal | Drumroll, time, deviation, tier label, reaction line | Stays until tapped, so players can take in their time (local sessions advance on their own). |
 | Round / Game results | Leaderboard, round loser, house-rule card, "Rematch" and "New game" | Share button on the final screen. |
 
 The loop is Handoff → Turn → Reveal for every player, then Round results, then the next round or Game results. "Rematch" goes straight back to the first Handoff with the same players and mode.

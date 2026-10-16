@@ -3,8 +3,8 @@ import SwiftUI
 /// Drumroll with a slot-machine count-up, then the result lands: tier,
 /// deviation arrow, reaction line, haptics and sound. DEAD ON adds a flash,
 /// confetti and the player's name in huge type. Showdown shows both players
-/// and the duel winner. Advances 3 s after landing or on tap; a tap during
-/// the drumroll skips straight to the result.
+/// and the duel winner. The result stays until someone taps, so players can
+/// take it in; a tap during the drumroll skips straight to the result.
 struct RevealView: View {
     @Environment(AppState.self) private var state
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -56,14 +56,21 @@ struct RevealView: View {
         }
         .overlay(alignment: .bottom) {
             if landed {
-                Button(isDuel ? LocalizedStringKey("Wrong players? Replay duel") : LocalizedStringKey("Wrong player? Replay turn")) {
-                    state.replayTurn()
+                VStack(spacing: 14) {
+                    if !state.isTVConnected {
+                        Text("Tap to continue")
+                            .font(.title3.weight(.bold))
+                            .foregroundStyle(Theme.primaryText)
+                    }
+                    Button(isDuel ? LocalizedStringKey("Wrong players? Replay duel") : LocalizedStringKey("Wrong player? Replay turn")) {
+                        state.replayTurn()
+                    }
+                    .font(.headline)
+                    .foregroundStyle(Theme.secondaryText)
+                    .padding(.vertical, 16)
+                    .padding(.horizontal, 24)
+                    .background(Theme.surface, in: Capsule())
                 }
-                .font(.headline)
-                .foregroundStyle(Theme.secondaryText)
-                .padding(.vertical, 16)
-                .padding(.horizontal, 24)
-                .background(Theme.surface, in: Capsule())
                 .padding(.bottom, 24)
             }
         }
@@ -260,11 +267,7 @@ struct RevealView: View {
         if !landed {
             await land()
         }
-        // VoiceOver users need longer than 3 s; they tap to continue.
-        guard !ScreenshotMode.isActive, !UIAccessibility.isVoiceOverRunning else { return }
-        try? await Task.sleep(for: RevealTiming.autoAdvanceDelay)
-        guard !Task.isCancelled else { return }
-        advance()
+        // No auto-advance: the player taps when they have taken in their time.
     }
 
     private func land() async {

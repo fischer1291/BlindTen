@@ -36,7 +36,8 @@ extension LandingCue {
 enum RevealTiming {
     /// SPEC.md: "a short drumroll (0.8–1.5 s)".
     static let drumrollRange: ClosedRange<TimeInterval> = 0.8...1.5
-    /// SPEC.md: the reveal auto-advances 3 s after the result lands.
+    /// How long a local session keeps a landed reveal up before moving on.
+    /// Pass-the-phone play waits for a tap instead.
     static let autoAdvanceDelay: Duration = .seconds(3)
 
     static func randomDrumrollDuration<G: RandomNumberGenerator>(using generator: inout G) -> TimeInterval {
