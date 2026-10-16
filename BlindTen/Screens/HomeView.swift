@@ -1,94 +1,97 @@
 import SwiftUI
 
-/// SPEC.md Home: big PLAY button, mode picker cards, settings gear.
-/// No onboarding; each card carries its one-line rules.
+/// SPEC.md Home: sorted by who you play with, not by technology.
+/// "Up next" (only when something is waiting), Party on one phone, together
+/// in the room on everyone's phone, Solo, Online. No onboarding; every tile
+/// explains itself in one line. Modes are picked when setting up a game.
 struct HomeView: View {
     @Environment(AppState.self) private var state
     @State private var showingSettings = false
-    /// Opens the duels when a "your turn" notification was tapped.
+    /// Opens the duels when a "your turn" notification or "Up next" was tapped.
     @State private var showingDuels = false
+    @State private var dailySession: ChallengeSession?
+    @State private var today = DailyChallenge(date: .now)
     @State private var paywallMode: ModeKind? = ScreenshotMode.scene == .paywall ? .liarsClock : nil
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                Text("Tap START, the timer vanishes. Stop at exactly the target. Closest wins.")
-                    .font(.title3.weight(.semibold))
-                    .foregroundStyle(Theme.secondaryText)
+            VStack(alignment: .leading, spacing: 14) {
+                upNext
+                partyCard
 
-                NavigationLink {
-                    PlayersView()
-                } label: {
-                    Text("PLAY")
-                        .font(Theme.display(40))
-                }
-                .buttonStyle(.primary)
-
-                VStack(spacing: 12) {
+                HomeSection(title: "Together in the room", symbol: "iphone.gen3.radiowaves.left.and.right")
+                HStack(spacing: 12) {
                     Button {
                         state.hostSession()
                     } label: {
-                        Label("Host a session", systemImage: "tv")
+                        HomeTile(symbol: "tv", title: "Host", subtitle: "Show the game on the TV")
                     }
                     NavigationLink {
                         JoinSessionView()
                     } label: {
-                        Label("Join a session", systemImage: "iphone.radiowaves.left.and.right")
+                        HomeTile(symbol: "iphone.radiowaves.left.and.right", title: "Join", subtitle: "Play on your own iPhone")
                     }
                 }
-                .buttonStyle(.secondary)
-                Text("Everyone plays on their own iPhone; the host's screen shows the game on the TV.")
-                    .font(.subheadline.weight(.medium))
-                    .foregroundStyle(Theme.secondaryText)
 
-                FeatureCard(
-                    title: "Challenges",
-                    subtitle: "Solo streaks, a Daily Challenge and Game Center leaderboards.",
-                    symbol: "trophy.fill"
-                ) {
-                    ChallengeHubView()
-                }
-                .padding(.top, 8)
-                FeatureCard(
-                    title: "Online Duel",
-                    subtitle: "Best of 3 against a friend or a random opponent, whenever you like.",
-                    symbol: "person.2.wave.2.fill"
-                ) {
-                    DuelListView()
-                }
-                FeatureCard(
-                    title: "Live Match",
-                    subtitle: "2 to 8 players online at the same time. Party Pack.",
-                    symbol: "bolt.horizontal.fill"
-                ) {
-                    LiveMatchMenuView()
+                HomeSection(title: "Solo", symbol: "person.fill")
+                HStack(spacing: 12) {
+                    Button {
+                        startDaily()
+                    } label: {
+                        HomeTile(
+                            symbol: "calendar",
+                            title: "Daily",
+                            subtitle: dailySubtitle,
+                            badge: dailyAttemptsLeft > 0 ? .count(dailyAttemptsLeft) : nil
+                        )
+                    }
+                    .disabled(dailyAttemptsLeft == 0)
+                    NavigationLink {
+                        StreaksView()
+                    } label: {
+                        HomeTile(symbol: "flame.fill", title: "Streaks", subtitle: streakSubtitle)
+                    }
                 }
 
-                Text("Modes")
-                    .font(.title2.weight(.heavy))
-                    .foregroundStyle(Theme.primaryText)
-                    .padding(.top, 8)
-
-                ForEach(ModeKind.allCases) { kind in
-                    ModeCard(
-                        kind: kind,
-                        isSelected: state.selectedMode == kind,
-                        isLocked: !PartyPack.canPlay(kind, unlocked: state.isPartyPackUnlocked)
-                    ) {
-                        // SPEC.md: the paywall appears only when tapping a locked mode card.
-                        if PartyPack.canPlay(kind, unlocked: state.isPartyPackUnlocked) {
-                            state.selectedMode = kind
-                        } else {
-                            paywallMode = kind
-                        }
+                HomeSection(title: "Online", symbol: "globe")
+                HStack(spacing: 12) {
+                    NavigationLink {
+                        DuelListView()
+                    } label: {
+                        HomeTile(
+                            symbol: "person.2.wave.2.fill",
+                            title: "Duel",
+                            subtitle: "Best of 3, whenever you like",
+                            badge: yourTurnCount > 0 ? .count(yourTurnCount) : nil
+                        )
+                    }
+                    NavigationLink {
+                        LiveMatchMenuView()
+                    } label: {
+                        HomeTile(
+                            symbol: "bolt.horizontal.fill",
+                            title: "Live",
+                            subtitle: "2 to 8 players at once",
+                            badge: state.isPartyPackUnlocked ? nil : .locked
+                        )
                     }
                 }
             }
+            .buttonStyle(.plain)
             .padding(20)
         }
         .background(Theme.background.ignoresSafeArea())
         .navigationTitle("Blind Ten")
         .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                NavigationLink {
+                    ProfileView()
+                } label: {
+                    Image(systemName: "person.crop.circle.fill")
+                        .font(.title2)
+                }
+                .accessibilityLabel(Text("Profile"))
+            }
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     showingSettings = true
@@ -105,6 +108,9 @@ struct HomeView: View {
         .onChange(of: state.duels.pendingMatchID) { _, id in
             if id != nil, !state.duels.isListVisible { showingDuels = true }
         }
+        .fullScreenCover(item: $dailySession) { session in
+            ChallengeRunView(session: session) {}
+        }
         .sheet(isPresented: $showingSettings) {
             SettingsView()
         }
@@ -112,109 +118,191 @@ struct HomeView: View {
             PaywallView(mode: kind)
         }
         .onAppear {
+            today = DailyChallenge(date: .now)
             if state.duels.pendingMatchID != nil, !state.duels.isListVisible { showingDuels = true }
-            // A refunded or revoked Party Pack must not leave a locked mode selected.
-            if !PartyPack.canPlay(state.selectedMode, unlocked: state.isPartyPackUnlocked) {
-                state.selectedMode = .classic
+        }
+    }
+
+    // MARK: - Party
+
+    private var partyCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Label("Party", systemImage: "iphone")
+                .font(.title2.weight(.heavy))
+            Text("One phone, pass it around. Tap START, the timer vanishes. Stop at exactly the target. Closest wins.")
+                .font(.body.weight(.semibold))
+                .fixedSize(horizontal: false, vertical: true)
+            NavigationLink {
+                PlayersView()
+            } label: {
+                Text("PLAY")
+                    .font(Theme.display(40))
+                    .foregroundStyle(Theme.accent)
+                    .frame(maxWidth: .infinity, minHeight: 72)
+                    .background(Theme.onAccent, in: RoundedRectangle(cornerRadius: 18))
+            }
+        }
+        .foregroundStyle(Theme.onAccent)
+        .padding(18)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Theme.accent, in: RoundedRectangle(cornerRadius: 24))
+    }
+
+    // MARK: - Up next
+
+    /// Only for returning players: today's Daily if they play challenges,
+    /// and duels waiting for their turn.
+    @ViewBuilder
+    private var upNext: some View {
+        let duels = state.duels.duels.filter { $0.status == .yourTurn }.prefix(2)
+        let showsDaily = isReturningPlayer && dailyAttemptsLeft > 0
+        if showsDaily || !duels.isEmpty {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Up next")
+                    .font(.caption.weight(.heavy))
+                    .foregroundStyle(Theme.secondaryText)
+                    .textCase(.uppercase)
+                if showsDaily {
+                    Button {
+                        startDaily()
+                    } label: {
+                        UpNextRow(symbol: "calendar", text: Text("Daily Challenge: stop at \(TimeFormat.seconds(today.target)) s"))
+                    }
+                }
+                ForEach(Array(duels)) { duel in
+                    Button {
+                        state.duels.pendingMatchID = duel.id
+                    } label: {
+                        UpNextRow(
+                            symbol: "person.2.wave.2.fill",
+                            text: Text("Your turn against \(duel.opponentName ?? String(localized: "Opponent"))")
+                        )
+                    }
+                }
             }
         }
     }
+
+    // MARK: - Solo
+
+    private var dailyAttemptsLeft: Int {
+        state.challengeRecords.attemptsLeft(for: today.day)
+    }
+
+    private var dailySubtitle: LocalizedStringKey {
+        dailyAttemptsLeft > 0 ? "Today: stop at \(TimeFormat.seconds(today.target)) s" : "Done for today"
+    }
+
+    private var streakSubtitle: LocalizedStringKey {
+        let best = ChallengeKind.allCases.flatMap { kind in
+            ChallengeDifficulty.allCases.map { state.challengeRecords.stats(kind, $0).best }
+        }.max() ?? 0
+        return best > 0 ? "Your best: \(best) in a row" : "Hit after hit until a miss"
+    }
+
+    private var isReturningPlayer: Bool {
+        let records = state.challengeRecords
+        return records.totalRuns > 0 || records.dailyDaysPlayed > 0
+            || records.duelWins + records.duelLosses + records.duelDraws > 0
+    }
+
+    private var yourTurnCount: Int {
+        state.duels.duels.filter { $0.status == .yourTurn }.count
+    }
+
+    private func startDaily() {
+        today = DailyChallenge(date: .now)
+        guard dailyAttemptsLeft > 0 else { return }
+        state.gameCenter.authenticate()
+        dailySession = state.makeChallengeSession(.daily(today))
+    }
 }
 
-/// A large card that opens a feature screen.
-private struct FeatureCard<Destination: View>: View {
+// MARK: - Building blocks
+
+/// A section heading with the symbol of how you play.
+private struct HomeSection: View {
+    let title: LocalizedStringKey
+    let symbol: String
+
+    var body: some View {
+        Label(title, systemImage: symbol)
+            .font(.title3.weight(.heavy))
+            .foregroundStyle(Theme.primaryText)
+            .padding(.top, 10)
+    }
+}
+
+/// One of two tiles in a row: symbol, title, one line, optional badge.
+private struct HomeTile: View {
+    enum Badge {
+        case count(Int)
+        case locked
+    }
+
+    let symbol: String
     let title: LocalizedStringKey
     let subtitle: LocalizedStringKey
-    let symbol: String
-    @ViewBuilder let destination: () -> Destination
+    var badge: Badge?
 
     var body: some View {
-        NavigationLink {
-            destination()
-        } label: {
-            HStack(spacing: 16) {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(alignment: .top) {
                 Image(systemName: symbol)
-                    .font(.title)
-                    .frame(width: 40)
+                    .font(.title2)
                     .foregroundStyle(Theme.accent)
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(title)
-                        .font(.title2.weight(.heavy))
-                    Text(subtitle)
-                        .font(.body.weight(.medium))
-                        .multilineTextAlignment(.leading)
-                        .fixedSize(horizontal: false, vertical: true)
+                Spacer()
+                switch badge {
+                case .count(let count):
+                    Text(verbatim: "\(count)")
+                        .font(.subheadline.weight(.heavy))
+                        .foregroundStyle(Theme.onAccent)
+                        .frame(minWidth: 26, minHeight: 26)
+                        .background(Theme.accent, in: Capsule())
+                case .locked:
+                    Image(systemName: "lock.fill")
+                        .font(.subheadline.weight(.heavy))
+                        .foregroundStyle(Theme.secondaryText)
+                case nil:
+                    EmptyView()
                 }
-                Spacer(minLength: 0)
-                Image(systemName: "chevron.right")
-                    .font(.headline)
-                    .foregroundStyle(Theme.secondaryText)
             }
-            .foregroundStyle(Theme.primaryText)
-            .padding(18)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Theme.surface, in: RoundedRectangle(cornerRadius: 20))
-            .contentShape(RoundedRectangle(cornerRadius: 20))
+            Text(title)
+                .font(.title3.weight(.heavy))
+                .foregroundStyle(Theme.primaryText)
+            Text(subtitle)
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(Theme.secondaryText)
+                .multilineTextAlignment(.leading)
+                .fixedSize(horizontal: false, vertical: true)
+            Spacer(minLength: 0)
         }
-        .buttonStyle(.plain)
+        .padding(16)
+        .frame(maxWidth: .infinity, minHeight: 140, alignment: .topLeading)
+        .background(Theme.surface, in: RoundedRectangle(cornerRadius: 20))
+        .contentShape(RoundedRectangle(cornerRadius: 20))
     }
 }
 
-private struct ModeCard: View {
-    let kind: ModeKind
-    let isSelected: Bool
-    let isLocked: Bool
-    let select: () -> Void
+private struct UpNextRow: View {
+    let symbol: String
+    let text: Text
 
     var body: some View {
-        Button {
-            select()
-        } label: {
-            HStack(alignment: .top, spacing: 16) {
-                Image(systemName: kind.symbol)
-                    .font(.title)
-                    .frame(width: 40)
-                    .foregroundStyle(isSelected ? Theme.onAccent : Theme.accent)
-                VStack(alignment: .leading, spacing: 6) {
-                    HStack {
-                        Text(kind.title)
-                            .font(.title2.weight(.heavy))
-                        if !kind.isFree {
-                            Label {
-                                Text("Party Pack")
-                            } icon: {
-                                if isLocked {
-                                    Image(systemName: "lock.fill")
-                                }
-                            }
-                                .font(.caption.weight(.heavy))
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 3)
-                                .background(
-                                    isSelected ? Theme.onAccent.opacity(0.15) : Theme.accent.opacity(0.2),
-                                    in: Capsule()
-                                )
-                        }
-                    }
-                    Text(kind.rules)
-                        .font(.body.weight(.medium))
-                        .multilineTextAlignment(.leading)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-                Spacer(minLength: 0)
-                if isSelected {
-                    Image(systemName: "checkmark.circle.fill")
-                        .font(.title2)
-                }
-            }
-            .foregroundStyle(isSelected ? Theme.onAccent : Theme.primaryText)
-            .padding(18)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(isSelected ? Theme.accent : Theme.surface, in: RoundedRectangle(cornerRadius: 20))
-            .contentShape(RoundedRectangle(cornerRadius: 20))
+        HStack(spacing: 12) {
+            Image(systemName: symbol)
+                .foregroundStyle(Theme.accent)
+            text
+                .font(.headline.weight(.heavy))
+                .foregroundStyle(Theme.primaryText)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+            Spacer()
+            Image(systemName: "chevron.right")
+                .foregroundStyle(Theme.secondaryText)
         }
-        .buttonStyle(.plain)
-        .accessibilityAddTraits(isSelected ? .isSelected : [])
+        .padding(14)
+        .background(Theme.accent.opacity(0.15), in: RoundedRectangle(cornerRadius: 16))
+        .contentShape(RoundedRectangle(cornerRadius: 16))
     }
 }
-

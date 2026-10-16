@@ -81,8 +81,8 @@ The app has six screens, and a first game must start within 15 seconds of the fi
 
 | Screen | Content | Notes |
 | --- | --- | --- |
-| Home | Big "PLAY" button, mode picker (cards), Daily Challenge tile, settings gear | No onboarding. Rules are one line under the mode card. |
-| Players | Add names with one text field + Return, emoji avatar auto-assigned, drag to reorder | Last group is remembered. "Quick play" skips names (Player 1, 2...). Min 2, max 10 free (unlimited in Party Pack). |
+| Home | Sorted by who you play with, top to bottom: "Up next" (only for returning players: today's Daily Challenge, duels waiting for your turn), **Party** (one phone, big "PLAY"), **Together in the room** (Host on the TV, Join with your own iPhone), **Solo** (Daily, Streaks), **Online** (Duel with a your-turn badge, Live with the Party Pack lock). Profile (statistics, duel record, Game Center) and settings in the top bar. | No onboarding; every tile explains itself in one line and keeps its symbol everywhere. Modes are not on Home: they are picked when setting up a game. |
+| Players | Add names with one text field + Return, emoji avatar auto-assigned, drag to reorder, then the mode cards (rules one line under each card; a locked card opens the paywall) and rounds | Last group is remembered. "Quick play" skips names (Player 1, 2...). Min 2, max 10 free (unlimited in Party Pack). Hosting and Live Match pick the mode in their lobby. |
 | Handoff | "Pass to Mia" in huge type, avatar, tap to continue | Prevents the wrong person from playing. |
 | Turn | Target, START, then the mode's blind state, whole-screen STOP | Max brightness, idle timer disabled. |
 | Reveal | Drumroll, time, deviation, tier label, reaction line | Stays until tapped, so players can take in their time (local sessions advance on their own). |
