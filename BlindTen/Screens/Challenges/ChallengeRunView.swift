@@ -145,6 +145,16 @@ private struct ChallengeIntroView: View {
                 Text("Attempts left: \(session.dailyAttemptsLeft)")
                     .foregroundStyle(Theme.secondaryText)
             }
+        case .duel(let plan):
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Round \((session.duelRound ?? 0) + 1) of \(DuelState.rounds)")
+                    .foregroundStyle(Theme.secondaryText)
+                Text("Stop at \(TimeFormat.seconds(session.target))")
+                    .font(Theme.display(44))
+                    .monospacedDigit()
+                Text("Against \(plan.displayOpponent)")
+                    .foregroundStyle(Theme.secondaryText)
+            }
         }
     }
 }
@@ -242,6 +252,30 @@ private struct ChallengeResultView: View {
         }
     }
 
+    /// The opponent's result of this round, once both have played it.
+    @ViewBuilder
+    private func duelRoundLine(_ plan: DuelPlan) -> some View {
+        if let duel = session.duel, let round = session.duelRound,
+           let theirs = duel.stopped(player: plan.opponent, round: round),
+           duel.isVisible(player: plan.opponent, round: round, to: plan.me) {
+            VStack(spacing: 6) {
+                Text("\(plan.displayOpponent): \(TimeFormat.seconds(theirs)) s")
+                switch duel.result(round: round) {
+                case .won(let winner) where winner == plan.me:
+                    Text("You win the round!")
+                        .foregroundStyle(Theme.accent)
+                case .won:
+                    Text("\(plan.displayOpponent) wins the round.")
+                        .foregroundStyle(Theme.late)
+                case .tie, nil:
+                    Text("Round tied.")
+                }
+            }
+        } else {
+            Text("\(plan.displayOpponent) plays this round next.")
+        }
+    }
+
     private var cue: LandingCue {
         if case .streak = session.mode {
             guard result.isHit else { return .fail }
@@ -257,7 +291,7 @@ private struct ChallengeResultView: View {
             Text(result.isHit ? LocalizedStringKey("HIT") : LocalizedStringKey("MISS"))
                 .font(Theme.display(64))
                 .foregroundStyle(result.isHit ? Theme.accent : Theme.late)
-        case .daily:
+        case .daily, .duel:
             outcomeLabel
                 .font(Theme.display(52))
                 .foregroundStyle(tierColor)
@@ -306,6 +340,12 @@ private struct ChallengeResultView: View {
             case .daily:
                 Text("Target: \(TimeFormat.seconds(result.target)) s")
                 Text("Attempts left: \(session.dailyAttemptsLeft)")
+            case .duel(let plan):
+                Text("Round \((session.duelRound ?? 0) + 1) of \(DuelState.rounds) · target \(TimeFormat.seconds(result.target)) s")
+                duelRoundLine(plan)
+                    .font(.title2.weight(.heavy))
+                    .foregroundStyle(Theme.primaryText)
+                    .multilineTextAlignment(.center)
             }
         }
         .font(.title3.weight(.semibold))
@@ -409,6 +449,8 @@ private struct ChallengeSummaryView: View {
                     .font(.title3.weight(.semibold))
                     .foregroundStyle(Theme.secondaryText)
             }
+        case .duel(let plan):
+            DuelSummary(plan: plan, duel: session.duel)
         }
     }
 
@@ -423,8 +465,48 @@ private struct ChallengeSummaryView: View {
             } else {
                 line = String(localized: "Try today's Blind Ten Daily Challenge: stop the hidden timer at exactly the target.")
             }
+        case .duel(let plan):
+            if let duel = session.duel, case .won(let winner) = duel.outcome, winner == plan.me {
+                line = String(localized: "I just won a Blind Ten duel \(duel.wins[plan.me])–\(duel.wins[plan.opponent]). Who's next?")
+            } else {
+                line = String(localized: "Duel me in Blind Ten: tap START, the timer vanishes, stop at the target. Closest wins.")
+            }
         }
         return "\(line) \(WebLinks.home.absoluteString)"
+    }
+}
+
+/// The end of a duel turn: the final score, or that the opponent plays next.
+private struct DuelSummary: View {
+    let plan: DuelPlan
+    let duel: DuelState?
+
+    var body: some View {
+        VStack(spacing: 12) {
+            if let duel, let outcome = duel.outcome {
+                switch outcome {
+                case .won(let winner) where winner == plan.me:
+                    Text("You won the duel!")
+                        .foregroundStyle(Theme.accent)
+                case .won:
+                    Text("\(plan.displayOpponent) won the duel.")
+                case .draw:
+                    Text("It's a draw!")
+                }
+                Text(verbatim: "\(duel.wins[plan.me]) – \(duel.wins[plan.opponent])")
+                    .font(Theme.display(96))
+                    .monospacedDigit()
+                    .foregroundStyle(Theme.accent)
+            } else {
+                Text("Turn sent")
+                    .foregroundStyle(Theme.accent)
+                Text("\(plan.displayOpponent) plays next. You'll get a notification when it's your turn again.")
+                    .font(.title3.weight(.semibold))
+                    .foregroundStyle(Theme.secondaryText)
+            }
+        }
+        .font(Theme.display(40))
+        .multilineTextAlignment(.center)
     }
 }
 

@@ -65,6 +65,15 @@ extension ChallengeMode {
             Text("\(Text(kind.title)) · \(Text(difficulty.title))")
         case .daily:
             Text("Daily Challenge")
+        case .duel(let plan):
+            Text("Duel against \(plan.displayOpponent)")
         }
+    }
+}
+
+extension DuelPlan {
+    /// The opponent's Game Center name, or a stand-in while matchmaking.
+    var displayOpponent: String {
+        opponentName ?? String(localized: "Opponent")
     }
 }

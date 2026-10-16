@@ -5,6 +5,8 @@ import SwiftUI
 struct HomeView: View {
     @Environment(AppState.self) private var state
     @State private var showingSettings = false
+    /// Opens the duels when a "your turn" notification was tapped.
+    @State private var showingDuels = false
     @State private var paywallMode: ModeKind? = ScreenshotMode.scene == .paywall ? .liarsClock : nil
 
     var body: some View {
@@ -39,35 +41,21 @@ struct HomeView: View {
                     .font(.subheadline.weight(.medium))
                     .foregroundStyle(Theme.secondaryText)
 
-                NavigationLink {
+                FeatureCard(
+                    title: "Challenges",
+                    subtitle: "Solo streaks, a Daily Challenge and Game Center leaderboards.",
+                    symbol: "trophy.fill"
+                ) {
                     ChallengeHubView()
-                } label: {
-                    HStack(spacing: 16) {
-                        Image(systemName: "trophy.fill")
-                            .font(.title)
-                            .frame(width: 40)
-                            .foregroundStyle(Theme.accent)
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text("Challenges")
-                                .font(.title2.weight(.heavy))
-                            Text("Solo streaks, a Daily Challenge and Game Center leaderboards.")
-                                .font(.body.weight(.medium))
-                                .multilineTextAlignment(.leading)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
-                        Spacer(minLength: 0)
-                        Image(systemName: "chevron.right")
-                            .font(.headline)
-                            .foregroundStyle(Theme.secondaryText)
-                    }
-                    .foregroundStyle(Theme.primaryText)
-                    .padding(18)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Theme.surface, in: RoundedRectangle(cornerRadius: 20))
-                    .contentShape(RoundedRectangle(cornerRadius: 20))
                 }
-                .buttonStyle(.plain)
                 .padding(.top, 8)
+                FeatureCard(
+                    title: "Online Duel",
+                    subtitle: "Best of 3 against a friend or a random opponent, whenever you like.",
+                    symbol: "person.2.wave.2.fill"
+                ) {
+                    DuelListView()
+                }
 
                 Text("Modes")
                     .font(.title2.weight(.heavy))
@@ -104,6 +92,12 @@ struct HomeView: View {
                 .accessibilityLabel(Text("Settings"))
             }
         }
+        .navigationDestination(isPresented: $showingDuels) {
+            DuelListView()
+        }
+        .onChange(of: state.duels.pendingMatchID) { _, id in
+            if id != nil, !state.duels.isListVisible { showingDuels = true }
+        }
         .sheet(isPresented: $showingSettings) {
             SettingsView()
         }
@@ -111,11 +105,51 @@ struct HomeView: View {
             PaywallView(mode: kind)
         }
         .onAppear {
+            if state.duels.pendingMatchID != nil, !state.duels.isListVisible { showingDuels = true }
             // A refunded or revoked Party Pack must not leave a locked mode selected.
             if !PartyPack.canPlay(state.selectedMode, unlocked: state.isPartyPackUnlocked) {
                 state.selectedMode = .classic
             }
         }
+    }
+}
+
+/// A large card that opens a feature screen.
+private struct FeatureCard<Destination: View>: View {
+    let title: LocalizedStringKey
+    let subtitle: LocalizedStringKey
+    let symbol: String
+    @ViewBuilder let destination: () -> Destination
+
+    var body: some View {
+        NavigationLink {
+            destination()
+        } label: {
+            HStack(spacing: 16) {
+                Image(systemName: symbol)
+                    .font(.title)
+                    .frame(width: 40)
+                    .foregroundStyle(Theme.accent)
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(title)
+                        .font(.title2.weight(.heavy))
+                    Text(subtitle)
+                        .font(.body.weight(.medium))
+                        .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                Spacer(minLength: 0)
+                Image(systemName: "chevron.right")
+                    .font(.headline)
+                    .foregroundStyle(Theme.secondaryText)
+            }
+            .foregroundStyle(Theme.primaryText)
+            .padding(18)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Theme.surface, in: RoundedRectangle(cornerRadius: 20))
+            .contentShape(RoundedRectangle(cornerRadius: 20))
+        }
+        .buttonStyle(.plain)
     }
 }
 
