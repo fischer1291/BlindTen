@@ -32,6 +32,36 @@ struct ChallengeRecords: Codable, Equatable, Sendable {
     private(set) var daily: [String: DailyResult] = [:]
     /// Challenge turns within 0.05 s.
     private(set) var deadOns = 0
+    private(set) var duelWins = 0
+    private(set) var duelLosses = 0
+    private(set) var duelDraws = 0
+    /// Finished duels already counted, newest last.
+    private(set) var countedDuels: [String] = []
+
+    /// How many counted duel IDs are kept to avoid counting one twice.
+    static let keptDuelIDs = 500
+
+    enum DuelResult: Sendable {
+        case win, loss, draw
+    }
+
+    init() {}
+
+    private enum CodingKeys: String, CodingKey {
+        case streaks, daily, deadOns, duelWins, duelLosses, duelDraws, countedDuels
+    }
+
+    /// Fields added in later versions may be missing in saved records.
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        streaks = try container.decodeIfPresent([String: StreakStats].self, forKey: .streaks) ?? [:]
+        daily = try container.decodeIfPresent([String: DailyResult].self, forKey: .daily) ?? [:]
+        deadOns = try container.decodeIfPresent(Int.self, forKey: .deadOns) ?? 0
+        duelWins = try container.decodeIfPresent(Int.self, forKey: .duelWins) ?? 0
+        duelLosses = try container.decodeIfPresent(Int.self, forKey: .duelLosses) ?? 0
+        duelDraws = try container.decodeIfPresent(Int.self, forKey: .duelDraws) ?? 0
+        countedDuels = try container.decodeIfPresent([String].self, forKey: .countedDuels) ?? []
+    }
 
     static func key(_ kind: ChallengeKind, _ difficulty: ChallengeDifficulty) -> String {
         "\(kind.rawValue).\(difficulty.rawValue)"
@@ -107,6 +137,29 @@ struct ChallengeRecords: Codable, Equatable, Sendable {
     /// Days with at least one Daily attempt among the kept days.
     var dailyDaysPlayed: Int {
         daily.values.filter { $0.attemptsUsed > 0 }.count
+    }
+
+    // MARK: - Duels
+
+    /// Counts a finished duel once. Returns false if it was already counted.
+    @discardableResult
+    mutating func recordDuel(id: String, result: DuelResult) -> Bool {
+        guard !countedDuels.contains(id) else { return false }
+        switch result {
+        case .win: duelWins += 1
+        case .loss: duelLosses += 1
+        case .draw: duelDraws += 1
+        }
+        countedDuels.append(id)
+        if countedDuels.count > Self.keptDuelIDs {
+            countedDuels.removeFirst(countedDuels.count - Self.keptDuelIDs)
+        }
+        return true
+    }
+
+    /// Adds DEAD ONs from duel turns, which are not part of a streak or Daily.
+    mutating func addDeadOns(_ count: Int) {
+        deadOns += count
     }
 
     // MARK: - Statistics

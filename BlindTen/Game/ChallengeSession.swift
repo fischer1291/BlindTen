@@ -1,17 +1,30 @@
 import Foundation
 import Observation
 
-/// What is being played: an endless streak or today's Daily Challenge.
+/// What is being played: an endless streak, today's Daily Challenge or the
+/// local player's rounds of an online duel.
 enum ChallengeMode: Equatable, Sendable {
     case streak(ChallengeKind, ChallengeDifficulty)
     case daily(DailyChallenge)
+    case duel(DuelPlan)
+}
+
+/// The local player's side of an online duel turn.
+struct DuelPlan: Equatable, Sendable {
+    let matchID: String
+    /// The local player's index in the duel.
+    let me: Int
+    let opponentName: String?
+    let state: DuelState
+
+    var opponent: Int { 1 - me }
 }
 
 /// One finished challenge turn.
 struct ChallengeTurnResult: Equatable, Sendable {
     let target: TimeInterval
     let stopped: TimeInterval
-    /// Streak: within the tolerance. Daily: scored (not a misfire or timeout).
+    /// Streak: within the tolerance. Daily and duel: scored (not a misfire or timeout).
     let isHit: Bool
 
     var outcome: TurnOutcome { Scoring.outcome(elapsed: stopped, target: target) }
@@ -41,6 +54,11 @@ final class ChallengeSession {
     private(set) var run: StreakRun?
     /// Daily attempts played in this session.
     private(set) var dailyTurns: [ChallengeTurnResult] = []
+    /// Duel: the live state and the round being played.
+    private(set) var duel: DuelState?
+    private(set) var duelRound: Int?
+    /// Duel rounds played in this session.
+    private(set) var duelTurns: [ChallengeTurnResult] = []
     /// Taps during "Get ready", each of which restarted the wait.
     private(set) var falseStarts = 0
     /// Streak: the finished run beat the personal best. Daily: this session
@@ -52,20 +70,29 @@ final class ChallengeSession {
 
     @ObservationIgnored private let delay: () -> TimeInterval
     @ObservationIgnored private let persist: (ChallengeRecords) -> Void
+    @ObservationIgnored private let onDuelUpdate: (DuelState, _ isTurnComplete: Bool) -> Void
 
     init(
         mode: ChallengeMode,
         records: ChallengeRecords,
         seed: UInt64? = nil,
         delay: @escaping () -> TimeInterval = { RandomStart.delay() },
-        persist: @escaping (ChallengeRecords) -> Void = { _ in }
+        persist: @escaping (ChallengeRecords) -> Void = { _ in },
+        onDuelUpdate: @escaping (DuelState, _ isTurnComplete: Bool) -> Void = { _, _ in }
     ) {
         self.mode = mode
         self.records = records
         self.delay = delay
         self.persist = persist
-        if case .streak(let kind, let difficulty) = mode {
+        self.onDuelUpdate = onDuelUpdate
+        switch mode {
+        case .streak(let kind, let difficulty):
             run = StreakRun(kind: kind, difficulty: difficulty, seed: seed)
+        case .daily:
+            break
+        case .duel(let plan):
+            duel = plan.state
+            duelRound = plan.state.nextRound(for: plan.me)
         }
     }
 
@@ -73,12 +100,13 @@ final class ChallengeSession {
         switch mode {
         case .streak: run?.target ?? GameEngine.classicTarget
         case .daily(let challenge): challenge.target
+        case .duel: duel?.target(round: duelRound ?? 0) ?? GameEngine.classicTarget
         }
     }
 
     var effect: BlindEffect {
         switch mode {
-        case .streak: .dark
+        case .streak, .duel: .dark
         case .daily(let challenge): challenge.effect
         }
     }
@@ -99,6 +127,7 @@ final class ChallengeSession {
         switch mode {
         case .streak: run?.isOver ?? true
         case .daily: dailyAttemptsLeft == 0
+        case .duel(let plan): duel?.nextRound(for: plan.me) == nil
         }
     }
 
@@ -114,7 +143,15 @@ final class ChallengeSession {
         case .getReady, .running, .finished:
             return
         }
-        if case .daily = mode, dailyAttemptsLeft == 0 { return }
+        switch mode {
+        case .streak:
+            break
+        case .daily:
+            guard dailyAttemptsLeft > 0 else { return }
+        case .duel(let plan):
+            guard let round = duel?.nextRound(for: plan.me) else { return }
+            duelRound = round
+        }
         phase = .getReady(goAt: now + delay())
     }
 
@@ -128,9 +165,18 @@ final class ChallengeSession {
     /// The random wait is over: the timer starts now.
     func go(at uptime: TimeInterval) {
         guard case .getReady(let goAt) = phase, uptime >= goAt else { return }
-        if case .daily(let challenge) = mode {
+        switch mode {
+        case .streak:
+            break
+        case .daily(let challenge):
             guard records.beginDailyAttempt(day: challenge.day) else { return }
             persist(records)
+        case .duel(let plan):
+            guard var state = duel, let round = duelRound,
+                  (try? state.begin(round: round, player: plan.me)) != nil
+            else { return }
+            duel = state
+            onDuelUpdate(state, false)
         }
         phase = .running(startedAt: uptime)
     }
@@ -172,7 +218,8 @@ final class ChallengeSession {
     }
 
     /// Leaves early. A turn in progress counts as a miss; turns already
-    /// played still count.
+    /// played still count. A duel turn is passed on only once all of the
+    /// player's rounds are played; otherwise they can resume it later.
     func quit() {
         switch phase {
         case .finished:
@@ -182,11 +229,12 @@ final class ChallengeSession {
         case .intro, .getReady, .result:
             break
         }
-        let hasPlayed = switch mode {
+        let shouldFinish = switch mode {
         case .streak: !(run?.turns.isEmpty ?? true)
         case .daily: !dailyTurns.isEmpty
+        case .duel: !duelTurns.isEmpty && isOverAfterResult
         }
-        if hasPlayed {
+        if shouldFinish {
             finish()
         } else {
             phase = .intro
@@ -205,6 +253,8 @@ final class ChallengeSession {
         case .daily(let challenge):
             guard let best = records.dailyResult(for: challenge.day).best else { return nil }
             return (ChallengeScore.daily(deviation: best), LeaderboardID.daily)
+        case .duel:
+            return nil
         }
     }
 
@@ -223,6 +273,8 @@ final class ChallengeSession {
             if !dailyTurns.isEmpty {
                 earned.append(.dailyPlayer)
             }
+        case .duel:
+            turns = duelTurns
         }
         if turns.contains(where: { ChallengeRecords.isDeadOn(stopped: $0.stopped, target: $0.target) }) {
             earned.insert(.firstDeadOn, at: 0)
@@ -251,15 +303,37 @@ final class ChallengeSession {
                 isNewBest = true
             }
             persist(records)
+        case .duel(let plan):
+            let turnTarget = target
+            result = ChallengeTurnResult(
+                target: turnTarget,
+                stopped: stopped,
+                isHit: Scoring.outcome(elapsed: stopped, target: turnTarget).isScored
+            )
+            duelTurns.append(result)
+            if var state = duel, let round = duelRound,
+               (try? state.record(stopped: stopped, round: round, player: plan.me)) != nil {
+                duel = state
+                onDuelUpdate(state, false)
+            }
         }
         phase = .result(result)
         return result
     }
 
     private func finish() {
-        if case .streak = mode, let run {
-            isNewBest = records.record(run)
-            persist(records)
+        switch mode {
+        case .streak:
+            if let run {
+                isNewBest = records.record(run)
+                persist(records)
+            }
+        case .daily:
+            break
+        case .duel:
+            if let duel {
+                onDuelUpdate(duel, true)
+            }
         }
         phase = .finished
     }

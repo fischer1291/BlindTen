@@ -99,6 +99,26 @@ struct ChallengeRecordsTests {
         #expect(records.dailyResult(for: "2026-01-01").attemptsUsed == 0)
     }
 
+    @Test func duelsAreCountedOnce() {
+        var records = ChallengeRecords()
+        let first = records.recordDuel(id: "m1", result: .win)
+        let again = records.recordDuel(id: "m1", result: .win)
+        records.recordDuel(id: "m2", result: .loss)
+        records.recordDuel(id: "m3", result: .draw)
+        #expect(first)
+        #expect(!again)
+        #expect(records.duelWins == 1)
+        #expect(records.duelLosses == 1)
+        #expect(records.duelDraws == 1)
+    }
+
+    @Test func recordsSavedBeforeDuelsStillLoad() throws {
+        let old = Data(#"{"streaks":{},"daily":{},"deadOns":3}"#.utf8)
+        let records = try JSONDecoder().decode(ChallengeRecords.self, from: old)
+        #expect(records.deadOns == 3)
+        #expect(records.duelWins == 0)
+    }
+
     @Test func roundTripsThroughUserDefaults() throws {
         let defaults = try #require(UserDefaults(suiteName: "ChallengeRecordsTests"))
         defaults.removePersistentDomain(forName: "ChallengeRecordsTests")
@@ -237,6 +257,51 @@ struct ChallengeSessionTests {
         #expect(session.records.stats(.classic, .close).best == 1)
         let earned = session.earnedAchievements
         #expect(earned.contains(.firstDeadOn))
+    }
+
+    @Test func duelTurnPlaysEveryOpenRoundThenPassesTheTurn() throws {
+        var state = DuelState(kind: .classic, seed: 1)
+        try state.begin(round: 0, player: 0)
+        try state.record(stopped: 10.2, round: 0, player: 0)
+        var updates: [(DuelState, Bool)] = []
+        let plan = DuelPlan(matchID: "m", me: 1, opponentName: "A", state: state)
+        let session = ChallengeSession(mode: .duel(plan), records: ChallengeRecords(), delay: { 2 }, onDuelUpdate: { updates.append(($0, $1)) })
+        #expect(session.duelRound == 0)
+        session.getReady(now: 0)
+        session.go(at: 2)
+        // The placeholder is saved before the stop.
+        #expect(updates.count == 1)
+        session.stop(at: 12.1)
+        #expect(!session.isOverAfterResult)
+        session.continueAfterResult(now: 20)
+        #expect(session.duelRound == 1)
+        session.go(at: 22)
+        session.stop(at: 32.3)
+        #expect(session.isOverAfterResult)
+        session.continueAfterResult(now: 40)
+        #expect(session.phase == .finished)
+        let last = try #require(updates.last)
+        #expect(last.1)
+        #expect(last.0.result(round: 0) == .won(by: 1))
+        #expect(last.0.nextRound(for: 0) == 1)
+    }
+
+    @Test func quittingADuelMidTurnKeepsTheTurn() throws {
+        var state = DuelState(kind: .classic, seed: 1)
+        try state.begin(round: 0, player: 0)
+        try state.record(stopped: 10.2, round: 0, player: 0)
+        var completed = false
+        let plan = DuelPlan(matchID: "m", me: 1, opponentName: nil, state: state)
+        let session = ChallengeSession(mode: .duel(plan), records: ChallengeRecords(), delay: { 2 }, onDuelUpdate: { _, done in
+            if done { completed = true }
+        })
+        session.getReady(now: 0)
+        session.go(at: 2)
+        session.stop(at: 12.1)
+        session.quit()
+        #expect(!completed)
+        #expect(session.phase == .intro)
+        #expect(session.duel?.nextRound(for: 1) == 1)
     }
 
     @Test func streakAchievements() {
