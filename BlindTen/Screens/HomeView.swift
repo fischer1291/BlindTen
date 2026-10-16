@@ -39,6 +39,36 @@ struct HomeView: View {
                     .font(.subheadline.weight(.medium))
                     .foregroundStyle(Theme.secondaryText)
 
+                NavigationLink {
+                    ChallengeHubView()
+                } label: {
+                    HStack(spacing: 16) {
+                        Image(systemName: "trophy.fill")
+                            .font(.title)
+                            .frame(width: 40)
+                            .foregroundStyle(Theme.accent)
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("Challenges")
+                                .font(.title2.weight(.heavy))
+                            Text("Solo streaks, a Daily Challenge and Game Center leaderboards.")
+                                .font(.body.weight(.medium))
+                                .multilineTextAlignment(.leading)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                        Spacer(minLength: 0)
+                        Image(systemName: "chevron.right")
+                            .font(.headline)
+                            .foregroundStyle(Theme.secondaryText)
+                    }
+                    .foregroundStyle(Theme.primaryText)
+                    .padding(18)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(Theme.surface, in: RoundedRectangle(cornerRadius: 20))
+                    .contentShape(RoundedRectangle(cornerRadius: 20))
+                }
+                .buttonStyle(.plain)
+                .padding(.top, 8)
+
                 Text("Modes")
                     .font(.title2.weight(.heavy))
                     .foregroundStyle(Theme.primaryText)
