@@ -22,16 +22,24 @@ final class SessionHost {
     private(set) var snapshot: SessionSnapshot?
 
     private unowned let state: AppState
-    @ObservationIgnored private var transport: PeerTransport?
-    @ObservationIgnored private var peers: [PeerTransport.Peer: Player.ID] = [:]
+    @ObservationIgnored private var transport: (any HostTransport)?
+    private let makeTransport: @MainActor (String, @escaping TransportEventHandler) -> any HostTransport
+    @ObservationIgnored private var peers: [TransportPeer: Player.ID] = [:]
     @ObservationIgnored private var revision = 0
     @ObservationIgnored private var presentedReveal: UUID?
     @ObservationIgnored private var revealTask: Task<Void, Never>?
     @ObservationIgnored private var timeoutTask: Task<Void, Never>?
     @ObservationIgnored private var timeoutDeadline: TimeInterval?
 
-    init(state: AppState) {
+    /// `makeTransport` picks the network: the local one by default.
+    init(
+        state: AppState,
+        makeTransport: @escaping @MainActor (String, @escaping TransportEventHandler) -> any HostTransport = {
+            PeerTransport(displayName: $0, onEvent: $1)
+        }
+    ) {
         self.state = state
+        self.makeTransport = makeTransport
         let emoji = Avatar.pool.shuffled()
         code = emoji.prefix(3).joined()
     }
@@ -59,7 +67,7 @@ final class SessionHost {
 
     func open() {
         guard transport == nil else { return }
-        let transport = PeerTransport(displayName: code) { [weak self] event in
+        let transport = makeTransport(code) { [weak self] event in
             self?.handle(event)
         }
         transport.advertise(name: code)
@@ -176,7 +184,7 @@ final class SessionHost {
 
     // MARK: - Network
 
-    private func handle(_ event: PeerTransport.Event) {
+    private func handle(_ event: TransportEvent) {
         switch event {
         case .found, .lost, .connected:
             break
@@ -190,7 +198,7 @@ final class SessionHost {
         }
     }
 
-    private func receive(_ message: ClientMessage, from peer: PeerTransport.Peer) {
+    private func receive(_ message: ClientMessage, from peer: TransportPeer) {
         if case .hello(let player, let version) = message {
             let result = logic.join(player, protocolVersion: version, gameInProgress: isGameRunning, maxPlayers: state.maxPlayers)
             if case .rejected(let reason) = result {
@@ -216,7 +224,7 @@ final class SessionHost {
         engineDidChange()
     }
 
-    private func send(_ message: HostMessage, to peers: [PeerTransport.Peer]) {
+    private func send(_ message: HostMessage, to peers: [TransportPeer]) {
         guard let data = SessionCoding.encode(message) else { return }
         transport?.send(data, to: peers)
     }

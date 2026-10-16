@@ -8,10 +8,10 @@ import Observation
 @Observable
 final class SessionClient {
     struct Host: Identifiable, Equatable {
-        let peer: PeerTransport.Peer
+        let peer: TransportPeer
         let name: String
 
-        var id: PeerTransport.Peer { peer }
+        var id: TransportPeer { peer }
     }
 
     enum Status: Equatable {
@@ -29,12 +29,20 @@ final class SessionClient {
     private(set) var snapshot: SessionSnapshot?
     private(set) var turn = ClientTurn()
 
-    @ObservationIgnored private var transport: PeerTransport?
-    @ObservationIgnored private var hostPeer: PeerTransport.Peer?
+    @ObservationIgnored private var transport: (any GuestTransport)?
+    private let makeTransport: @MainActor (String, @escaping TransportEventHandler) -> any GuestTransport
+    @ObservationIgnored private var hostPeer: TransportPeer?
     @ObservationIgnored private var hostName: String?
 
-    init(player: Player) {
+    /// `makeTransport` picks the network: the local one by default.
+    init(
+        player: Player,
+        makeTransport: @escaping @MainActor (String, @escaping TransportEventHandler) -> any GuestTransport = {
+            PeerTransport(displayName: $0, onEvent: $1)
+        }
+    ) {
         self.player = player
+        self.makeTransport = makeTransport
     }
 
     /// True once the host has sent the session state.
@@ -44,7 +52,7 @@ final class SessionClient {
 
     func open() {
         guard transport == nil else { return }
-        let transport = PeerTransport(displayName: player.name) { [weak self] event in
+        let transport = makeTransport(player.name) { [weak self] event in
             self?.handle(event)
         }
         transport.browse()
@@ -93,7 +101,7 @@ final class SessionClient {
 
     // MARK: - Network
 
-    private func handle(_ event: PeerTransport.Event) {
+    private func handle(_ event: TransportEvent) {
         switch event {
         case .found(let peer, let name):
             hosts.removeAll { $0.peer == peer || $0.name == name }

@@ -341,3 +341,71 @@ struct HostPlaysTooTests {
         #expect(!(hostTurn.screen(for: snapshot, me: host.id).needsPlayer))
     }
 }
+
+/// Stands in for the network so the host and client can be driven directly.
+final class FakeTransport: HostTransport, GuestTransport, @unchecked Sendable {
+    var handler: TransportEventHandler?
+    private(set) var sent: [(data: Data, peers: [TransportPeer])] = []
+    private(set) var advertisedName: String?
+    private(set) var joined: [TransportPeer] = []
+    var connectedPeers: [TransportPeer] = []
+
+    func send(_ data: Data, to peers: [TransportPeer]) { sent.append((data, peers)) }
+    func stop() {}
+    func advertise(name: String) { advertisedName = name }
+    func browse() {}
+    func join(_ peer: TransportPeer) { joined.append(peer) }
+}
+
+@MainActor
+struct SessionTransportTests {
+    let mia = Player(name: "Mia", emoji: "🦊")
+    let phone = TransportPeer(id: "phone-1", displayName: "Mia")
+
+    @Test func hostAdvertisesAndAnswersAHelloWithASnapshot() throws {
+        let fake = FakeTransport()
+        // The host holds the app state unowned, so keep it alive for the test.
+        let state = AppState(store: nil)
+        defer { withExtendedLifetime(state) {} }
+        let host = SessionHost(state: state) { _, handler in
+            fake.handler = handler
+            return fake
+        }
+        host.open()
+        #expect(fake.advertisedName == host.code)
+
+        let hello = try #require(SessionCoding.encode(ClientMessage.hello(player: mia, protocolVersion: SessionProtocol.version)))
+        let handler = try #require(fake.handler)
+        handler(.connected(phone))
+        handler(.received(hello, from: phone))
+
+        let last = try #require(fake.sent.last)
+        #expect(last.peers == [phone])
+        guard case .snapshot(let snapshot)? = SessionCoding.decode(HostMessage.self, from: last.data) else {
+            Issue.record("expected a snapshot")
+            return
+        }
+        #expect(snapshot.players.map(\.player) == [mia])
+        #expect(host.players == [mia])
+    }
+
+    @Test func clientSaysHelloOnceConnectedToTheChosenHost() throws {
+        let fake = FakeTransport()
+        let client = SessionClient(player: mia) { _, handler in
+            fake.handler = handler
+            return fake
+        }
+        client.open()
+        let handler = try #require(fake.handler)
+        let hostPeer = TransportPeer(id: "host", displayName: "🦊🐙🐳")
+        handler(.found(hostPeer, name: "🦊🐙🐳"))
+        let found = try #require(client.hosts.first)
+        client.join(found)
+        #expect(fake.joined == [hostPeer])
+
+        handler(.connected(hostPeer))
+        let sent = try #require(fake.sent.first)
+        #expect(sent.peers == [hostPeer])
+        #expect(SessionCoding.decode(ClientMessage.self, from: sent.data) == .hello(player: mia, protocolVersion: SessionProtocol.version))
+    }
+}

@@ -1,29 +1,19 @@
 @preconcurrency import MultipeerConnectivity
 
-/// A thin MultipeerConnectivity wrapper: the host advertises, players browse
-/// and invite themselves. Delegate callbacks arrive on background queues and
-/// are forwarded, in order, to the main actor.
-final class PeerTransport: NSObject, @unchecked Sendable {
-    /// A remote phone. Wraps `MCPeerID`, which is not marked Sendable.
-    struct Peer: Hashable, @unchecked Sendable {
-        let id: MCPeerID
-        var displayName: String { id.displayName }
-    }
-
-    enum Event: Sendable {
-        case found(Peer, name: String)
-        case lost(Peer)
-        case connected(Peer)
-        case disconnected(Peer)
-        case received(Data, from: Peer)
-    }
-
+/// The local-network transport: a thin MultipeerConnectivity wrapper. The
+/// host advertises, players browse and invite themselves. Delegate callbacks
+/// arrive on background queues and are forwarded, in order, to the main actor.
+final class PeerTransport: NSObject, HostTransport, GuestTransport, @unchecked Sendable {
     private let session: MCSession
     private var advertiser: MCNearbyServiceAdvertiser?
     private var browser: MCNearbyServiceBrowser?
-    private let onEvent: @MainActor @Sendable (Event) -> Void
+    private let onEvent: TransportEventHandler
+    /// `MCPeerID` is not Sendable; the rest of the app only sees `TransportPeer`.
+    private let lock = NSLock()
+    private var peersByID: [MCPeerID: TransportPeer] = [:]
+    private var mcPeers: [String: MCPeerID] = [:]
 
-    init(displayName: String, onEvent: @escaping @MainActor @Sendable (Event) -> Void) {
+    init(displayName: String, onEvent: @escaping TransportEventHandler) {
         let peer = MCPeerID(displayName: Self.safeName(displayName))
         session = MCSession(peer: peer, securityIdentity: nil, encryptionPreference: .required)
         self.onEvent = onEvent
@@ -31,8 +21,8 @@ final class PeerTransport: NSObject, @unchecked Sendable {
         session.delegate = self
     }
 
-    var connectedPeers: [Peer] {
-        session.connectedPeers.map(Peer.init)
+    var connectedPeers: [TransportPeer] {
+        session.connectedPeers.map(peer(for:))
     }
 
     /// Host: lets players find this session under `name`.
@@ -57,13 +47,15 @@ final class PeerTransport: NSObject, @unchecked Sendable {
     }
 
     /// Player: asks a host to connect.
-    func join(_ peer: Peer) {
-        browser?.invitePeer(peer.id, to: session, withContext: nil, timeout: 15)
+    func join(_ peer: TransportPeer) {
+        guard let id = mcPeer(for: peer) else { return }
+        browser?.invitePeer(id, to: session, withContext: nil, timeout: 15)
     }
 
-    func send(_ data: Data, to peers: [Peer]) {
-        guard !peers.isEmpty else { return }
-        try? session.send(data, toPeers: peers.map(\.id), with: .reliable)
+    func send(_ data: Data, to peers: [TransportPeer]) {
+        let ids = peers.compactMap(mcPeer(for:))
+        guard !ids.isEmpty else { return }
+        try? session.send(data, toPeers: ids, with: .reliable)
     }
 
     func stop() {
@@ -74,7 +66,21 @@ final class PeerTransport: NSObject, @unchecked Sendable {
         session.disconnect()
     }
 
-    private func emit(_ event: Event) {
+    private func peer(for id: MCPeerID) -> TransportPeer {
+        lock.withLock {
+            if let known = peersByID[id] { return known }
+            let peer = TransportPeer(id: UUID().uuidString, displayName: id.displayName)
+            peersByID[id] = peer
+            mcPeers[peer.id] = id
+            return peer
+        }
+    }
+
+    private func mcPeer(for peer: TransportPeer) -> MCPeerID? {
+        lock.withLock { mcPeers[peer.id] }
+    }
+
+    private func emit(_ event: TransportEvent) {
         let handler = onEvent
         DispatchQueue.main.async {
             MainActor.assumeIsolated {
@@ -97,15 +103,15 @@ final class PeerTransport: NSObject, @unchecked Sendable {
 extension PeerTransport: MCSessionDelegate {
     func session(_ session: MCSession, peer peerID: MCPeerID, didChange state: MCSessionState) {
         switch state {
-        case .connected: emit(.connected(Peer(id: peerID)))
-        case .notConnected: emit(.disconnected(Peer(id: peerID)))
+        case .connected: emit(.connected(peer(for: peerID)))
+        case .notConnected: emit(.disconnected(peer(for: peerID)))
         case .connecting: break
         @unknown default: break
         }
     }
 
     func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID) {
-        emit(.received(data, from: Peer(id: peerID)))
+        emit(.received(data, from: peer(for: peerID)))
     }
 
     func session(_ session: MCSession, didReceive stream: InputStream, withName streamName: String, fromPeer peerID: MCPeerID) {}
@@ -141,10 +147,10 @@ extension PeerTransport: MCNearbyServiceAdvertiserDelegate {
 extension PeerTransport: MCNearbyServiceBrowserDelegate {
     func browser(_ browser: MCNearbyServiceBrowser, foundPeer peerID: MCPeerID, withDiscoveryInfo info: [String: String]?) {
         let name = info?[SessionProtocol.nameKey] ?? peerID.displayName
-        emit(.found(Peer(id: peerID), name: name))
+        emit(.found(peer(for: peerID), name: name))
     }
 
     func browser(_ browser: MCNearbyServiceBrowser, lostPeer peerID: MCPeerID) {
-        emit(.lost(Peer(id: peerID)))
+        emit(.lost(peer(for: peerID)))
     }
 }
