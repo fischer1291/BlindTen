@@ -13,9 +13,13 @@ struct StreaksView: View {
                     .foregroundStyle(Theme.secondaryText)
                 ForEach(ChallengeKind.allCases, id: \.self) { kind in
                     VStack(alignment: .leading, spacing: 10) {
-                        Label(kind.title, systemImage: kind.symbol)
-                            .font(.title3.weight(.heavy))
-                            .foregroundStyle(Theme.primaryText)
+                        HStack(spacing: 10) {
+                            Image(systemName: kind.symbol)
+                                .frame(width: 30, alignment: .leading)
+                            Text(kind.title)
+                        }
+                        .font(.title3.weight(.heavy))
+                        .foregroundStyle(Theme.primaryText)
                         Text(kind.subtitle)
                             .font(.subheadline.weight(.medium))
                             .foregroundStyle(Theme.secondaryText)

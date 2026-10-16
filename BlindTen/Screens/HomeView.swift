@@ -24,7 +24,7 @@ struct HomeView: View {
                     .entrance(1, isVisible: hasAppeared)
 
                 Group {
-                    HomeSection(title: "Together in the room", symbol: "iphone.gen3.radiowaves.left.and.right")
+                    HomeSection(title: "Together in the room", symbol: "house.fill")
                     HStack(spacing: 12) {
                         Button {
                             state.hostSession()
