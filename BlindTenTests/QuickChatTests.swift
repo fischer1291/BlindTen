@@ -96,7 +96,8 @@ struct DuelMessageTests {
 
     @Test func duelsSavedWithoutMessagesStillLoad() throws {
         let duel = DuelState(kind: .classic, seed: 5)
-        var json = try #require(String(data: try #require(duel.encoded()), encoding: .utf8))
+        let data = try #require(duel.encoded())
+        var json = try #require(String(data: data, encoding: .utf8))
         json = json.replacingOccurrences(of: ",\"messages\":[]", with: "")
             .replacingOccurrences(of: "\"messages\":[],", with: "")
         let decoded = DuelState.decode(Data(json.utf8))
