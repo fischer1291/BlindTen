@@ -221,6 +221,35 @@ Party games are played in bursts with friends watching. Ads mid-game kill the mo
 
 **Growth is the real lever.** Revenue here scales with installs, and installs come from people seeing it at a table. Priorities: the share card, TikTok/Reels clips of DEAD ON moments, and a "Played Blind Ten?" prompt to rate after a fun game (SKStoreReviewController, only after a DEAD ON or a close final).
 
+## Version 2: Online & Challenges
+
+Goal: turn the party game into something people open every day, alone against their own best, against friends far away and against the world. The offline party game stays the core and stays unchanged.
+
+**Features**
+
+| Feature | What it is | Access |
+| --- | --- | --- |
+| Streak Challenge | Endless solo run: new turn after each hit, one miss ends it. Score = streak length; ties go to the lower average deviation. Classic and Random Target, each in two difficulties (Pro, Close). | Free |
+| Daily Challenge | One target and blind effect per day, the same for everyone (seeded by the UTC date), 3 attempts, daily leaderboard and share card. | Free |
+| Online Duel | Asynchronous best of 3 against a friend or a random opponent; each plays their turns when they like. | Free |
+| Live Match | 2–8 players online at the same time, same target, shared reveal. Quick match or invite. | Party Pack |
+| Leaderboards, achievements, statistics | Global and friends leaderboards per challenge, achievements, personal statistics and history. | Free |
+
+**Streak rules.** A turn is a hit when its displayed deviation (two decimals) is within the tolerance; a misfire or timeout is a miss.
+
+| | Pro | Close |
+| --- | --- | --- |
+| Classic (10 s) | ≤ 0.25 s | ≤ 0.50 s |
+| Random Target (4–20 s) | ≤ 2.5 % of the target | ≤ 5 % of the target |
+
+Random Target uses a relative tolerance because timing error grows with the length of the interval; a fixed tolerance would make 20 s targets much harder than 4 s ones.
+
+**Random start (anti-cheat).** In every leaderboard run (streaks, Daily Challenge, online) the player does not tap START. After "ready", the app explains: "We can't stop you from using a stopwatch. So the timer starts by itself at a random moment. Keep your thumb ready and count from the GO." Then a silent "Get ready…" screen holds for a random 1.5–4.5 s (no countdown, nothing that ticks), and a GO flash with a haptic starts the timer. A second stopwatch can only be started after seeing the GO, so it carries the player's reaction delay (about 0.2–0.3 s), which is enough to break a tight streak. STOP is still measured with `UITouch.timestamp`; the auto-start moment is the system uptime of the GO frame. Offline party play keeps the START button.
+
+**Further anti-cheat.** Plausibility checks before submitting scores; friends leaderboards shown first. A server with App Attest and server-side validation only if the app grows large.
+
+**Technology.** Game Center for sign-in, friends, leaderboards (recurring leaderboards for the Daily Challenge), achievements, turn-based matches (Online Duel, `GKTurnBasedMatch`) and real-time matches (Live Match, `GKMatch`). No own backend at first. Timing stays on the player's device and only elapsed times travel, as in local sessions. The local session protocol and logic are reused for Live Match behind a transport abstraction (MultipeerConnectivity or Game Center). No free-text chat, only preset emoji reactions. SwiftData moves to a versioned schema with migrations before any model changes.
+
 ## Build plan for Claude Code
 
 Build in five milestones; the game is playable at the bar after milestone 2.
@@ -233,8 +262,16 @@ Build in five milestones; the game is playable at the bar after milestone 2.
 4. **Monetization & persistence** — Prompt: "Add SwiftData models from SPEC.md, remembered groups and stats awards, house-rule cards with custom rules, and StoreKit 2 PurchaseManager with one non-consumable Party Pack, paywall on locked mode tap, restore button, and a local StoreKit configuration file."
 5. **Launch polish** — Prompt: "Add the share card (1080×1920, ImageRenderer, share sheet), the review prompt rule, app icon placeholder, and an external display scene that shows leaderboard and reveals on the TV while the phone shows only the touch surface."
 
-After launch: Daily Challenge with Game Center, more languages (German first, since you can check it yourself), extra packs.
+**Version 2 (Online & Challenges), see the section above:**
+
+6. **Foundation** — Versioned SwiftData schema with migration plan, `SessionTransport` abstraction over MultipeerConnectivity, Game Center capability and sign-in, pure `ChallengeEngine` (streak rules, tolerances, random start, daily seed, score encoding) with unit tests.
+7. **Solo challenges (update 1.1)** — Streak Challenge (Classic and Random, Pro and Close) and Daily Challenge with the random start flow, personal bests and statistics, Game Center leaderboards and achievements, share cards.
+8. **Online Duel (update 1.2)** — Asynchronous best-of-3 duels via Game Center turn-based matches, invites and random opponents, "your turn" notifications, duel history.
+9. **Live Match (update 1.3)** — Real-time online matches for 2–8 players over Game Center, reusing the session protocol; quick match and invites; Party Pack.
+10. **Polish (1.4)** — Anti-cheat stage 2, seasons and weekly leaderboards, marketing assets, tuning from real player data.
+
+Later: more languages (German first), extra packs.
 
 **Testing tips:** precise timing only behaves on a real device, so run every milestone on your iPhone, not just the simulator. Test the reveal with real friends at milestone 2; their reactions decide what gets polished.
 
-**Out of scope for v1:** online multiplayer over the internet (the local session above stays on the local network), accounts, Android, a backend, user-generated content shared between devices.
+**Out of scope for v1:** online multiplayer over the internet (planned for version 2, see above), accounts, Android, a backend, user-generated content shared between devices.
