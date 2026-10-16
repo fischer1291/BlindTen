@@ -1,5 +1,6 @@
 import SwiftUI
 
+/// Setting up a party game on one phone: players, then the mode.
 struct PlayersView: View {
     @Environment(AppState.self) private var state
     @State private var newName = ""
@@ -42,25 +43,21 @@ struct PlayersView: View {
             .listRowBackground(Theme.surface)
 
             Section {
-                HStack(spacing: 12) {
-                    Image(systemName: state.selectedMode.symbol)
-                        .foregroundStyle(Theme.accent)
-                    Text(state.selectedMode.title)
-                        .font(.title3.weight(.bold))
-                }
+                ModePicker()
+                    .listRowBackground(Color.clear)
+                    .listRowInsets(EdgeInsets())
                 if state.selectedMode.mode.eliminatesRoundLoser {
                     Text("Rounds: until one is left")
                         .font(.title3)
+                        .listRowBackground(Theme.surface)
                 } else {
                     Stepper("Rounds: \(rounds)", value: $rounds, in: 1...10)
                         .font(.title3)
+                        .listRowBackground(Theme.surface)
                 }
             } header: {
                 Text("Mode")
-            } footer: {
-                Text(state.selectedMode.rules)
             }
-            .listRowBackground(Theme.surface)
 
             Section {
                 Button("Start game") { startGame() }
