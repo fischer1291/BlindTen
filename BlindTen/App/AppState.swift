@@ -44,6 +44,10 @@ final class AppState {
     let gameCenter = GameCenterManager()
     /// Online duels (Game Center turn-based matches).
     let duels = DuelCenter()
+    /// Live Match matchmaking (Game Center real-time matches).
+    let live = LiveMatchCenter()
+    /// The Live Match in progress: this phone hosts it or joined it.
+    private(set) var liveMatch: LiveMatch?
     /// Personal bests and statistics of the solo challenges and duels.
     private(set) var challengeRecords = ChallengeRecordsStorage.load()
 
@@ -69,6 +73,10 @@ final class AppState {
         self.store = store
         gameCenter.onAuthenticated = { [weak self] in
             self?.duels.start()
+            self?.live.start()
+        }
+        live.onConnection = { [weak self] connection in
+            self?.beginLiveMatch(connection)
         }
         duels.onFinished = { [weak self] id, result in
             self?.recordDuel(id: id, result: result)
@@ -88,8 +96,9 @@ final class AppState {
     }
 
     /// Starts a game. Named rosters are remembered as a group; quick play is not.
-    func startGame(players: [Player], rounds: Int, remember: Bool) throws {
-        engine = try GameEngine(players: players, mode: selectedMode.mode, rounds: rounds)
+    /// `mode` replaces the selected mode's rules, e.g. Live Match plays it all at once.
+    func startGame(players: [Player], rounds: Int, remember: Bool, mode: (any GameMode)? = nil) throws {
+        engine = try GameEngine(players: players, mode: mode ?? selectedMode.mode, rounds: rounds)
         groupID = remember ? store?.rememberGroup(players) : nil
         resetGameExtras()
     }
@@ -230,6 +239,60 @@ final class AppState {
     func leaveSession() {
         sessionClient?.close()
         sessionClient = nil
+    }
+
+    // MARK: - Live Match
+
+    enum LiveMatch {
+        case host(SessionHost)
+        case client(SessionClient)
+    }
+
+    /// A Live Match was found: the elected host runs the game on this phone
+    /// and plays too; everyone else joins it.
+    func beginLiveMatch(_ connection: LiveMatchConnection) {
+        leaveLiveMatch()
+        endHostedSession()
+        leaveSession()
+        let me = liveMatchPlayer(name: connection.localName)
+        if connection.isHost {
+            if !TogetherMode.supports(selectedMode) || !PartyPack.canPlay(selectedMode, unlocked: isPartyPackUnlocked) {
+                selectedMode = .classic
+            }
+            let host = SessionHost(state: self) { _, handler in connection.makeTransport(handler) }
+            host.playsAllAtOnce = true
+            host.playerLimit = LiveMatchRules.maxPlayers
+            host.open()
+            host.setLocalPlayer(me)
+            liveMatch = .host(host)
+        } else {
+            let client = SessionClient(player: me) { _, handler in connection.makeTransport(handler) }
+            client.open()
+            client.join(SessionClient.Host(peer: connection.hostPeer, name: connection.hostPeer.displayName))
+            liveMatch = .client(client)
+        }
+    }
+
+    func leaveLiveMatch() {
+        switch liveMatch {
+        case .host(let host):
+            host.close()
+            newGame()
+        case .client(let client):
+            client.close()
+        case nil:
+            return
+        }
+        liveMatch = nil
+    }
+
+    /// The Game Center name with the avatar picked for sessions.
+    private func liveMatchPlayer(name: String) -> Player {
+        let defaults = UserDefaults.standard
+        let emoji = defaults.string(forKey: SessionIdentity.emojiKey) ?? Avatar.pool.randomElement() ?? "🙂"
+        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        let shown = trimmed.isEmpty ? String(localized: "Player") : String(trimmed.prefix(24))
+        return Player(id: SessionIdentity.playerID(defaults: defaults), name: shown, emoji: emoji)
     }
 
     // MARK: - Challenges
