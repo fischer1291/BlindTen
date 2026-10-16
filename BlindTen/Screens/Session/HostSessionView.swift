@@ -226,30 +226,14 @@ struct HostSessionView: View {
         Toggle("I'm playing too", isOn: $hostPlays)
             .font(.headline)
         if hostPlays {
-            TextField("Your name", text: $name)
-                .font(.title3.weight(.bold))
-                .textInputAutocapitalization(.words)
-                .submitLabel(.done)
-                .padding(12)
-                .background(Theme.surface, in: RoundedRectangle(cornerRadius: 14))
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    ForEach(Avatar.pool, id: \.self) { option in
-                        Button {
-                            emoji = option
-                        } label: {
-                            Text(verbatim: option)
-                                .font(.system(size: 28))
-                                .frame(width: 48, height: 48)
-                                .background(
-                                    option == emoji ? Theme.accent : Theme.surface,
-                                    in: RoundedRectangle(cornerRadius: 12)
-                                )
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityAddTraits(option == emoji ? .isSelected : [])
-                    }
-                }
+            HStack(spacing: 12) {
+                AvatarButton(emoji: $emoji, size: 52)
+                TextField("Your name", text: $name)
+                    .font(.title3.weight(.bold))
+                    .textInputAutocapitalization(.words)
+                    .submitLabel(.done)
+                    .padding(12)
+                    .background(Theme.surface, in: RoundedRectangle(cornerRadius: 14))
             }
             if host.localPlayer == nil {
                 Text("Enter your name to join your own game.")

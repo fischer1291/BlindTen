@@ -7,6 +7,12 @@ struct PlayersView: View {
     @State private var rounds = GameEngine.defaultRounds
     @State private var quickPlayCount = GameEngine.minPlayers
     @FocusState private var nameFieldFocused: Bool
+    /// The player whose avatar is being picked.
+    @State private var avatarPlayer: AvatarTarget?
+
+    private struct AvatarTarget: Identifiable {
+        let id: Player.ID
+    }
 
     private static let maxNameLength = 20
     private var isFull: Bool { state.roster.count >= state.maxPlayers }
@@ -23,8 +29,16 @@ struct PlayersView: View {
                     .disabled(isFull)
                 ForEach(state.roster) { player in
                     HStack(spacing: 12) {
-                        Text(player.emoji)
-                            .font(.title)
+                        Button {
+                            avatarPlayer = AvatarTarget(id: player.id)
+                        } label: {
+                            Text(verbatim: player.emoji)
+                                .font(.title)
+                                .frame(width: 44, height: 44)
+                                .background(Theme.background.opacity(0.5), in: Circle())
+                        }
+                        .buttonStyle(.pressable)
+                        .accessibilityLabel(Text("Change avatar"))
                         Text(player.name)
                             .font(.title3.weight(.semibold))
                     }
@@ -85,6 +99,17 @@ struct PlayersView: View {
         .background(Theme.background.ignoresSafeArea())
         .navigationTitle("Players")
         .onAppear { state.loadLastGroupIfNeeded() }
+        .sheet(item: $avatarPlayer) { target in
+            let id = target.id
+            AvatarPicker(selection: Binding(
+                get: { state.roster.first { $0.id == id }?.emoji ?? AvatarCatalog.fallback },
+                set: { emoji in
+                    if let index = state.roster.firstIndex(where: { $0.id == id }) {
+                        state.roster[index].emoji = emoji
+                    }
+                }
+            ))
+        }
         .toolbar {
             EditButton()
         }

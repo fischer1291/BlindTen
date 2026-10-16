@@ -62,10 +62,29 @@ struct StreaksView: View {
 /// achievements. Not behind the paywall.
 struct ProfileView: View {
     @Environment(AppState.self) private var state
+    @AppStorage(SessionIdentity.nameKey) private var name = ""
+    @AppStorage(SessionIdentity.emojiKey) private var emoji = Avatar.pool[0]
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
+                SectionTitle(title: "You")
+                HStack(spacing: 16) {
+                    AvatarButton(emoji: $emoji, size: 72)
+                    VStack(alignment: .leading, spacing: 6) {
+                        TextField("Your name", text: $name)
+                            .font(.title3.weight(.bold))
+                            .textInputAutocapitalization(.words)
+                            .submitLabel(.done)
+                            .padding(12)
+                            .background(Theme.surface, in: RoundedRectangle(cornerRadius: 14))
+                        Text("Shown when you host, join or play a live match.")
+                            .font(.footnote.weight(.medium))
+                            .foregroundStyle(Theme.secondaryText)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+
                 SectionTitle(title: "Statistics")
                 ChallengeStatsView(records: state.challengeRecords)
 

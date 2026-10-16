@@ -19,33 +19,15 @@ struct JoinSessionView: View {
                     .font(.title3.weight(.semibold))
                     .foregroundStyle(Theme.secondaryText)
 
-                TextField("Your name", text: $name)
-                    .font(.title2.weight(.bold))
-                    .textInputAutocapitalization(.words)
-                    .submitLabel(.done)
-                    .focused($nameFocused)
-                    .padding(16)
-                    .background(Theme.surface, in: RoundedRectangle(cornerRadius: 16))
-                    .disabled(state.sessionClient != nil)
-
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 10) {
-                        ForEach(Avatar.pool, id: \.self) { option in
-                            Button {
-                                emoji = option
-                            } label: {
-                                Text(verbatim: option)
-                                    .font(.system(size: 36))
-                                    .frame(width: 60, height: 60)
-                                    .background(
-                                        option == emoji ? Theme.accent : Theme.surface,
-                                        in: RoundedRectangle(cornerRadius: 14)
-                                    )
-                            }
-                            .buttonStyle(.plain)
-                            .accessibilityAddTraits(option == emoji ? .isSelected : [])
-                        }
-                    }
+                HStack(spacing: 14) {
+                    AvatarButton(emoji: $emoji, size: 64)
+                    TextField("Your name", text: $name)
+                        .font(.title2.weight(.bold))
+                        .textInputAutocapitalization(.words)
+                        .submitLabel(.done)
+                        .focused($nameFocused)
+                        .padding(16)
+                        .background(Theme.surface, in: RoundedRectangle(cornerRadius: 16))
                 }
                 .disabled(state.sessionClient != nil)
 
