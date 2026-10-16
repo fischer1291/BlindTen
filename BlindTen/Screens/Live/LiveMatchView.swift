@@ -225,6 +225,8 @@ struct LiveMatchView: View {
                     Text(verbatim: snapshot?.player(id)?.emoji ?? "")
                         .font(.system(size: 34))
                         .opacity(ids.contains(id) ? 1 : 0.3)
+                        .scaleEffect(ids.contains(id) ? 1.1 : 0.9)
+                        .animation(Motion.snappy, value: ids.contains(id))
                 }
             }
             if case .host(let host) = match, !host.missingPlayers.isEmpty {
@@ -250,39 +252,84 @@ private struct LiveLobbyView: View {
     let snapshot: SessionSnapshot?
     let leave: () -> Void
 
+    private var players: [SessionPlayer] { snapshot?.players ?? [] }
+
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: 18) {
                 Text("Live Match")
                     .font(Theme.display(40))
-                ForEach(snapshot?.players ?? []) { entry in
-                    Text(verbatim: "\(entry.player.emoji) \(entry.player.name)")
-                        .font(.title3.weight(.heavy))
-                        .opacity(entry.isConnected ? 1 : 0.4)
+
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Players \(players.count) of \(LiveMatchRules.maxPlayers)")
+                        .font(.caption.weight(.heavy))
+                        .foregroundStyle(Theme.secondaryText)
+                        .textCase(.uppercase)
+                    FlowChips(players: players)
                 }
+
                 VStack(alignment: .leading, spacing: 8) {
-                    Label("The timer starts by itself", systemImage: "shuffle")
-                        .font(.headline.weight(.heavy))
-                        .foregroundStyle(Theme.accent)
+                    HStack(spacing: 10) {
+                        Image(systemName: "shuffle")
+                            .frame(width: 24, alignment: .leading)
+                        Text("The timer starts by itself")
+                    }
+                    .font(.headline.weight(.heavy))
+                    .foregroundStyle(Theme.accent)
                     Text("We can't control whether someone uses a second stopwatch. So there is no START button: after everyone is ready, the timer starts at a random moment. Watch for the yellow flash and the buzz.")
                         .font(.subheadline.weight(.medium))
+                        .foregroundStyle(Theme.primaryText)
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 .padding(16)
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .background(Theme.surface, in: RoundedRectangle(cornerRadius: 16))
 
                 if case .host(let host) = match {
                     LiveHostLobbyControls(host: host)
                 } else {
-                    Text("Waiting for the host to start the game.")
-                        .font(.headline)
-                        .foregroundStyle(Theme.secondaryText)
+                    HStack(spacing: 10) {
+                        ProgressView()
+                        Text("Waiting for the host to start the game.")
+                    }
+                    .font(.headline)
+                    .foregroundStyle(Theme.secondaryText)
                 }
+
                 Button("Leave", action: leave)
-                    .buttonStyle(.secondary)
+                    .font(.headline)
+                    .foregroundStyle(Theme.secondaryText)
+                    .frame(maxWidth: .infinity, minHeight: 44)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
             .padding(20)
         }
+    }
+}
+
+/// The players as avatar chips, wrapping onto new lines.
+private struct FlowChips: View {
+    let players: [SessionPlayer]
+
+    var body: some View {
+        LazyVGrid(columns: [GridItem(.adaptive(minimum: 140), spacing: 8, alignment: .leading)], alignment: .leading, spacing: 8) {
+            ForEach(players) { entry in
+                HStack(spacing: 8) {
+                    Text(verbatim: entry.player.emoji)
+                    Text(verbatim: entry.player.name)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                }
+                .font(.headline.weight(.heavy))
+                .padding(.horizontal, 12)
+                .padding(.vertical, 10)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Theme.surface, in: Capsule())
+                .opacity(entry.isConnected ? 1 : 0.4)
+                .transition(.scale.combined(with: .opacity))
+            }
+        }
+        .animation(Motion.snappy, value: players.map(\.id))
     }
 }
 
@@ -293,29 +340,48 @@ private struct LiveHostLobbyControls: View {
     var body: some View {
         @Bindable var state = state
         @Bindable var host = host
-        VStack(alignment: .leading, spacing: 14) {
-            Picker("Mode", selection: $state.selectedMode) {
-                ForEach(ModeKind.allCases.filter {
-                    TogetherMode.supports($0) && PartyPack.canPlay($0, unlocked: state.isPartyPackUnlocked)
-                }) { kind in
-                    Text(kind.title).tag(kind)
+        VStack(spacing: 14) {
+            VStack(spacing: 0) {
+                HStack {
+                    Text("Mode")
+                        .font(.headline)
+                    Spacer()
+                    Picker("Mode", selection: $state.selectedMode) {
+                        ForEach(ModeKind.allCases.filter {
+                            TogetherMode.supports($0) && PartyPack.canPlay($0, unlocked: state.isPartyPackUnlocked)
+                        }) { kind in
+                            Text(kind.title).tag(kind)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    .labelsHidden()
+                }
+                .padding(.horizontal, 16)
+                .frame(minHeight: 52)
+                if state.selectedMode != .elimination {
+                    Divider().overlay(Theme.secondaryText.opacity(0.3))
+                    Stepper(value: $host.rounds, in: 1...10) {
+                        Text("Rounds: \(host.rounds)")
+                            .font(.headline)
+                    }
+                    .padding(.horizontal, 16)
+                    .frame(minHeight: 52)
                 }
             }
-            .pickerStyle(.menu)
-            .font(.title3.weight(.bold))
-            if state.selectedMode != .elimination {
-                Stepper("Rounds: \(host.rounds)", value: $host.rounds, in: 1...10)
-                    .font(.headline)
-            }
+            .background(Theme.surface, in: RoundedRectangle(cornerRadius: 16))
+
             Button("Start game") {
                 host.startGame()
             }
             .buttonStyle(.primary)
             .disabled(!host.canStart)
             if host.players.count < LiveMatchRules.minPlayers {
-                Text("Waiting for the other players to connect…")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(Theme.secondaryText)
+                HStack(spacing: 10) {
+                    ProgressView()
+                    Text("Waiting for the other players to connect…")
+                }
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(Theme.secondaryText)
             }
         }
     }

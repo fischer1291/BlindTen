@@ -88,6 +88,7 @@ private struct ChallengeIntroView: View {
     @Environment(AppState.self) private var state
     let session: ChallengeSession
     let close: () -> Void
+    @State private var hasAppeared = ScreenshotMode.isActive
 
     var body: some View {
         VStack(spacing: 0) {
@@ -101,22 +102,29 @@ private struct ChallengeIntroView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     Image(systemName: "shuffle")
-                        .font(.system(size: 56, weight: .bold))
+                        .font(.system(size: 44, weight: .bold))
                         .foregroundStyle(Theme.accent)
+                        .symbolEffect(.bounce, value: hasAppeared)
                         .padding(.top, 12)
+                        .entrance(0, isVisible: hasAppeared)
                     Text("The timer starts by itself")
-                        .font(Theme.display(40))
+                        .font(Theme.display(34))
                         .fixedSize(horizontal: false, vertical: true)
+                        .entrance(1, isVisible: hasAppeared)
                     Text("We can't control whether you're cheating with a second stopwatch. That's why there is no START button here.")
                         .fixedSize(horizontal: false, vertical: true)
+                        .entrance(2, isVisible: hasAppeared)
                     Text("Instead, the timer starts automatically at a random moment, a few seconds after you tap \"I'm ready\". Watch for the yellow flash and the buzz, then stop at exactly the target.")
                         .fixedSize(horizontal: false, vertical: true)
+                        .entrance(3, isVisible: hasAppeared)
                     Text("Leaving the app while the timer runs counts as a miss.")
                         .foregroundStyle(Theme.secondaryText)
                         .fixedSize(horizontal: false, vertical: true)
+                        .entrance(4, isVisible: hasAppeared)
                     targetLine
+                        .entrance(5, isVisible: hasAppeared)
                 }
-                .font(.title3.weight(.semibold))
+                .font(.body.weight(.semibold))
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
             Button("I'm ready") {
@@ -124,8 +132,10 @@ private struct ChallengeIntroView: View {
             }
             .buttonStyle(.primary)
             .padding(.top, 12)
+            .entrance(6, isVisible: hasAppeared)
         }
         .padding(24)
+        .onAppear { hasAppeared = true }
     }
 
     @ViewBuilder
@@ -218,26 +228,43 @@ private struct ChallengeResultView: View {
     let session: ChallengeSession
     let result: ChallengeTurnResult
     @State private var acceptsTap = false
+    /// The number rolls up to the stopped time, then the verdict lands.
+    @State private var shownTime: TimeInterval = 0
+    @State private var isLanded = ScreenshotMode.isActive
+    @State private var confettiStart: TimeInterval?
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
-        VStack(spacing: 20) {
-            Spacer()
-            verdict
-            Text(verbatim: TimeFormat.seconds(result.stopped))
-                .font(Theme.display(96))
-                .monospacedDigit()
-                .lineLimit(1)
-                .minimumScaleFactor(0.5)
-            deviationLine
-            details
-            Spacer()
-            if acceptsTap {
+        ZStack {
+            VStack(spacing: 20) {
+                Spacer()
+                verdict
+                    .scaleEffect(isLanded ? 1 : 0.6)
+                    .opacity(isLanded ? 1 : 0)
+                Text(verbatim: TimeFormat.seconds(isLanded ? result.stopped : shownTime))
+                    .font(Theme.display(96))
+                    .monospacedDigit()
+                    .contentTransition(.numericText(value: isLanded ? result.stopped : shownTime))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
+                Group {
+                    deviationLine
+                    details
+                }
+                .opacity(isLanded ? 1 : 0)
+                .offset(y: isLanded ? 0 : 12)
+                Spacer()
                 Text("Tap to continue")
                     .font(.title3.weight(.bold))
-                    .transition(.opacity)
+                    .opacity(acceptsTap ? 1 : 0)
+            }
+            .padding(24)
+            if let confettiStart {
+                ConfettiView(startTime: confettiStart)
+                    .allowsHitTesting(false)
+                    .ignoresSafeArea()
             }
         }
-        .padding(24)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .contentShape(Rectangle())
         .onTapGesture {
@@ -245,10 +272,18 @@ private struct ChallengeResultView: View {
             session.continueAfterResult(now: ProcessInfo.processInfo.systemUptime)
         }
         .task {
+            if !reduceMotion, !isLanded {
+                withAnimation(.easeOut(duration: 0.45)) { shownTime = result.stopped }
+                try? await Task.sleep(for: .milliseconds(450))
+            }
+            withAnimation(Motion.snappy) { isLanded = true }
             state.feel.land(cue)
+            if cue == .deadOn {
+                confettiStart = ProcessInfo.processInfo.systemUptime
+            }
             // The STOP tap must not also skip the result.
-            try? await Task.sleep(for: .milliseconds(700))
-            withAnimation { acceptsTap = true }
+            try? await Task.sleep(for: .milliseconds(500))
+            withAnimation(.easeIn(duration: 0.2)) { acceptsTap = true }
         }
     }
 
@@ -360,8 +395,38 @@ private struct ChallengeSummaryView: View {
     let session: ChallengeSession
     let close: () -> Void
     let playAgain: () -> Void
+    @State private var hasAppeared = ScreenshotMode.isActive
+    @State private var confettiStart: TimeInterval?
+
+    /// A new personal best or a won duel gets confetti.
+    private var celebrates: Bool {
+        if session.isNewBest { return true }
+        if case .duel(let plan) = session.mode, case .won(let winner) = session.duel?.outcome {
+            return winner == plan.me
+        }
+        return false
+    }
 
     var body: some View {
+        ZStack {
+            summary
+            if let confettiStart {
+                ConfettiView(startTime: confettiStart)
+                    .allowsHitTesting(false)
+                    .ignoresSafeArea()
+            }
+        }
+        .task {
+            withAnimation(Motion.spring) { hasAppeared = true }
+            if celebrates {
+                try? await Task.sleep(for: .milliseconds(250))
+                confettiStart = ProcessInfo.processInfo.systemUptime
+                state.feel.land(.deadOn)
+            }
+        }
+    }
+
+    private var summary: some View {
         VStack(spacing: 20) {
             HStack {
                 session.mode.title
@@ -372,6 +437,8 @@ private struct ChallengeSummaryView: View {
             }
             Spacer()
             content
+                .scaleEffect(hasAppeared ? 1 : 0.85)
+                .opacity(hasAppeared ? 1 : 0)
             if session.isNewBest {
                 Label("New personal best!", systemImage: "star.fill")
                     .font(.title2.weight(.heavy))
@@ -379,6 +446,10 @@ private struct ChallengeSummaryView: View {
                     .padding(.horizontal, 18)
                     .padding(.vertical, 10)
                     .background(Theme.accent, in: Capsule())
+                    .symbolEffect(.bounce, value: hasAppeared)
+                    .scaleEffect(hasAppeared ? 1 : 0.4)
+                    .opacity(hasAppeared ? 1 : 0)
+                    .animation(Motion.snappy.delay(0.2), value: hasAppeared)
             }
             if session.leaderboardSubmission != nil, state.gameCenter.isAuthenticated {
                 Button {
@@ -390,17 +461,29 @@ private struct ChallengeSummaryView: View {
             }
             Spacer()
             VStack(spacing: 12) {
-                ShareLink(item: shareText) {
-                    Label("Share", systemImage: "square.and.arrow.up")
-                }
-                .buttonStyle(.secondary)
                 if case .streak = session.mode {
                     Button("Play again", action: playAgain)
                         .buttonStyle(.primary)
-                }
-                Button("Done", action: close)
+                    ShareLink(item: shareText) {
+                        Label("Share", systemImage: "square.and.arrow.up")
+                    }
                     .buttonStyle(.secondary)
+                    Button("Done", action: close)
+                        .font(.headline)
+                        .foregroundStyle(Theme.secondaryText)
+                        .frame(maxWidth: .infinity, minHeight: 44)
+                } else {
+                    Button("Done", action: close)
+                        .buttonStyle(.primary)
+                    ShareLink(item: shareText) {
+                        Label("Share", systemImage: "square.and.arrow.up")
+                    }
+                    .buttonStyle(.secondary)
+                }
             }
+            .opacity(hasAppeared ? 1 : 0)
+            .offset(y: hasAppeared ? 0 : 24)
+            .animation(Motion.spring.delay(0.15), value: hasAppeared)
         }
         .padding(24)
     }

@@ -15,13 +15,16 @@ struct ModePicker: View {
                     isLocked: !PartyPack.canPlay(kind, unlocked: state.isPartyPackUnlocked)
                 ) {
                     if PartyPack.canPlay(kind, unlocked: state.isPartyPackUnlocked) {
-                        state.selectedMode = kind
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                            state.selectedMode = kind
+                        }
                     } else {
                         paywallMode = kind
                     }
                 }
             }
         }
+        .sensoryFeedback(.selection, trigger: state.selectedMode)
         .sheet(item: $paywallMode) { kind in
             PaywallView(mode: kind)
         }
@@ -44,30 +47,30 @@ private struct ModeCard: View {
         Button {
             select()
         } label: {
-            HStack(alignment: .top, spacing: 16) {
+            HStack(alignment: .firstTextBaseline, spacing: 16) {
                 Image(systemName: kind.symbol)
-                    .font(.title)
-                    .frame(width: 40)
+                    .font(.title2)
+                    .frame(width: 44)
                     .foregroundStyle(isSelected ? Theme.onAccent : Theme.accent)
+                    .symbolEffect(.bounce, value: isSelected)
                 VStack(alignment: .leading, spacing: 6) {
-                    HStack {
+                    HStack(alignment: .firstTextBaseline, spacing: 8) {
                         Text(kind.title)
                             .font(.title2.weight(.heavy))
                         if !kind.isFree {
-                            Label {
-                                Text("Party Pack")
-                            } icon: {
+                            HStack(spacing: 4) {
                                 if isLocked {
                                     Image(systemName: "lock.fill")
                                 }
+                                Text("Party Pack")
                             }
-                                .font(.caption.weight(.heavy))
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 3)
-                                .background(
-                                    isSelected ? Theme.onAccent.opacity(0.15) : Theme.accent.opacity(0.2),
-                                    in: Capsule()
-                                )
+                            .font(.caption.weight(.heavy))
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 3)
+                            .background(
+                                isSelected ? Theme.onAccent.opacity(0.15) : Theme.accent.opacity(0.2),
+                                in: Capsule()
+                            )
                         }
                     }
                     Text(kind.rules)
@@ -79,6 +82,7 @@ private struct ModeCard: View {
                 if isSelected {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.title2)
+                        .transition(.scale(scale: 0.4).combined(with: .opacity))
                 }
             }
             .foregroundStyle(isSelected ? Theme.onAccent : Theme.primaryText)
@@ -87,7 +91,7 @@ private struct ModeCard: View {
             .background(isSelected ? Theme.accent : Theme.surface, in: RoundedRectangle(cornerRadius: 20))
             .contentShape(RoundedRectangle(cornerRadius: 20))
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.pressable)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }

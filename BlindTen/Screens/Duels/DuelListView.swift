@@ -43,7 +43,9 @@ struct DuelListView: View {
                         .foregroundStyle(Theme.late)
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
             .padding(20)
+            .animation(Motion.spring, value: duels.duels.map(\.id))
         }
         .background(Theme.background.ignoresSafeArea())
         .navigationTitle("Online Duel")
@@ -125,7 +127,7 @@ struct DuelListView: View {
                 } label: {
                     DuelRow(duel: duel)
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(.pressable)
             }
         }
     }

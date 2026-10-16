@@ -10,7 +10,7 @@ struct LiveMatchMenuView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 Text("2 to 8 players online at the same time. Everyone gets the same target, the timer starts by itself, and all results land together.")
-                    .font(.title3.weight(.semibold))
+                    .font(.body.weight(.medium))
                     .foregroundStyle(Theme.secondaryText)
                     .fixedSize(horizontal: false, vertical: true)
 
@@ -52,6 +52,7 @@ struct LiveMatchMenuView: View {
                         .foregroundStyle(Theme.late)
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
             .padding(20)
         }
         .background(Theme.background.ignoresSafeArea())

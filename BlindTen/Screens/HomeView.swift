@@ -12,75 +12,89 @@ struct HomeView: View {
     @State private var dailySession: ChallengeSession?
     @State private var today = DailyChallenge(date: .now)
     @State private var paywallMode: ModeKind? = ScreenshotMode.scene == .paywall ? .liarsClock : nil
+    /// Drives the entrance on the first appearance only.
+    @State private var hasAppeared = ScreenshotMode.isActive
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
                 upNext
+                    .entrance(0, isVisible: hasAppeared)
                 partyCard
+                    .entrance(1, isVisible: hasAppeared)
 
-                HomeSection(title: "Together in the room", symbol: "iphone.gen3.radiowaves.left.and.right")
-                HStack(spacing: 12) {
-                    Button {
-                        state.hostSession()
-                    } label: {
-                        HomeTile(symbol: "tv", title: "Host", subtitle: "Show the game on the TV")
-                    }
-                    NavigationLink {
-                        JoinSessionView()
-                    } label: {
-                        HomeTile(symbol: "iphone.radiowaves.left.and.right", title: "Join", subtitle: "Play on your own iPhone")
+                Group {
+                    HomeSection(title: "Together in the room", symbol: "iphone.gen3.radiowaves.left.and.right")
+                    HStack(spacing: 12) {
+                        Button {
+                            state.hostSession()
+                        } label: {
+                            HomeTile(symbol: "tv", title: "Host", subtitle: "Show the game on the TV")
+                        }
+                        NavigationLink {
+                            JoinSessionView()
+                        } label: {
+                            HomeTile(symbol: "iphone.radiowaves.left.and.right", title: "Join", subtitle: "Play on your own iPhone")
+                        }
                     }
                 }
+                .entrance(2, isVisible: hasAppeared)
 
-                HomeSection(title: "Solo", symbol: "person.fill")
-                HStack(spacing: 12) {
-                    Button {
-                        startDaily()
-                    } label: {
-                        HomeTile(
-                            symbol: "calendar",
-                            title: "Daily",
-                            subtitle: dailySubtitle,
-                            badge: dailyAttemptsLeft > 0 ? .count(dailyAttemptsLeft) : nil
-                        )
-                    }
-                    .disabled(dailyAttemptsLeft == 0)
-                    NavigationLink {
-                        StreaksView()
-                    } label: {
-                        HomeTile(symbol: "flame.fill", title: "Streaks", subtitle: streakSubtitle)
+                Group {
+                    HomeSection(title: "Solo", symbol: "person.fill")
+                    HStack(spacing: 12) {
+                        Button {
+                            startDaily()
+                        } label: {
+                            HomeTile(
+                                symbol: "calendar",
+                                title: "Daily",
+                                subtitle: dailySubtitle,
+                                badge: dailyAttemptsLeft > 0 ? .count(dailyAttemptsLeft) : nil
+                            )
+                        }
+                        .disabled(dailyAttemptsLeft == 0)
+                        NavigationLink {
+                            StreaksView()
+                        } label: {
+                            HomeTile(symbol: "flame.fill", title: "Streaks", subtitle: streakSubtitle)
+                        }
                     }
                 }
+                .entrance(3, isVisible: hasAppeared)
 
-                HomeSection(title: "Online", symbol: "globe")
-                HStack(spacing: 12) {
-                    NavigationLink {
-                        DuelListView()
-                    } label: {
-                        HomeTile(
-                            symbol: "person.2.wave.2.fill",
-                            title: "Duel",
-                            subtitle: "Best of 3, whenever you like",
-                            badge: yourTurnCount > 0 ? .count(yourTurnCount) : nil
-                        )
-                    }
-                    NavigationLink {
-                        LiveMatchMenuView()
-                    } label: {
-                        HomeTile(
-                            symbol: "bolt.horizontal.fill",
-                            title: "Live",
-                            subtitle: "2 to 8 players at once",
-                            badge: state.isPartyPackUnlocked ? nil : .locked
-                        )
+                Group {
+                    HomeSection(title: "Online", symbol: "globe")
+                    HStack(spacing: 12) {
+                        NavigationLink {
+                            DuelListView()
+                        } label: {
+                            HomeTile(
+                                symbol: "person.2.wave.2.fill",
+                                title: "Duel",
+                                subtitle: "Best of 3, whenever you like",
+                                badge: yourTurnCount > 0 ? .count(yourTurnCount) : nil
+                            )
+                        }
+                        NavigationLink {
+                            LiveMatchMenuView()
+                        } label: {
+                            HomeTile(
+                                symbol: "bolt.fill",
+                                title: "Live",
+                                subtitle: "2 to 8 players at once",
+                                badge: state.isPartyPackUnlocked ? nil : .locked
+                            )
+                        }
                     }
                 }
+                .entrance(4, isVisible: hasAppeared)
             }
-            .buttonStyle(.plain)
+            .buttonStyle(.pressable)
             .padding(20)
         }
         .defaultScrollAnchor(ScreenshotMode.scene == .homeBottom ? .bottom : .top)
+        .toolbarBackground(Theme.background, for: .navigationBar)
         .background(Theme.background.ignoresSafeArea())
         .navigationTitle("Blind Ten")
         .toolbar {
@@ -118,7 +132,9 @@ struct HomeView: View {
         .sheet(item: $paywallMode) { kind in
             PaywallView(mode: kind)
         }
+        .animation(Motion.spring, value: yourTurnCount)
         .onAppear {
+            hasAppeared = true
             today = DailyChallenge(date: .now)
             if state.duels.pendingMatchID != nil, !state.duels.isListVisible { showingDuels = true }
         }
@@ -179,8 +195,10 @@ struct HomeView: View {
                             text: Text("Your turn against \(duel.opponentName ?? String(localized: "Opponent"))")
                         )
                     }
+                    .transition(.move(edge: .top).combined(with: .opacity))
                 }
             }
+            .transition(.opacity.combined(with: .scale(scale: 0.96, anchor: .top)))
         }
     }
 
@@ -227,10 +245,14 @@ private struct HomeSection: View {
     let symbol: String
 
     var body: some View {
-        Label(title, systemImage: symbol)
-            .font(.title3.weight(.heavy))
-            .foregroundStyle(Theme.primaryText)
-            .padding(.top, 10)
+        HStack(spacing: 10) {
+            Image(systemName: symbol)
+                .frame(width: 30, alignment: .leading)
+            Text(title)
+        }
+        .font(.title3.weight(.heavy))
+        .foregroundStyle(Theme.primaryText)
+        .padding(.top, 10)
     }
 }
 
@@ -248,18 +270,23 @@ private struct HomeTile: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            HStack(alignment: .top) {
+            HStack(alignment: .center) {
                 Image(systemName: symbol)
                     .font(.title2)
                     .foregroundStyle(Theme.accent)
+                    .frame(width: 44, height: 30, alignment: .leading)
                 Spacer()
                 switch badge {
                 case .count(let count):
                     Text(verbatim: "\(count)")
                         .font(.subheadline.weight(.heavy))
+                        .monospacedDigit()
+                        .contentTransition(.numericText(value: Double(count)))
                         .foregroundStyle(Theme.onAccent)
+                        .padding(.horizontal, 8)
                         .frame(minWidth: 26, minHeight: 26)
                         .background(Theme.accent, in: Capsule())
+                        .transition(.scale.combined(with: .opacity))
                 case .locked:
                     Image(systemName: "lock.fill")
                         .font(.subheadline.weight(.heavy))

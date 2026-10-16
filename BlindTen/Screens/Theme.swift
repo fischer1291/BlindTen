@@ -75,9 +75,28 @@ private struct ButtonBody: View {
                         .strokeBorder(Theme.primaryText.opacity(0.5), lineWidth: 2)
                 }
             }
-            .opacity(isEnabled ? (configuration.isPressed ? 0.7 : 1) : 0.35)
+            .opacity(isEnabled ? (configuration.isPressed ? 0.85 : 1) : 0.35)
+            .scaleEffect(configuration.isPressed ? 0.97 : 1)
+            .animation(.spring(response: 0.25, dampingFraction: 0.7), value: configuration.isPressed)
             .contentShape(RoundedRectangle(cornerRadius: 20))
     }
+}
+
+/// Cards and tiles: the content keeps its own look and gives way a little
+/// under the finger, like a physical button.
+struct PressableButtonStyle: ButtonStyle {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed && !reduceMotion ? 0.96 : 1)
+            .brightness(configuration.isPressed ? 0.06 : 0)
+            .animation(.spring(response: 0.25, dampingFraction: 0.7), value: configuration.isPressed)
+    }
+}
+
+extension ButtonStyle where Self == PressableButtonStyle {
+    static var pressable: PressableButtonStyle { PressableButtonStyle() }
 }
 
 extension ButtonStyle where Self == PrimaryButtonStyle {

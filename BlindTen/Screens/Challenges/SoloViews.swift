@@ -34,6 +34,7 @@ struct StreaksView: View {
                     .padding(.top, 8)
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
             .padding(20)
         }
         .background(Theme.background.ignoresSafeArea())
@@ -74,6 +75,7 @@ struct ProfileView: View {
                 SectionTitle(title: "Game Center")
                 gameCenterSection
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
             .padding(20)
         }
         .background(Theme.background.ignoresSafeArea())
@@ -179,7 +181,7 @@ private struct StreakCard: View {
             .background(Theme.surface, in: RoundedRectangle(cornerRadius: 20))
             .contentShape(RoundedRectangle(cornerRadius: 20))
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.pressable)
         .accessibilityElement(children: .combine)
         .accessibilityHint(Text("Starts a streak"))
     }
