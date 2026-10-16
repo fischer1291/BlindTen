@@ -83,6 +83,7 @@ jobs:
           rm -rf /tmp/previews && cp -R previews /tmp/previews
           git checkout --orphan ui-previews
           git rm -rf --quiet .
+          rm -rf previews
           cp -R /tmp/previews previews
           git add previews
           git commit -m "UI previews from ${GITHUB_SHA::7} [skip ci]"
