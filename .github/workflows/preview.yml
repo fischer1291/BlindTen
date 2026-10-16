@@ -75,6 +75,8 @@ jobs:
           capture liveMenu 4 11-live-menu
           capture liveLobby 4 12-live-lobby
           capture homeBottom 4 13-home-bottom
+          capture avatarPicker 4 14-avatar-picker
+          capture quickChatSheet 4 15-quick-chat
 
       - name: Push to the ui-previews branch
         run: |

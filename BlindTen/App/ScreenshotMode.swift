@@ -31,12 +31,14 @@ enum ScreenshotMode {
         case duels
         case liveMenu
         case liveLobby
+        case avatarPicker
+        case quickChatSheet
 
         /// Scenes that replace the Home screen with another root view.
         var isPreviewRoot: Bool {
             switch self {
             case .players, .streaks, .profile, .challengeIntro, .challengeGetReady,
-                 .challengeResult, .challengeSummary, .duels, .liveMenu:
+                 .challengeResult, .challengeSummary, .duels, .liveMenu, .avatarPicker, .quickChatSheet:
                 true
             default:
                 false
@@ -105,7 +107,7 @@ enum ScreenshotFixtures {
             writePartyPackArt()
         case .homeReturning, .homeBottom, .profile, .streaks:
             state.setChallengeRecordsForPreview(previewRecords())
-        case .players, .duels, .liveMenu:
+        case .players, .duels, .liveMenu, .avatarPicker, .quickChatSheet:
             break
         case .challengeIntro:
             session = state.makeChallengeSession(.daily(DailyChallenge(date: .now)))
@@ -183,6 +185,8 @@ struct ScreenshotPreviewRoot: View {
         case .profile: ProfileView()
         case .duels: DuelListView()
         case .liveMenu: LiveMatchMenuView()
+        case .avatarPicker: AvatarPicker(selection: .constant("🦊"))
+        case .quickChatSheet: QuickChatSheet { _ in }
         case .challengeIntro, .challengeGetReady, .challengeResult, .challengeSummary:
             if let session = ScreenshotFixtures.session {
                 ChallengeRunView(session: session) {}
