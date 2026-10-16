@@ -35,7 +35,7 @@ final class GameCenterManager {
     /// formed in main-actor code (Swift 6 would trap on the isolation check).
     private nonisolated static func makeAuthenticateHandler(
         _ onAnswer: @escaping @Sendable (UIViewController?) -> Void
-    ) -> (UIViewController?, (any Error)?) -> Void {
+    ) -> @Sendable (UIViewController?, (any Error)?) -> Void {
         { viewController, _ in onAnswer(viewController) }
     }
 

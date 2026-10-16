@@ -228,10 +228,10 @@ final class AppState {
 
     /// A new streak or Daily Challenge run. Records are saved as it goes.
     func makeChallengeSession(_ mode: ChallengeMode) -> ChallengeSession {
-        ChallengeSession(mode: mode, records: challengeRecords) { [weak self] records in
+        ChallengeSession(mode: mode, records: challengeRecords, persist: { [weak self] records in
             self?.challengeRecords = records
             ChallengeRecordsStorage.save(records)
-        }
+        })
     }
 
     /// Sends the run's score and achievements to Game Center.
