@@ -1,8 +1,9 @@
 # App Store images
 
 Generated from the real app by the **App Store Screenshots** workflow
-(Actions tab, "Run workflow"). Rerun it after UI changes; the newest set
-is also pushed to the `app-store-assets` branch.
+(Actions tab, "Run workflow"). Rerun it after UI changes: it commits the
+new set into this folder on the branch it ran on, so `git pull` brings
+it to your computer.
 
 All images are JPEG without an alpha channel: App Store Connect rejects
 screenshots with transparency. The workflow checks size and alpha, and
@@ -27,3 +28,8 @@ App Store Connect scales them down for smaller iPhones.
 
 - `review-screenshot.jpg`: "Review Information > Screenshot" of the Party Pack
 - `party-pack-promo-1024.jpg`: optional "Promotional Image" (1024 x 1024, no transparency)
+
+## archive-1.0-6.5-inch
+
+The 1242 x 2688 screenshots uploaded for version 1.0, kept for reference.
+They show the old Home screen; App Store Connect only needs the 6.9" set.

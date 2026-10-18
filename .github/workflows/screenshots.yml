@@ -104,14 +104,17 @@ jobs:
           name: app-store-screenshots
           path: screenshots/
 
-      - name: Publish to the app-store-assets branch
+      - name: Commit to AppStore/Screenshots on this branch
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          rm -rf /tmp/assets && cp -R screenshots /tmp/assets
-          git checkout --orphan app-store-assets
-          git rm -rf --quiet .
-          rm -rf screenshots && cp -R /tmp/assets screenshots
-          git add screenshots
-          git commit -m "App Store screenshots from ${GITHUB_SHA::7} [skip ci]"
-          git push --force origin app-store-assets
+          cp screenshots/iPhone-6.9/*.jpg AppStore/Screenshots/iPhone-6.9/
+          cp screenshots/InAppPurchase/*.jpg AppStore/Screenshots/InAppPurchase/
+          git add AppStore/Screenshots
+          if git diff --cached --quiet; then
+            echo "Screenshots unchanged."
+            exit 0
+          fi
+          git commit -m "Update App Store screenshots from ${GITHUB_SHA::7} [skip ci]"
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
