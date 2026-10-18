@@ -18,7 +18,10 @@ App Store Connect scales them down for smaller iPhones.
 3. `3-awards.jpg`: final results with awards
 4. `4-pass-the-phone.jpg`: handoff
 5. `5-start.jpg`: the START button
-6. `6-modes.jpg`: Home with the modes
+6. `6-home.jpg`: Home sorted by how you play, with "Up next"
+7. `7-streak.jpg`: a streak summary with a new personal best
+8. `8-seasons.jpg`: streaks with personal bests and the weekly season
+9. `9-modes.jpg`: setting up a game with the mode cards
 
 ## InAppPurchase
 

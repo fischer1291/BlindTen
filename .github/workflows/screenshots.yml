@@ -70,7 +70,10 @@ jobs:
           capture results 5 iPhone-6.9/3-awards
           capture handoff 4 iPhone-6.9/4-pass-the-phone
           capture turn 4 iPhone-6.9/5-start
-          capture home 4 iPhone-6.9/6-modes
+          capture homeReturning 4 iPhone-6.9/6-home
+          capture challengeSummary 4 iPhone-6.9/7-streak
+          capture streaks 4 iPhone-6.9/8-seasons
+          capture players 4 iPhone-6.9/9-modes
           capture paywall 4 InAppPurchase/review-screenshot
           capture partyPackArt 4 warmup && rm screenshots/warmup.jpg
           DATA=$(xcrun simctl get_app_container "$UDID" "$BUNDLE_ID" data)
