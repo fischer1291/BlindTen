@@ -31,6 +31,7 @@ OUT = ROOT / "AppStore" / "Artwork"
 
 FPS = 30
 SECONDS = 8
+REPEATS = 2
 
 # name: (width, height)
 SIZES = {
@@ -174,20 +175,31 @@ def main():
             tab = browser.new_page(viewport={"width": width, "height": height})
             tab.set_content(page(width, height))
             tab.evaluate("document.fonts.ready")
-            # Silent stereo track: some App Store video slots expect audio.
+            frames = []
+            for n in range(FPS * SECONDS):
+                tab.evaluate(f"frame({n / FPS})")
+                frames.append(tab.screenshot(type="jpeg", quality=95,
+                                             clip={"x": 0, "y": 0, "width": width, "height": height}))
+            # Played REPEATS times (it loops seamlessly) so the file clears
+            # the 15 seconds App Store processing is known to expect for
+            # previews. Tagged BT.709 in video range, constant 30 fps, with a
+            # silent stereo AAC track: the safest shape for Apple's
+            # server-side processing.
             ffmpeg = subprocess.Popen([
                 "ffmpeg", "-y", "-loglevel", "error",
                 "-f", "image2pipe", "-framerate", str(FPS), "-c:v", "mjpeg", "-i", "-",
                 "-f", "lavfi", "-i", "anullsrc=channel_layout=stereo:sample_rate=48000",
                 "-map", "0:v", "-map", "1:a", "-shortest",
-                "-c:v", "libx264", "-profile:v", "high", "-pix_fmt", "yuv420p", "-crf", "14",
-                "-preset", "slow", "-r", str(FPS),
-                "-c:a", "aac", "-b:a", "128k", "-movflags", "+faststart", str(out),
+                "-vf", "scale=out_range=tv:out_color_matrix=bt709,format=yuv420p",
+                "-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709", "-color_range", "tv",
+                "-c:v", "libx264", "-profile:v", "high", "-level", "5.1",
+                "-b:v", "20M", "-maxrate", "24M", "-bufsize", "40M", "-preset", "slow",
+                "-r", str(FPS), "-fps_mode", "cfr",
+                "-c:a", "aac", "-b:a", "256k", "-movflags", "+faststart", str(out),
             ], stdin=subprocess.PIPE)
-            for n in range(FPS * SECONDS):
-                tab.evaluate(f"frame({n / FPS})")
-                ffmpeg.stdin.write(tab.screenshot(type="jpeg", quality=95,
-                                                  clip={"x": 0, "y": 0, "width": width, "height": height}))
+            for _ in range(REPEATS):
+                for frame in frames:
+                    ffmpeg.stdin.write(frame)
             ffmpeg.stdin.close()
             if ffmpeg.wait() != 0:
                 raise SystemExit(f"ffmpeg failed for {name}")

@@ -28,7 +28,7 @@ and [creative asset specifications](https://developer.apple.com/help/app-store-c
 ## Header video
 
 Rendered by `python3 marketing/appstore-art/header_video.py` (needs ffmpeg):
-one round as an 8-second seamless loop at 30 fps. START is tapped, the
+one round as an 8-second seamless loop, played twice (16 s) at 30 fps. START is tapped, the
 timer runs and blurs away, "Can you feel 10 seconds?" holds the blind
 phase, then 10.02 s, DEAD ON and confetti, and START returns. Everything
 stays in the header's visible center; it works muted.
