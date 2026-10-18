@@ -6,29 +6,36 @@ new set into this folder on the branch it ran on, so `git pull` brings
 it to your computer.
 
 All images are JPEG without an alpha channel: App Store Connect rejects
-screenshots with transparency. The workflow checks size and alpha, and
-saves each file under the name below.
+screenshots with transparency. The workflow checks size and alpha.
+
+## How the set is made
+
+1. The workflow captures the real app into `raw/<size>/<scene>.jpg`.
+2. `marketing/appstore-art/screenshots.py` puts each capture into an
+   iPhone frame under one short caption and writes the numbered upload
+   images below. Change the order or captions in its `STORY` list and
+   run it locally with `python3 marketing/appstore-art/screenshots.py`.
+
+Following Apple's guidance, the set tells the game in order and leads with
+the hook: the first three also appear in search results.
 
 ## iPhone-6.9 (1320 x 2868)
 
 Upload in this order under the version's "iPhone 6.9" Display" screenshots.
-App Store Connect scales them down for smaller iPhones.
 
-1. `1-dead-on.jpg`: the DEAD ON reveal with confetti
-2. `2-showdown.jpg`: Showdown split screen
-3. `3-awards.jpg`: final results with awards
-4. `4-pass-the-phone.jpg`: handoff
-5. `5-start.jpg`: the START button
-6. `6-home.jpg`: Home sorted by how you play, with "Up next"
-7. `7-streak.jpg`: a streak summary with a new personal best
-8. `8-seasons.jpg`: streaks with personal bests and the weekly season
-9. `9-modes.jpg`: setting up a game with the mode cards
+1. `1-dead-on.jpg`: "Can you feel 10 seconds?" with the DEAD ON reveal
+2. `2-start.jpg`: "Tap START. The timer vanishes."
+3. `3-showdown.jpg`: "Showdown: head to head." with the split screen
+4. `4-awards.jpg`: "Crown the inner clock." with results and awards
+5. `5-home.jpg`: "Party, solo or online." with Home
+6. `6-streak.jpg`: "Daily Challenge & streaks." with a new personal best
+7. `7-seasons.jpg`: "A new season every week." with the weekly season
+8. `8-modes.jpg`: "8 modes to master." with the mode cards
 
 ## iPhone-6.3 (1206 x 2622)
 
-The same nine screens, captured on a 6.3" iPhone, for the "iPhone 6.3"" /
-"6.1"" slot. Optional: when the 6.9" set is uploaded, App Store Connect
-scales it down for smaller iPhones by itself.
+The same eight images for the "iPhone 6.3"" / "6.1"" slot. Optional: when
+the 6.9" set is uploaded, App Store Connect scales it down by itself.
 
 ## InAppPurchase
 
