@@ -34,8 +34,8 @@ Upload in this order under the version's "iPhone 6.9" Display" screenshots.
 
 ## iPhone-6.3 (1206 x 2622)
 
-The same eight images for the "iPhone 6.3"" / "6.1"" slot. Optional: when
-the 6.9" set is uploaded, App Store Connect scales it down by itself.
+The same eight images, in the same order, for the "iPhone 6.3"" / "6.1""
+slot. Upload this set or the 6.9" one; either is enough.
 
 ## InAppPurchase
 
