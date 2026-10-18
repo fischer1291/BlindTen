@@ -21,7 +21,7 @@ import os
 import random
 from pathlib import Path
 
-from PIL import Image
+from PIL import Image, ImageCms
 from playwright.sync_api import sync_playwright
 
 HERE = Path(__file__).resolve().parent
@@ -31,6 +31,8 @@ SCREENSHOT = ROOT / "AppStore" / "Screenshots" / "iPhone-6.9" / "1-dead-on.jpg"
 OUT = ROOT / "AppStore" / "Artwork"
 
 # name: (width, height, format)
+SRGB = ImageCms.ImageCmsProfile(ImageCms.createProfile("sRGB")).tobytes()
+
 SIZES = {
     "header-16x9-5244x2950": (5244, 2950, "png"),
     "header-21x9-3840x1646": (3840, 1646, "jpg"),
@@ -134,10 +136,13 @@ def main():
             image = Image.open(io.BytesIO(png)).convert("RGB")
             assert image.size == (width, height), image.size
             out = OUT / f"{name}.{kind}"
+            # Tagged sRGB at 72 dpi, like a design tool's export: untagged
+            # files can be rejected by App Store Connect's upload check.
+            tags = {"icc_profile": SRGB, "dpi": (72, 72)}
             if kind == "png":
-                image.save(out, optimize=True)
+                image.save(out, optimize=True, **tags)
             else:
-                image.save(out, quality=92, optimize=True)
+                image.save(out, quality=92, optimize=True, **tags)
             print("Wrote", out.relative_to(ROOT), image.size, image.mode)
             tab.close()
         browser.close()
