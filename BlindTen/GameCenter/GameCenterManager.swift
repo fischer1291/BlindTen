@@ -69,11 +69,11 @@ final class GameCenterManager {
         hasAnswered = true
     }
 
-    func submit(_ score: Int, to leaderboardID: String) {
-        guard isAuthenticated else { return }
+    func submit(_ score: Int, to leaderboardIDs: [String]) {
+        guard isAuthenticated, !leaderboardIDs.isEmpty else { return }
         Task {
             try? await GKLeaderboard.submitScore(
-                score, context: 0, player: GKLocalPlayer.local, leaderboardIDs: [leaderboardID]
+                score, context: 0, player: GKLocalPlayer.local, leaderboardIDs: leaderboardIDs
             )
         }
     }
@@ -96,9 +96,10 @@ final class GameCenterManager {
         guard isAuthenticated else { return }
         let viewController: GKGameCenterViewController
         if let leaderboardID {
-            let timeScope: GKLeaderboard.TimeScope = leaderboardID == LeaderboardID.daily ? .today : .allTime
+            let timeScope: GKLeaderboard.TimeScope = LeaderboardID.isRecurring(leaderboardID) ? .today : .allTime
+            // SPEC.md: friends first; Apple's screen switches to everyone.
             viewController = GKGameCenterViewController(
-                leaderboardID: leaderboardID, playerScope: .global, timeScope: timeScope
+                leaderboardID: leaderboardID, playerScope: .friendsOnly, timeScope: timeScope
             )
         } else {
             viewController = GKGameCenterViewController(state: .leaderboards)

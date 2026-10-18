@@ -177,7 +177,7 @@ struct ChallengeSessionTests {
         #expect(session.phase == .finished)
         #expect(session.isNewBest)
         #expect(session.records.stats(.classic, .close).best == 1)
-        #expect(session.leaderboardSubmission?.leaderboardID == LeaderboardID.streak(.classic, .close))
+        #expect(session.leaderboardSubmission?.leaderboardIDs == [LeaderboardID.streak(.classic, .close), LeaderboardID.weeklyStreak(.classic, .close)])
         #expect(session.leaderboardSubmission?.score == 1)
     }
 
@@ -231,7 +231,7 @@ struct ChallengeSessionTests {
         #expect(saved.last?.dailyResult(for: daily.day).attemptsUsed == DailyChallenge.attempts)
         session.continueAfterResult(now: 1_000)
         #expect(session.phase == .finished)
-        #expect(session.leaderboardSubmission?.leaderboardID == LeaderboardID.daily)
+        #expect(session.leaderboardSubmission?.leaderboardIDs == [LeaderboardID.daily])
         #expect(session.leaderboardSubmission?.score == 10)
         let earned = session.earnedAchievements
         #expect(earned.contains(.dailyPlayer))
@@ -316,6 +316,6 @@ struct ChallengeSessionTests {
     @Test func streakAchievements() {
         #expect(AchievementID.forStreak(length: 4).isEmpty)
         #expect(AchievementID.forStreak(length: 10) == [.streak5, .streak10])
-        #expect(LeaderboardID.all.count == 5)
+        #expect(LeaderboardID.all.count == 9)
     }
 }

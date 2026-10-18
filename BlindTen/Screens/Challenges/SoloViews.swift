@@ -11,6 +11,7 @@ struct StreaksView: View {
                 Text("Hit after hit until the first miss. Pro is tight, Close is forgiving.")
                     .font(.body.weight(.medium))
                     .foregroundStyle(Theme.secondaryText)
+                SeasonCard(season: Season(date: .now))
                 ForEach(ChallengeKind.allCases, id: \.self) { kind in
                     VStack(alignment: .leading, spacing: 10) {
                         HStack(spacing: 10) {
@@ -159,6 +160,56 @@ private struct ProfileTile: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 12)
+        .background(Theme.surface, in: RoundedRectangle(cornerRadius: 16))
+    }
+}
+
+/// The running weekly season and its leaderboards.
+private struct SeasonCard: View {
+    @Environment(AppState.self) private var state
+    let season: Season
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(alignment: .firstTextBaseline) {
+                Text("Season \(season.week)")
+                    .font(.title3.weight(.heavy))
+                    .foregroundStyle(Theme.accent)
+                Spacer()
+                Group {
+                    let days = season.daysLeft(from: .now)
+                    if days == 0 {
+                        Text("Last day")
+                    } else {
+                        Text("\(days) days left")
+                    }
+                }
+                .font(.subheadline.weight(.bold))
+                .foregroundStyle(Theme.secondaryText)
+            }
+            Text("Weekly leaderboards start over every Monday. Your best streak of the week counts.")
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(Theme.primaryText)
+                .fixedSize(horizontal: false, vertical: true)
+            if state.gameCenter.isAuthenticated {
+                Menu {
+                    ForEach(ChallengeKind.allCases, id: \.self) { kind in
+                        ForEach(ChallengeDifficulty.allCases, id: \.self) { difficulty in
+                            Button {
+                                state.gameCenter.showLeaderboard(LeaderboardID.weeklyStreak(kind, difficulty))
+                            } label: {
+                                Text("\(Text(kind.title)) · \(Text(difficulty.title))")
+                            }
+                        }
+                    }
+                } label: {
+                    Label("This week's leaderboards", systemImage: "calendar")
+                        .font(.headline)
+                }
+            }
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .background(Theme.surface, in: RoundedRectangle(cornerRadius: 16))
     }
 }

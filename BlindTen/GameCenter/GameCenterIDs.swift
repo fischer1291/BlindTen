@@ -9,13 +9,23 @@ enum LeaderboardID {
         "\(prefix).streak.\(kind.rawValue).\(difficulty.rawValue)"
     }
 
+    /// Recurring leaderboard per streak that resets every Monday at
+    /// 00:00 UTC: one season.
+    static func weeklyStreak(_ kind: ChallengeKind, _ difficulty: ChallengeDifficulty) -> String {
+        "\(streak(kind, difficulty)).weekly"
+    }
+
     /// Recurring leaderboard that resets every day at 00:00 UTC.
     static let daily = "\(prefix).daily"
 
     static var all: [String] {
         ChallengeKind.allCases.flatMap { kind in
-            ChallengeDifficulty.allCases.map { streak(kind, $0) }
+            ChallengeDifficulty.allCases.flatMap { [streak(kind, $0), weeklyStreak(kind, $0)] }
         } + [daily]
+    }
+
+    static func isRecurring(_ id: String) -> Bool {
+        id == daily || id.hasSuffix(".weekly")
     }
 }
 

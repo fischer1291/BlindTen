@@ -261,16 +261,30 @@ final class ChallengeSession {
 
     // MARK: - Summary
 
-    /// What goes to the leaderboard, if anything.
-    var leaderboardSubmission: (score: Int, leaderboardID: String)? {
-        guard case .finished = phase else { return nil }
+    /// Anti-cheat stage 2: the deviations of this session's turns.
+    var plausibility: Plausibility.Verdict {
+        let deviations: [TimeInterval] = switch mode {
+        case .streak: run?.turns.map(\.deviation) ?? []
+        case .daily: dailyTurns.map(\.deviation)
+        case .duel: duelTurns.map(\.deviation)
+        }
+        return Plausibility.check(deviations: deviations)
+    }
+
+    /// What goes to the leaderboards, if anything. Implausible runs stay
+    /// personal bests but are not submitted.
+    var leaderboardSubmission: (score: Int, leaderboardIDs: [String])? {
+        guard case .finished = phase, plausibility == .plausible else { return nil }
         switch mode {
         case .streak(let kind, let difficulty):
             guard let run, run.length > 0 else { return nil }
-            return (ChallengeScore.streakLeaderboard(length: run.length), LeaderboardID.streak(kind, difficulty))
+            return (
+                ChallengeScore.streakLeaderboard(length: run.length),
+                [LeaderboardID.streak(kind, difficulty), LeaderboardID.weeklyStreak(kind, difficulty)]
+            )
         case .daily(let challenge):
             guard let best = records.dailyResult(for: challenge.day).best else { return nil }
-            return (ChallengeScore.daily(deviation: best), LeaderboardID.daily)
+            return (ChallengeScore.daily(deviation: best), [LeaderboardID.daily])
         case .duel:
             return nil
         }

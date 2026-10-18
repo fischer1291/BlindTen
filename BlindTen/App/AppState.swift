@@ -331,7 +331,7 @@ final class AppState {
             }
         }
         if let submission = session.leaderboardSubmission {
-            gameCenter.submit(submission.score, to: submission.leaderboardID)
+            gameCenter.submit(submission.score, to: submission.leaderboardIDs)
         }
         gameCenter.unlock(session.earnedAchievements)
     }

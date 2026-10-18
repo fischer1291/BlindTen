@@ -38,6 +38,7 @@
         }
       }
     },
+    "%lld days left": {},
     "%lld duel wins": {
       "localizations": {
         "en": {
@@ -305,6 +306,7 @@
     "Join on your iPhone": {},
     "Joining %@…": {},
     "Knocked out": {},
+    "Last day": {},
     "Leaderboard": {},
     "Leaderboards": {},
     "Leave": {},
@@ -339,6 +341,7 @@
     "No duels yet. Start one above!": {},
     "No timed attempt today.": {},
     "Not now": {},
+    "Not sent to the leaderboard: this run looks too perfect to be human. Your personal best still counts.": {},
     "Off": {},
     "One phone, pass it around. Tap START, the timer vanishes. Stop at exactly the target. Closest wins.": {},
     "One-time purchase. No subscription, no ads.": {},
@@ -393,6 +396,7 @@
     "Rounds: %lld": {},
     "Rounds: until one is left": {},
     "START": {},
+    "Season %lld": {},
     "Send a message": {},
     "Send a message with your turn": {},
     "Send turn": {},
@@ -459,6 +463,8 @@
     "Think you can stop at exactly 10?": {},
     "This round": {},
     "This session is full.": {},
+    "This week": {},
+    "This week's leaderboards": {},
     "Time's up": {},
     "Today's Blind Ten Daily Challenge: I was %@ s off. Can you beat it?": {},
     "Today: stop at %@ s": {},
@@ -491,6 +497,7 @@
     "Watch the TV. Your turn is coming.": {},
     "We can't control whether someone uses a second stopwatch. So there is no START button: after everyone is ready, the timer starts at a random moment. Watch for the yellow flash and the buzz.": {},
     "We can't control whether you're cheating with a second stopwatch. That's why there is no START button here.": {},
+    "Weekly leaderboards start over every Monday. Your best streak of the week counts.": {},
     "When everyone is ready, the timer starts by itself at a random moment.": {},
     "Winner": {},
     "Won": {},

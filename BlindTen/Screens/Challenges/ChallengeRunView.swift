@@ -426,6 +426,12 @@ private struct ChallengeSummaryView: View {
         }
     }
 
+    /// Anti-cheat stage 2 held back a leaderboard score.
+    private var isWithheld: Bool {
+        if case .duel = session.mode { return false }
+        return session.plausibility != .plausible
+    }
+
     /// Phrases for the end of a duel turn: the duel's result, or how the
     /// last round went.
     private var duelChatContext: QuickChat.Context {
@@ -467,13 +473,25 @@ private struct ChallengeSummaryView: View {
                     .opacity(hasAppeared ? 1 : 0)
                     .animation(Motion.snappy.delay(0.2), value: hasAppeared)
             }
-            if session.leaderboardSubmission != nil, state.gameCenter.isAuthenticated {
-                Button {
-                    state.gameCenter.showLeaderboard(session.leaderboardSubmission?.leaderboardID)
-                } label: {
-                    Label("Leaderboard", systemImage: "list.number")
-                        .font(.headline)
+            if let submission = session.leaderboardSubmission, state.gameCenter.isAuthenticated {
+                HStack(spacing: 24) {
+                    ForEach(submission.leaderboardIDs, id: \.self) { id in
+                        Button {
+                            state.gameCenter.showLeaderboard(id)
+                        } label: {
+                            Label(
+                                id.hasSuffix(".weekly") ? LocalizedStringKey("This week") : LocalizedStringKey("Leaderboard"),
+                                systemImage: id.hasSuffix(".weekly") ? "calendar" : "list.number"
+                            )
+                            .font(.headline)
+                        }
+                    }
                 }
+            } else if isWithheld {
+                Label("Not sent to the leaderboard: this run looks too perfect to be human. Your personal best still counts.", systemImage: "hand.raised.fill")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(Theme.secondaryText)
+                    .multilineTextAlignment(.center)
             }
             Spacer()
             VStack(spacing: 12) {
