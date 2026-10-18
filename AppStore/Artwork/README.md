@@ -1,7 +1,7 @@
 # App Store artwork
 
 Rendered by `python3 marketing/appstore-art/render.py` from
-`AppStore/Screenshots/iPhone-6.9/1-dead-on.jpg`, following Apple's
+`AppStore/Screenshots/raw/iPhone-6.9/dead-on.jpg`, following Apple's
 [asset best practices](https://developer.apple.com/app-store/asset-best-practices/)
 and [creative asset specifications](https://developer.apple.com/help/app-store-connect/reference/app-information/creative-assets-specifications):
 
@@ -9,6 +9,8 @@ and [creative asset specifications](https://developer.apple.com/help/app-store-c
 - A single idea with the focal point in the center: the DEAD ON moment.
 - A short phrase that adds to the visual; no logo or app name (the App
   Store shows them), no prices, URLs or awards.
+- The header keeps everything inside the center 1.45 x its height: on
+  iPhone the product page crops its sides away.
 - The bottom edge stays clear for the App Store's own overlay.
 - No alpha channel; the 16:9 sizes are PNG as the specification requires.
 

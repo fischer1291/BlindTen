@@ -27,11 +27,17 @@ from playwright.sync_api import sync_playwright
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent.parent
 FONTS = ROOT / "marketing" / "tools" / "fonts"
-SCREENSHOT = ROOT / "AppStore" / "Screenshots" / "iPhone-6.9" / "1-dead-on.jpg"
+SCREENSHOT = ROOT / "AppStore" / "Screenshots" / "raw" / "iPhone-6.9" / "dead-on.jpg"
 OUT = ROOT / "AppStore" / "Artwork"
 
-# name: (width, height, format)
 SRGB = ImageCms.ImageCmsProfile(ImageCms.createProfile("sRGB")).tobytes()
+
+# The product page header fills the iPhone's width and crops the sides:
+# only a center area of about 1.45 x the height stays visible. Everything
+# that matters in a header sits inside that area.
+HEADER_SAFE_RATIO = 1.45
+
+# name: (width, height, format)
 
 SIZES = {
     "header-16x9-5244x2950": (5244, 2950, "png"),
@@ -69,16 +75,19 @@ def confetti(cx, cy, inner, outer, count, seed, band):
     return "".join(pieces)
 
 
-def page(width, height):
+def page(width, height, header):
     # The phone sets the scale: it fills most of the height, sitting a
     # little above center so the bottom stays clear for the App Store.
     phone_h = height * 0.78
     phone_w = phone_h * 1320 / 2868
     cx, cy = width / 2, height * 0.46
-    side = (width - phone_w) / 2
-    # The phrase, left and right of the phone, as large as fits.
-    font = min(side * 0.82 / 6.4, height * 0.14)
     gap = phone_w * 0.18
+    # The phrase, left and right of the phone, as large as fits: on one
+    # line, or on two inside a header's visible area.
+    safe = min(width, height * HEADER_SAFE_RATIO) if header else width
+    side = (safe - phone_w) / 2 - gap
+    lines = ("Can you<br>feel", "10<br>seconds?") if header else ("Can you feel", "10 seconds?")
+    font = min(side * 0.92 / (4.6 if header else 6.4), height * 0.14)
     fonts = f"@font-face {{ font-family: Nunito; font-weight: 900; src: url({data_uri(FONTS / 'nunito-latin-900-normal.woff2', 'font/woff2')}); }}"
     svg = (
         f'<svg class="art" width="{width}" height="{height}" viewBox="0 0 {width} {height}">'
@@ -106,15 +115,15 @@ body {{
 .phone img {{ width: 100%; height: 100%; display: block; border-radius: {phone_w * 0.14:.0f}px; }}
 .phrase {{
   position: absolute; top: {cy:.0f}px; transform: translateY(-50%);
-  font-size: {font:.0f}px; line-height: 1; letter-spacing: {-font * 0.02:.1f}px; white-space: nowrap;
+  font-size: {font:.0f}px; line-height: 1.05; letter-spacing: {-font * 0.02:.1f}px; white-space: nowrap;
 }}
 .left {{ right: {cx + phone_w / 2 + gap:.0f}px; color: #FFFFFF; text-align: right; }}
 .right {{ left: {cx + phone_w / 2 + gap:.0f}px; color: {ACCENT}; }}
 </style></head><body>
 {svg}
-<div class="phrase left">Can you feel</div>
+<div class="phrase left">{lines[0]}</div>
 <div class="phone"><img src="{data_uri(SCREENSHOT, 'image/jpeg')}"></div>
-<div class="phrase right">10 seconds?</div>
+<div class="phrase right">{lines[1]}</div>
 </body></html>"""
 
 
@@ -129,7 +138,7 @@ def main():
         browser = p.chromium.launch(**launch)
         for name, (width, height, kind) in SIZES.items():
             tab = browser.new_page(viewport={"width": width, "height": height})
-            tab.set_content(page(width, height))
+            tab.set_content(page(width, height, header=name.startswith("header")))
             tab.evaluate("document.fonts.ready")
             tab.wait_for_timeout(300)
             png = tab.screenshot(clip={"x": 0, "y": 0, "width": width, "height": height})
