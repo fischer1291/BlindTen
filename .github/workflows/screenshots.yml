@@ -39,6 +39,26 @@ jobs:
             --cellularMode active --cellularBars 4 \
             --batteryState charged --batteryLevel 100
 
+      - name: Boot a 6.3-inch iPhone simulator
+        run: |
+          UDID63=$(xcrun simctl list devices available -j | python3 -c '
+          import json, sys
+          devices = [d for rt, ds in json.load(sys.stdin)["devices"].items() if ".iOS-" in rt for d in ds]
+          for wanted in ("iPhone 17 Pro", "iPhone 16 Pro"):
+              for d in devices:
+                  if d["name"] == wanted:
+                      print(d["udid"]); sys.exit(0)
+          sys.exit("No 6.3-inch iPhone simulator found")
+          ')
+          echo "UDID63=$UDID63" >> "$GITHUB_ENV"
+          xcrun simctl boot "$UDID63"
+          xcrun simctl bootstatus "$UDID63" -b
+          xcrun simctl ui "$UDID63" appearance dark
+          xcrun simctl status_bar "$UDID63" override --time "9:41" \
+            --dataNetwork wifi --wifiMode active --wifiBars 3 \
+            --cellularMode active --cellularBars 4 \
+            --batteryState charged --batteryLevel 100
+
       - name: Build the app (Debug, simulator)
         run: |
           set -o pipefail
@@ -50,6 +70,7 @@ jobs:
             -derivedDataPath build \
             CODE_SIGNING_ALLOWED=NO
           xcrun simctl install "$UDID" build/Build/Products/Debug-iphonesimulator/BlindTen.app
+          xcrun simctl install "$UDID63" build/Build/Products/Debug-iphonesimulator/BlindTen.app
 
       - name: Capture screenshots
         run: |
@@ -79,6 +100,26 @@ jobs:
           DATA=$(xcrun simctl get_app_container "$UDID" "$BUNDLE_ID" data)
           cp "$DATA/Documents/PartyPackPromo.jpg" screenshots/InAppPurchase/party-pack-promo-1024.jpg
 
+      - name: Capture 6.3-inch screenshots
+        run: |
+          mkdir -p screenshots/iPhone-6.3
+          capture() {
+            xcrun simctl terminate "$UDID63" "$BUNDLE_ID" 2>/dev/null || true
+            xcrun simctl launch "$UDID63" "$BUNDLE_ID" -screenshotScene "$1"
+            sleep "$2"
+            xcrun simctl io "$UDID63" screenshot --type=jpeg "screenshots/iPhone-6.3/$3.jpg"
+          }
+          capture home 8 warmup && rm screenshots/iPhone-6.3/warmup.jpg
+          capture reveal 3 1-dead-on
+          capture showdown 4 2-showdown
+          capture results 5 3-awards
+          capture handoff 4 4-pass-the-phone
+          capture turn 4 5-start
+          capture homeReturning 4 6-home
+          capture challengeSummary 4 7-streak
+          capture streaks 4 8-seasons
+          capture players 4 9-modes
+
       - name: Check sizes and alpha
         run: |
           ok=1
@@ -88,6 +129,7 @@ jobs:
             alpha=$(sips -g hasAlpha "$f" | awk '/hasAlpha/ {print $2}')
             case "$f" in
               *party-pack-promo-1024.jpg) want="1024x1024" ;;
+              *iPhone-6.3/*) want="1206x2622" ;;
               *) want="1320x2868" ;;
             esac
             if [ "${w}x${h}" = "$want" ] && [ "$alpha" = "no" ]; then
@@ -108,7 +150,9 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          mkdir -p AppStore/Screenshots/iPhone-6.3
           cp screenshots/iPhone-6.9/*.jpg AppStore/Screenshots/iPhone-6.9/
+          cp screenshots/iPhone-6.3/*.jpg AppStore/Screenshots/iPhone-6.3/
           cp screenshots/InAppPurchase/*.jpg AppStore/Screenshots/InAppPurchase/
           git add AppStore/Screenshots
           if git diff --cached --quiet; then

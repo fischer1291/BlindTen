@@ -24,6 +24,12 @@ App Store Connect scales them down for smaller iPhones.
 8. `8-seasons.jpg`: streaks with personal bests and the weekly season
 9. `9-modes.jpg`: setting up a game with the mode cards
 
+## iPhone-6.3 (1206 x 2622)
+
+The same nine screens, captured on a 6.3" iPhone, for the "iPhone 6.3"" /
+"6.1"" slot. Optional: when the 6.9" set is uploaded, App Store Connect
+scales it down for smaller iPhones by itself.
+
 ## InAppPurchase
 
 - `review-screenshot.jpg`: "Review Information > Screenshot" of the Party Pack
