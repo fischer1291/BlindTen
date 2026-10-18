@@ -1,17 +1,24 @@
 # App Store artwork
 
-Rendered by `python3 marketing/appstore-art/render.py` from the current
-screenshots in `AppStore/Screenshots/iPhone-6.9`. JPEG, RGB, no alpha.
-Key content sits inside the middle of the canvas because the App Store
-crops these images per device.
+Rendered by `python3 marketing/appstore-art/render.py` from
+`AppStore/Screenshots/iPhone-6.9/1-dead-on.jpg`, following Apple's
+[asset best practices](https://developer.apple.com/app-store/asset-best-practices/)
+and [creative asset specifications](https://developer.apple.com/help/app-store-connect/reference/app-information/creative-assets-specifications):
 
-## Product page header (custom header)
+- One universal design for the header and search results.
+- A single idea with the focal point in the center: the DEAD ON moment.
+- A short phrase that adds to the visual; no logo or app name (the App
+  Store shows them), no prices, URLs or awards.
+- The bottom edge stays clear for the App Store's own overlay.
+- No alpha channel; the 16:9 sizes are PNG as the specification requires.
 
-- `header-5244x2950.jpg`
-- `header-3840x1646.jpg`
+## Product page header
+
+- `header-21x9-3840x1646.jpg` (21:9)
+- `header-16x9-5244x2950.png` (16:9)
 
 ## Search results
 
-- `search-5244x2950.jpg`
-- `search-3840x2560.jpg`
-- `search-1920x1280.jpg`
+- `search-3x2-3840x2560.jpg` (3:2, maximum size)
+- `search-3x2-1920x1280.jpg` (3:2, minimum size; upload one of the two)
+- `search-16x9-5244x2950.png` (16:9)
